@@ -30,3 +30,4 @@ build/
 pip-wheel-metadata/
 
 *.iml
+uploads

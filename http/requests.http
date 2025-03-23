@@ -1,0 +1,41 @@
+POST http://127.0.0.1:5000/chat
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="WP102544 - Exec_Over - IBM JSR 352 Java Batch.pdf"
+Content-Type: application/pdf
+
+< ../data/pdf/WP102544 - Exec_Over - IBM JSR 352 Java Batch.pdf
+--boundary--
+
+###
+
+POST http://127.0.0.1:5000/chat
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Lambdas.pdf"
+Content-Type: application/pdf
+
+< ../data/pdf/Lambdas.pdf
+--boundary--
+
+###
+
+POST http://127.0.0.1:5000/chat/query
+Content-Type: application/json
+
+{
+  "token": "Q4Rsf0RGoYGv9HW9FhwBiA",
+  "question": "What is this book about?"
+}
+
+###
+
+POST http://127.0.0.1:5000/chat/query
+Content-Type: application/json
+
+{
+  "token": "IZEz7nFNlMWVu9kLkCVsag",
+  "question": "What is this book about?"
+}
