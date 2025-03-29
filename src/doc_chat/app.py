@@ -4,7 +4,7 @@ import secrets
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
-from doc_chat.chat import Chat
+from doc_chat.rag.chat import Chat
 
 app = Flask(__name__)
 
