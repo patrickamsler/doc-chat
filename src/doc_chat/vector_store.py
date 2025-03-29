@@ -2,7 +2,8 @@ from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 
-from src.llm import create_llm
+from doc_chat.llm import create_llm
+
 
 class VectorStore:
     def __init__(self, documents: list):

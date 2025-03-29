@@ -1,6 +1,5 @@
-from src.rag.document_loader import DocumentLoader
-from src.rag.vector_store import VectorStore
-
+from .vector_store import VectorStore
+from .document_loader import DocumentLoader
 
 class Chat:
     def __init__(self, file_path: str):
