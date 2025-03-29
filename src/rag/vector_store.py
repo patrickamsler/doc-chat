@@ -22,3 +22,6 @@ class VectorStore:
             chain_type=chain_type
         )
         return qa_chain.invoke(question)
+
+    def __str__(self):
+        return f"Number of collections: {self.vectorstore._collection.count()}"

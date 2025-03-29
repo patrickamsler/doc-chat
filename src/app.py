@@ -4,7 +4,7 @@ import secrets
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
-from rag.chat import Chat
+from src.rag.chat import Chat
 
 app = Flask(__name__)
 
@@ -26,7 +26,7 @@ def upload_file():
         return jsonify({"error": "No file selected"}), 400
 
     if not file or not allowed_file(file.filename):
-        return jsonify({"error": "Invalid file"}), 400\
+        return jsonify({"error": "Invalid file"}), 400
 
     token = create_token()
     print("created token: ", token)
@@ -35,7 +35,7 @@ def upload_file():
     print("saved file: ", file_path)
 
     chat = Chat(file_path)
-    print("created chat")
+    print("created chat", chat)
 
     chats_session[token] = chat
     return jsonify({
@@ -51,6 +51,8 @@ def query():
         return jsonify({"error": "Invalid token"}), 400
 
     chat = chats_session[token]
+    print("For token: ", token)
+    print("Load chat: ", chat)
     response = chat.query(question)
     return jsonify(response), 200
 
@@ -69,4 +71,7 @@ def allowed_file(filename) -> bool:
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
+    # Set memory limit to 1GB
+    # import resource
+    # resource.setrlimit(resource.RLIMIT_AS, (1024 * 1024, -1))
     app.run(debug=True)
