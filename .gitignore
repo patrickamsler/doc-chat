@@ -1,6 +1,6 @@
 # Ignore virtual environment
-venv/
-.env
+api/venv/
+api/.env
 
 # Byte-compiled / cached files
 __pycache__/
@@ -30,4 +30,3 @@ build/
 pip-wheel-metadata/
 
 *.iml
-uploads
