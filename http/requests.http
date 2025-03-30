@@ -26,7 +26,7 @@ POST http://127.0.0.1:5000/chat/query
 Content-Type: application/json
 
 {
-  "token": "R4A_S1K0ln1hTH5iLt1YhQ",
+  "token": "xixxNKz8hkpoXNL5bDR7FA",
   "question": "What is this book about?"
 }
 
@@ -36,6 +36,6 @@ POST http://127.0.0.1:5000/chat/query
 Content-Type: application/json
 
 {
-  "token": "uhsusNfEaOAc0fVkW7V1OA",
+  "token": "vGZajQ5VWHWVHRkE0dZQMw",
   "question": "What is this book about?"
 }

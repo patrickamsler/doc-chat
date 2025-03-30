@@ -8,10 +8,8 @@ from doc_chat.rag.chat import Chat
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = '../uploads'
+UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "/tmp/doc-chat/uploads")
 ALLOWED_EXTENSIONS = {'pdf'}
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 chats_session = {}
 
@@ -34,7 +32,7 @@ def upload_file():
     file_path = save_file(file, token)
     print("saved file: ", file_path)
 
-    chat = Chat(file_path)
+    chat = Chat(file_path=file_path, token=token)
     print("created chat", chat)
 
     chats_session[token] = chat
@@ -61,8 +59,8 @@ def create_token() -> str:
 
 def save_file(file, token) -> str:
     filename = secure_filename(file.filename)
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], token + '_' + filename)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    file_path = os.path.join(UPLOAD_FOLDER, token + '_' + filename)
     file.save(file_path)
     return str(file_path)
 

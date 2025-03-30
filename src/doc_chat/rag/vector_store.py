@@ -1,23 +1,33 @@
+import os
+import tempfile
+
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
+from chromadb.config import Settings
 
 from doc_chat.llm import create_llm
 
+CHROMA_TMP_DIR = os.getenv("CHROMA_TMP_DIR", "/tmp/doc-chat/chroma")
 
 class VectorStore:
-    def __init__(self, documents: list):
-        embeddings = OpenAIEmbeddings()
-        self.vectorstore = Chroma.from_documents(documents, embeddings)
-        self.llm = create_llm()
+    def __init__(self, documents: list, token: str):
+        self._persist_directory = os.path.join(CHROMA_TMP_DIR, token)
+        os.makedirs(self._persist_directory, exist_ok=True)
+        self._vectorstore = Chroma.from_documents(
+            documents=documents,
+            embedding=OpenAIEmbeddings(),
+            persist_directory=self._persist_directory
+        )
+        self._llm = create_llm()
 
     def qa_chain(self, question: str, chain_type="stuff", k=2) -> dict:
-        retriever = self.vectorstore.as_retriever(
+        retriever = self._vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": k}
         )
         qa_chain = RetrievalQA.from_chain_type(
-            llm=self.llm,
+            llm=self._llm,
             retriever=retriever,
             return_source_documents=True,
             chain_type=chain_type
@@ -25,4 +35,5 @@ class VectorStore:
         return qa_chain.invoke(question)
 
     def __str__(self):
-        return f"Number of collections: {self.vectorstore._collection.count()}"
+        return (f"Number of collections: {self._vectorstore._collection.count()}, "
+                f"persist_directory: {self._persist_directory}")

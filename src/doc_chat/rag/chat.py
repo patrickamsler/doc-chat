@@ -2,12 +2,13 @@ from .vector_store import VectorStore
 from .document_loader import DocumentLoader
 
 class Chat:
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, token: str):
         self.file_path = file_path
+        self.token = token
         doc_loader = DocumentLoader(file_path)
         _, splits = doc_loader.load_and_split()
         self.splits = splits
-        self._vector_store = VectorStore(splits)
+        self._vector_store = VectorStore(documents=splits, token=token)
 
     def query(self, question: str):
          answer = self._vector_store.qa_chain(question, k=2)
