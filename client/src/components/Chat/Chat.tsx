@@ -3,26 +3,28 @@ import styled from 'styled-components';
 import { sendMessage } from '../../services/api';
 
 const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 500px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 150px); /* Adjust from fixed 500px to window height minus space for header */
+    min-height: 400px; /* Minimum height for smaller screens */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
 `;
 
 const MessagesContainer = styled.div`
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  background-color: #f9f9f9;
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
 `;
 
 const InputContainer = styled.div`
-  display: flex;
-  padding: 10px;
-  background-color: white;
-  border-top: 1px solid #ddd;
+    display: flex;
+    padding: 15px;
+    background-color: white;
+    border-top: 1px solid #ddd;
 `;
 
 const MessageInput = styled.input`

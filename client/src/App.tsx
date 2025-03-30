@@ -4,20 +4,26 @@ import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
 
 const AppContainer = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+    width: 90%;
+    max-width: 1200px; /* Increased from 800px */
+    margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 `;
 
 const Title = styled.h1`
-  text-align: center;
-  color: #333;
+    text-align: center;
+    color: #333;
+    margin-bottom: 5px; /* Add small margin to reduce spacing */
 `;
 
 const Subtitle = styled.p`
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
+    text-align: center;
+    color: #666;
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 30px; /* Keep existing margin below subtitle */
 `;
 
 function App() {
