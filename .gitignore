@@ -1,32 +1,7 @@
-# Ignore virtual environment
-api/venv/
-api/.env
-
-# Byte-compiled / cached files
-__pycache__/
-*.py[cod]
-*$py.class
-
 # IDE and editor settings
 .vscode/
-.idea/
+.idea
 *.swp
 *.swo
-
-# Logs and databases
-logs/
-*.log
-*.sqlite3
-
-# Python package files
-*.egg-info/
-dist/
-build/
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Dependencies
-pip-wheel-metadata/
-
 *.iml
+/.idea/

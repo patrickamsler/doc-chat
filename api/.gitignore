@@ -1,0 +1,23 @@
+venv/
+.env
+
+# Byte-compiled / cached files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs and databases
+logs/
+*.log
+*.sqlite3
+
+# Python package files
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Dependencies
+pip-wheel-metadata/

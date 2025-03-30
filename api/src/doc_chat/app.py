@@ -2,11 +2,13 @@ import os
 import secrets
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 from doc_chat.rag.chat import Chat
 
 app = Flask(__name__)
+CORS(app)
 
 ALLOWED_EXTENSIONS = {'pdf'}
 

@@ -31,3 +31,13 @@ Start the server by running the following command:
 ```bash
 python -m src.doc_chat.app
 ```
+
+### Frontend
+
+Build and run the frontend by running the following commands:
+
+```bash
+cd client
+npm install
+npm start
+```
