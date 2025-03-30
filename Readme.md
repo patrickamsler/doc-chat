@@ -8,7 +8,7 @@
 cd api
 ```
 
-Add a `.env` file in the root of the project with the following content:
+Add a `.env` file in within the api folder with the following content:
 ```
 OPENAI_API_KEY=<your-openai-api-key>
 LANGSMITH_TRACING=true

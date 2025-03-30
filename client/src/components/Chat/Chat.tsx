@@ -5,72 +5,83 @@ import { sendMessage } from '../../services/api';
 const ChatContainer = styled.div`
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 150px); /* Adjust from fixed 500px to window height minus space for header */
-    min-height: 400px; /* Minimum height for smaller screens */
-    border: 1px solid #ddd;
+    height: calc(100vh - 150px);
+    min-height: 400px;
+    border: 1px solid ${props => props.theme.colors.border};
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 20px;
+    background-color: ${props => props.theme.colors.white};
+    font-family: ${props => props.theme.fonts.main};
 `;
 
 const MessagesContainer = styled.div`
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: #f9f9f9;
+    background-color: ${props => props.theme.colors.background};
+    color: ${props => props.theme.colors.text};
 `;
 
 const InputContainer = styled.div`
     display: flex;
     padding: 15px;
-    background-color: white;
-    border-top: 1px solid #ddd;
+    background-color: ${props => props.theme.colors.white};
+    border-top: 1px solid ${props => props.theme.colors.border};
 `;
 
 const MessageInput = styled.input`
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+    flex: 1;
+    padding: 10px;
+    border: 1px solid ${props => props.theme.colors.border};
+    border-radius: 4px;
+    font-size: 16px;
+    color: ${props => props.theme.colors.text};
+    font-family: ${props => props.theme.fonts.main};
+
+    &:disabled {
+        background-color: ${props => props.theme.colors.background};
+    }
 `;
 
 const SendButton = styled.button`
   margin-left: 10px;
   padding: 10px 15px;
-  background-color: #4285f4;
-  color: white;
+  background-color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-family: ${props => props.theme.fonts.main};
 
   &:hover {
-    background-color: #3367d6;
+    background-color: ${props => props.theme.colors.secondary};
   }
 
   &:disabled {
-    background-color: #cccccc;
+    background-color: ${props => props.theme.colors.disabled};
     cursor: not-allowed;
   }
 `;
 
 const Message = styled.div<{ isUser: boolean }>`
-  max-width: 70%;
-  padding: 10px 15px;
-  margin: 5px 0;
-  border-radius: 18px;
-  align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.isUser ? '#4285f4' : '#e5e5ea'};
-  color: ${props => props.isUser ? 'white' : 'black'};
-  align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  margin-left: ${props => props.isUser ? 'auto' : '0'};
-  margin-right: ${props => !props.isUser ? 'auto' : '0'};
+    max-width: 70%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 18px;
+    align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+    background-color: ${props => props.isUser ? props.theme.colors.primary : '#e5e5ea'};
+    color: ${props => props.isUser ? props.theme.colors.white : props.theme.colors.text};
+    margin-left: ${props => props.isUser ? 'auto' : '0'};
+    margin-right: ${props => !props.isUser ? 'auto' : '0'};
+    font-family: ${props => props.theme.fonts.main};
 `;
 
 const MessagesList = styled.div`
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    font-family: ${props => props.theme.fonts.main};
 `;
 
 interface ChatProps {
@@ -153,7 +164,7 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
           <MessageInput
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder="Type your message..."
               disabled={isLoading}
           />

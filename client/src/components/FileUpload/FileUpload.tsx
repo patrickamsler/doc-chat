@@ -7,8 +7,8 @@ const UploadContainer = styled.div`
 `;
 
 const UploadButton = styled.button`
-  background-color: #4285f4;
-  color: white;
+  background-color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
   padding: 10px 15px;
   border: none;
   border-radius: 4px;
@@ -16,11 +16,11 @@ const UploadButton = styled.button`
   font-size: 16px;
 
   &:hover {
-    background-color: #3367d6;
+    background-color: ${props => props.theme.colors.secondary};
   }
 
   &:disabled {
-    background-color: #cccccc;
+    background-color: ${props => props.theme.colors.disabled};
     cursor: not-allowed;
   }
 `;

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+import { theme } from './theme';
 import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
 
 const AppContainer = styled.div`
     width: 90%;
-    max-width: 1200px; /* Increased from 800px */
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     height: 100vh;
@@ -15,15 +16,17 @@ const AppContainer = styled.div`
 
 const Title = styled.h1`
     text-align: center;
-    color: #333;
-    margin-bottom: 5px; /* Add small margin to reduce spacing */
+    color: ${props => props.theme.colors.text};
+    margin-bottom: 5px;
+    font-family: ${props => props.theme.fonts.main};
 `;
 
 const Subtitle = styled.p`
     text-align: center;
-    color: #666;
-    margin-top: 0; /* Remove default top margin */
-    margin-bottom: 30px; /* Keep existing margin below subtitle */
+    color: ${props => props.theme.colors.lightText};
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-family: ${props => props.theme.fonts.main};
 `;
 
 function App() {
@@ -34,16 +37,18 @@ function App() {
   };
 
   return (
-      <AppContainer>
-        <Title>Doc Chat</Title>
-        <Subtitle>Upload a PDF and chat with its contents</Subtitle>
+      <ThemeProvider theme={theme}>
+        <AppContainer>
+          <Title>Doc Chat</Title>
+          <Subtitle>Upload a PDF and chat with its contents</Subtitle>
 
-        {!token ? (
-            <FileUpload onFileUploaded={handleFileUploaded} />
-        ) : (
-            <Chat token={token} />
-        )}
-      </AppContainer>
+          {!token ? (
+              <FileUpload onFileUploaded={handleFileUploaded} />
+          ) : (
+              <Chat token={token} />
+          )}
+        </AppContainer>
+      </ThemeProvider>
   );
 }
 
