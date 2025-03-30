@@ -26,7 +26,7 @@ POST http://127.0.0.1:5000/chat/query
 Content-Type: application/json
 
 {
-  "token": "xixxNKz8hkpoXNL5bDR7FA",
+  "token": "7vLKcFz9gXWntKXe1paHJA",
   "question": "What is this book about?"
 }
 

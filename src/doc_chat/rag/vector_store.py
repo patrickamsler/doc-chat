@@ -8,11 +8,9 @@ from chromadb.config import Settings
 
 from doc_chat.llm import create_llm
 
-CHROMA_TMP_DIR = os.getenv("CHROMA_TMP_DIR", "/tmp/doc-chat/chroma")
-
 class VectorStore:
     def __init__(self, documents: list, token: str):
-        self._persist_directory = os.path.join(CHROMA_TMP_DIR, token)
+        self._persist_directory = os.path.join(os.getenv("CHROMA_TMP_DIR"), token)
         os.makedirs(self._persist_directory, exist_ok=True)
         self._vectorstore = Chroma.from_documents(
             documents=documents,
