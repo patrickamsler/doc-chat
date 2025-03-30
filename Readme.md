@@ -1,9 +1,11 @@
 # Doc Chat
 
-## How to run the project
+## How to run the project locally
 
-Install the dependencies:
+Create the virtual environment and install the dependencies:
 ```bash
+python -m venv venv
+source venv/bin/activat
 pip install -r requirements.txt
 pip install -e .
 ```
