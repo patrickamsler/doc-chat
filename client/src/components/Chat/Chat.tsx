@@ -122,9 +122,10 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
 
     try {
       const response = await sendMessage(token, inputValue);
+      console.log(response.documents)
       const botMessage: MessageType = {
         id: Date.now() + 1,
-        text: response,
+        text: response.answer,
         isUser: false,
       };
       setMessages(prev => [...prev, botMessage]);
