@@ -3,15 +3,15 @@ import styled, { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
+import PdfViewer from './components/PdfViewer/PdfViewer';
 
 const AppContainer = styled.div`
-    width: 90%;
-    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    max-width: 1600px;
 `;
 
 const Title = styled.h1`
@@ -29,11 +29,25 @@ const Subtitle = styled.p`
     font-family: ${props => props.theme.fonts.main};
 `;
 
+const ContentContainer = styled.div`
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 150px);
+    gap: 20px;
+`;
+
+const ContentPanel = styled.div`
+    flex: 1 1 50%;
+    // overflow: auto; // add scrollbars
+`;
+
 function App() {
   const [token, setToken] = useState<string | null>(null);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
 
-  const handleFileUploaded = (newToken: string) => {
+  const handleFileUploaded = (newToken: string, fileUrl: string) => {
     setToken(newToken);
+    setFileUrl(fileUrl);
   };
 
   return (
@@ -43,9 +57,16 @@ function App() {
           <Subtitle>Upload a PDF and chat with its contents</Subtitle>
 
           {!token ? (
-              <FileUpload onFileUploaded={handleFileUploaded} />
+              <FileUpload onFileUploaded={handleFileUploaded}/>
           ) : (
-              <Chat token={token} />
+              <ContentContainer>
+                <ContentPanel>
+                  {fileUrl && <PdfViewer fileUrl={fileUrl}/>}
+                </ContentPanel>
+                <ContentPanel>
+                  <Chat token={token}/>
+                </ContentPanel>
+              </ContentContainer>
           )}
         </AppContainer>
       </ThemeProvider>
