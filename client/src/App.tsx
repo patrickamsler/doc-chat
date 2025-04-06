@@ -4,6 +4,7 @@ import { theme } from './theme';
 import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
 import PdfViewer from './components/PdfViewer/PdfViewer';
+import GlobalStyle from './GlobalStyle';
 
 const AppContainer = styled.div`
     margin: 0 auto;
@@ -12,12 +13,14 @@ const AppContainer = styled.div`
     display: flex;
     flex-direction: column;
     max-width: 1600px;
+    overflow: hidden;
 `;
 
 const Title = styled.h1`
     text-align: center;
     color: ${props => props.theme.colors.text};
     margin-bottom: 5px;
+    margin-top: 30px;
     font-family: ${props => props.theme.fonts.main};
 `;
 
@@ -25,20 +28,24 @@ const Subtitle = styled.p`
     text-align: center;
     color: ${props => props.theme.colors.lightText};
     margin-top: 0;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     font-family: ${props => props.theme.fonts.main};
 `;
 
 const ContentContainer = styled.div`
     display: flex;
     flex: 1;
-    height: calc(100vh - 150px);
-    gap: 20px;
+    height: 100%;
+    gap: 15px;
+    overflow: hidden;
 `;
 
 const ContentPanel = styled.div`
     flex: 1 1 50%;
-    // overflow: auto; // add scrollbars
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
 `;
 
 function App() {
@@ -52,6 +59,7 @@ function App() {
 
   return (
       <ThemeProvider theme={theme}>
+        <GlobalStyle />
         <AppContainer>
           <Title>Doc Chat</Title>
           <Subtitle>Upload a PDF and chat with its contents</Subtitle>

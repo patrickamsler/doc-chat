@@ -5,12 +5,11 @@ import { sendMessage } from '../../services/api';
 const ChatContainer = styled.div`
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 150px);
-    min-height: 400px;
+    height: 100%;
+    min-height: 0; /* Ensure it doesn't exceed the parent height */
     border: 1px solid ${props => props.theme.colors.border};
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 20px;
     background-color: ${props => props.theme.colors.white};
     font-family: ${props => props.theme.fonts.main};
 `;

@@ -8,7 +8,8 @@ const PdfContainer = styled.div`
     flex: 1;
     border: 1px solid ${props => props.theme.colors.border};
     border-radius: 8px;
-    overflow: hidden;
+    overflow: auto;
+    height: 100%;
 `;
 
 interface PdfViewerProps {
