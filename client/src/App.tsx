@@ -57,9 +57,13 @@ function App() {
     setFileUrl(fileUrl);
   };
 
+  const handleBadgeClick = (pageRef?: number) => {
+    console.log(pageRef)
+  };
+
   return (
       <ThemeProvider theme={theme}>
-        <GlobalStyle />
+        <GlobalStyle/>
         <AppContainer>
           <Title>Doc Chat</Title>
           <Subtitle>Upload a PDF and chat with its contents</Subtitle>
@@ -72,7 +76,10 @@ function App() {
                   {fileUrl && <PdfViewer fileUrl={fileUrl}/>}
                 </ContentPanel>
                 <ContentPanel>
-                  <Chat token={token}/>
+                  <Chat
+                      token={token}
+                      onBadgeClick={handleBadgeClick}
+                  />
                 </ContentPanel>
               </ContentContainer>
           )}

@@ -64,6 +64,17 @@ const SendButton = styled.button`
   }
 `;
 
+const DocBadge = styled.span`
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 6px;
+  background-color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+`;
+
 const Message = styled.div<{ isUser: boolean }>`
     max-width: 70%;
     padding: 10px 15px;
@@ -75,6 +86,9 @@ const Message = styled.div<{ isUser: boolean }>`
     margin-left: ${props => props.isUser ? 'auto' : '0'};
     margin-right: ${props => !props.isUser ? 'auto' : '0'};
     font-family: ${props => props.theme.fonts.main};
+    position: relative;
+    text-align: left;
+    word-wrap: break-word;
 `;
 
 const MessagesList = styled.div`
@@ -85,15 +99,17 @@ const MessagesList = styled.div`
 
 interface ChatProps {
   token: string;
+  onBadgeClick: (pageRef: number) => void;
 }
 
 interface MessageType {
   id: number;
   text: string;
   isUser: boolean;
+  pageRef?: number;
 }
 
-const Chat: React.FC<ChatProps> = ({ token }) => {
+const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -127,6 +143,7 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
         id: Date.now() + 1,
         text: response.answer,
         isUser: false,
+        pageRef: response.documents?.[0]?.page ?? null,
       };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
@@ -142,9 +159,15 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage();
+    }
+  };
+
+  const handleBadgeClick = (pageRef?: number) => {
+    if (pageRef) {
+      onBadgeClick(pageRef)
     }
   };
 
@@ -155,6 +178,7 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
             {messages.map(message => (
                 <Message key={message.id} isUser={message.isUser}>
                   {message.text}
+                  {!message.isUser && <DocBadge onClick={() => handleBadgeClick(message.pageRef)}>Doc</DocBadge>}
                 </Message>
             ))}
             <div ref={messagesEndRef} />
@@ -164,7 +188,7 @@ const Chat: React.FC<ChatProps> = ({ token }) => {
           <MessageInput
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              onKeyDown={handleKeyPress}
+              onKeyDown={onKeyPress}
               placeholder="Type your message..."
               disabled={isLoading}
           />
