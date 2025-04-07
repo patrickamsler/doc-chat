@@ -35,7 +35,8 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl}) => {
   const {
     CurrentPageInput,
     GoToNextPageButton,
-    GoToPreviousPageButton
+    GoToPreviousPageButton,
+    jumpToPage
   } = pageNavigationPluginInstance;
 
   return (
