@@ -5,6 +5,7 @@ import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
 import PdfViewer from './components/PdfViewer/PdfViewer';
 import GlobalStyle from './GlobalStyle';
+import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 
 const AppContainer = styled.div`
     margin: 0 auto;
@@ -48,7 +49,7 @@ const ContentPanel = styled.div`
     overflow: hidden;
 `;
 
-function App() {
+const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
@@ -57,8 +58,15 @@ function App() {
     setFileUrl(fileUrl);
   };
 
-  const handleBadgeClick = (pageRef?: number) => {
-    console.log(pageRef)
+  const pageNavigationPluginInstance = pageNavigationPlugin();
+  const {
+    jumpToPage
+  } = pageNavigationPluginInstance;
+
+  const handleBadgeClick = (pageRef: number) => {
+    if (jumpToPage) {
+      jumpToPage(pageRef);
+    }
   };
 
   return (
@@ -73,7 +81,8 @@ function App() {
           ) : (
               <ContentContainer>
                 <ContentPanel>
-                  {fileUrl && <PdfViewer fileUrl={fileUrl}/>}
+                  {fileUrl && <PdfViewer fileUrl={fileUrl}
+                                         pageNavigationPluginInstance={pageNavigationPluginInstance} />}
                 </ContentPanel>
                 <ContentPanel>
                   <Chat

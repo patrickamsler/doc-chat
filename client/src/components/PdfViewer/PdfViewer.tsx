@@ -1,6 +1,6 @@
 import React from 'react';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
-import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
+import { PageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import styled from 'styled-components';
@@ -28,15 +28,14 @@ const NavigationButtonContainer = styled.div`
 
 interface PdfViewerProps {
   fileUrl: string;
+  pageNavigationPluginInstance: PageNavigationPlugin;
 }
 
-const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl}) => {
-  const pageNavigationPluginInstance = pageNavigationPlugin();
+const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInstance}) => {
   const {
     CurrentPageInput,
     GoToNextPageButton,
     GoToPreviousPageButton,
-    jumpToPage
   } = pageNavigationPluginInstance;
 
   return (
