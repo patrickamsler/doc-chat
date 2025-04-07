@@ -1,33 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { uploadFile } from '../../services/api';
+import {
+  UploadContainer,
+  UploadButton,
+  FileInput,
+} from './FileUpload.styles'
 
-const UploadContainer = styled.div`
-    margin-bottom: 20px;
-`;
-
-const UploadButton = styled.button`
-    background-color: ${props => props.theme.colors.primary};
-    color: ${props => props.theme.colors.white};
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-
-    &:hover {
-        background-color: ${props => props.theme.colors.secondary};
-    }
-
-    &:disabled {
-        background-color: ${props => props.theme.colors.disabled};
-        cursor: not-allowed;
-    }
-`;
-
-const FileInput = styled.input`
-    display: none;
-`;
 
 interface FileUploadProps {
   onFileUploaded: (token: string, fileUrl: string) => void;
@@ -52,7 +30,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
       onFileUploaded(response.token, fileUrl);
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Failed to upload file');
     } finally {
       setIsUploading(false);
     }

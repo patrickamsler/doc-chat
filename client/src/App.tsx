@@ -1,53 +1,13 @@
 import React, { useState } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import FileUpload from './components/FileUpload/FileUpload';
 import Chat from './components/Chat/Chat';
 import PdfViewer from './components/PdfViewer/PdfViewer';
 import GlobalStyle from './GlobalStyle';
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
+import { AppContainer, Title, Subtitle, ContentContainer, ContentPanel } from './App.styles';
 
-const AppContainer = styled.div`
-    margin: 0 auto;
-    padding: 20px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    max-width: 1600px;
-    overflow: hidden;
-`;
-
-const Title = styled.h1`
-    text-align: center;
-    color: ${props => props.theme.colors.text};
-    margin-bottom: 5px;
-    margin-top: 30px;
-    font-family: ${props => props.theme.fonts.main};
-`;
-
-const Subtitle = styled.p`
-    text-align: center;
-    color: ${props => props.theme.colors.lightText};
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-family: ${props => props.theme.fonts.main};
-`;
-
-const ContentContainer = styled.div`
-    display: flex;
-    flex: 1;
-    height: 100%;
-    gap: 15px;
-    overflow: hidden;
-`;
-
-const ContentPanel = styled.div`
-    flex: 1 1 50%;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-`;
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
