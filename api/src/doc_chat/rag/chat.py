@@ -1,5 +1,4 @@
 from typing import TypedDict, List
-
 from .vector_store import VectorStore
 from .document_loader import DocumentLoader
 
@@ -23,18 +22,22 @@ class Chat:
         _, splits = doc_loader.load_and_split()
         self.splits = splits
         self._vector_store = VectorStore(documents=splits, token=token)
+        self._qa_chain = self._vector_store.create_conversational_retrieval_chain(
+            chain_type="stuff", k=2
+        )
 
     def query(self, question: str) -> QueryResponse:
-        answer = self._vector_store.qa_chain(question, k=2)
+        response = self._qa_chain.invoke(question)
         documents = [
             {'page': doc.metadata.get('page', 0), 'content': doc.page_content}
-            for doc in answer['source_documents']
+            for doc in response['source_documents']
         ]
-        return {
-            'question': question,
-            'answer': answer['result'],
-            'documents': documents
-        }
+        answer = response['answer']
+        return QueryResponse(
+            question=question,
+            answer=answer,
+            documents=documents
+        )
 
     def __str__(self):
         return f"File Path: {self.file_path}, Number of splits: {len(self.splits)}, {self._vector_store}"
