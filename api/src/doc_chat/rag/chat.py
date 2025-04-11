@@ -22,12 +22,12 @@ class Chat:
         _, splits = doc_loader.load_and_split()
         self.splits = splits
         self._vector_store = VectorStore(documents=splits, token=token)
-        self._qa_chain = self._vector_store.create_conversational_retrieval_chain(
+        self._retrieval_chain = self._vector_store.create_conversational_retrieval_chain(
             chain_type="stuff", k=2
         )
 
     def query(self, question: str) -> QueryResponse:
-        response = self._qa_chain.invoke(question)
+        response = self._retrieval_chain.invoke(question)
         documents = [
             {'page': doc.metadata.get('page', 0), 'content': doc.page_content}
             for doc in response['source_documents']
