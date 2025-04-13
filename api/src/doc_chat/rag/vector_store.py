@@ -23,6 +23,18 @@ class VectorStore:
         )
         self._llm = create_llm()
 
+    def create_qa_chain(self, chain_type="stuff", k=2) -> dict:
+        retriever = self._vectorstore.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k}
+        )
+        return RetrievalQA.from_chain_type(
+            llm=self._llm,
+            retriever=retriever,
+            return_source_documents=True,
+            chain_type=chain_type,
+        )
+
     def create_conversational_retrieval_chain(
           self,
           chain_type="stuff",
