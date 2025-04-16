@@ -24,6 +24,9 @@ class VectorStore:
         self._llm = create_llm()
 
     def create_qa_chain(self, chain_type="stuff", k=2) -> dict:
+        """
+        Create a retrieval QA chain without memory.
+        """
         retriever = self._vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": k}
@@ -40,6 +43,9 @@ class VectorStore:
           chain_type="stuff",
           k=2
     ) -> ConversationalRetrievalChain:
+        """
+        Create a conversational retrieval chain with memory.
+        """
         retriever = self._vectorstore.as_retriever(
             search_type="similarity",
             search_kwargs={"k": k}
@@ -56,6 +62,16 @@ class VectorStore:
             return_source_documents=True,
             chain_type=chain_type
         )
+
+    def retrieve_documents(self, query: str, k: int = 2) -> list:
+        """
+        Retrieve documents based on similarity without calling the LLM.
+        """
+        retriever = self._vectorstore.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k}
+        )
+        return retriever.get_relevant_documents(query)
 
     def __str__(self):
         return (
