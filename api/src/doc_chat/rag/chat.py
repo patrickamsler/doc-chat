@@ -22,9 +22,10 @@ class Chat:
         _, splits = doc_loader.load_and_split()
         self.splits = splits
         self._vector_store = VectorStore(documents=splits, token=token)
-        self._retrieval_chain = self._vector_store.create_conversational_retrieval_chain(
-            chain_type="stuff", k=2
-        )
+        # self._retrieval_chain = self._vector_store.create_conversational_retrieval_chain(
+        #     chain_type="stuff", k=2
+        # )
+        self._retrieval_chain = self._vector_store.create_citation_retrieval_chain(k=2)
 
     def query(self, question: str) -> QueryResponse:
         response = self._retrieval_chain.invoke(question)

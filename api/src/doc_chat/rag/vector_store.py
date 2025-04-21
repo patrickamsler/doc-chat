@@ -7,7 +7,7 @@ from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 
 from doc_chat.llm import create_llm
-
+from doc_chat.rag.citation_retrieval_chain import CitationRetrievalChain
 
 class VectorStore:
     def __init__(self, documents: list, token: str):
@@ -72,6 +72,15 @@ class VectorStore:
             search_kwargs={"k": k}
         )
         return retriever.get_relevant_documents(query)
+
+    def create_citation_retrieval_chain(self, k: int = 2) -> CitationRetrievalChain:
+        retrieval_chain = CitationRetrievalChain(
+            self._vectorstore.as_retriever(
+                search_type="similarity",
+                search_kwargs={"k": k}
+            ),
+            self._llm)
+        return retrieval_chain
 
     def __str__(self):
         return (

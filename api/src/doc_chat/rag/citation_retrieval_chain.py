@@ -1,0 +1,57 @@
+from langchain.chains import StuffDocumentsChain, LLMChain
+from langchain_core.prompts import PromptTemplate
+from langchain_core.vectorstores.base import BaseRetriever
+from langchain_core.language_models import BaseLLM
+
+prompt_template = """
+You are an assistant who answers questions **only** from the texts provided below.
+
+Citation rules
+1. After the answer, append the ID of each text you used, wrapped in square brackets.
+   • Example (single source):  The river is the Seine. [TXT2]
+   • Example (multiple sources):  Coffee was first cultivated in Yemen. [TXT3][TXT4]
+2. If the answer cannot be found in the texts, reply exactly:  I don’t know
+
+{context}
+
+"Question:```{question}```"
+"""
+
+
+class CitationRetrievalChain:
+    def __init__(self, retriever: BaseRetriever, llm: BaseLLM):
+        self._retriever = retriever
+        self._llm = llm
+        prompt = PromptTemplate.from_template(prompt_template)
+        self._chain = prompt | llm
+
+    def invoke(self, query):
+        documents = self._retriever.get_relevant_documents(query)
+        context = self.create_context(documents)
+        answer = self._chain.invoke({"context": context, "question": query})
+        answer = answer.strip()
+        answer = self.replace_txt_with_page_numbers(answer, documents)
+        return {
+            'answer': answer,
+            'source_documents': documents
+        }
+
+    @staticmethod
+    def create_context(documents):
+        context_parts = []
+        for i, doc in enumerate(documents):
+            context_parts.append(f"[TXT{i + 1}]\n")
+            context_parts.append(f"{doc.page_content}\n\n")
+        return ''.join(context_parts)
+
+    @staticmethod
+    def replace_txt_with_page_numbers(answer, documents):
+        page_numbers = []
+        for doc in documents:
+            page_numbers.append(doc.metadata['page'])
+
+        for i in range(len(page_numbers)):
+            answer = answer.replace(f"[TXT{i + 1}]",
+                                    f"<<{str(page_numbers[i])}>>")
+
+        return answer
