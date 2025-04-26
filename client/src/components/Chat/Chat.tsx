@@ -20,7 +20,6 @@ interface MessageType {
   id: number;
   text: string;
   isUser: boolean;
-  pageIndex?: number;
 }
 
 const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
@@ -57,7 +56,6 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
         id: Date.now() + 1,
         text: response.answer,
         isUser: false,
-        pageIndex: response.documents?.[0]?.page ?? null,
       };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
@@ -85,16 +83,33 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
     }
   };
 
+  const parseMessageWithDocBadges = (
+      message: string,
+      onBadgeClick: (pageRef: number) => void
+  ): React.ReactNode => {
+    const parts = message.split(/(<<\d+>>)/g); // Split message into text and <<>> parts
+
+    return parts.map((part, index) => {
+      const match = part.match(/<<(\d+)>>/); // Check if part is a <<>> reference
+      if (match) {
+        const pageRef = parseInt(match[1], 10); // Extract the page number
+        return (
+            <DocBadge key={index} onClick={() => onBadgeClick(pageRef)}>
+              {pageRef + 1}
+            </DocBadge>
+        );
+      }
+      return <span key={index}>{part}</span>; // Return plain text for non-<<>> parts
+    });
+  };
+
   return (
       <ChatContainer>
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} isUser={message.isUser}>
-                  {message.text}
-                  {!message.isUser && message.pageIndex &&
-                      <DocBadge onClick={() => handleBadgeClick(message.pageIndex)}>{message.pageIndex + 1}</DocBadge>
-                  }
+                  {parseMessageWithDocBadges(message.text, handleBadgeClick)}
                 </Message>
             ))}
             <div ref={messagesEndRef} />
