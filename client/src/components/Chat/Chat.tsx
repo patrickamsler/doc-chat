@@ -8,7 +8,7 @@ import {
   InputContainer,
   MessageInput,
   SendButton,
-  DocBadge
+  PageRefBadge
 } from './Chat.styles';
 
 interface ChatProps {
@@ -83,7 +83,7 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
     }
   };
 
-  const parseMessageWithDocBadges = (
+  const parseMessageWithPageRefBadges = (
       message: string,
       onBadgeClick: (pageRef: number) => void
   ): React.ReactNode => {
@@ -94,9 +94,9 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
       if (match) {
         const pageRef = parseInt(match[1], 10); // Extract the page number
         return (
-            <DocBadge key={index} onClick={() => onBadgeClick(pageRef)}>
+            <PageRefBadge key={index} onClick={() => onBadgeClick(pageRef)}>
               {pageRef + 1}
-            </DocBadge>
+            </PageRefBadge>
         );
       }
       return <span key={index}>{part}</span>; // Return plain text for non-<<>> parts
@@ -109,7 +109,7 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} isUser={message.isUser}>
-                  {parseMessageWithDocBadges(message.text, handleBadgeClick)}
+                  {parseMessageWithPageRefBadges(message.text, handleBadgeClick)}
                 </Message>
             ))}
             <div ref={messagesEndRef} />

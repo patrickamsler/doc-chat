@@ -62,7 +62,7 @@ export const SendButton = styled.button`
   }
 `;
 
-export const DocBadge = styled.span`
+export const PageRefBadge = styled.span`
   display: inline-block;
   margin-left: 10px;
   padding: 2px 6px;
