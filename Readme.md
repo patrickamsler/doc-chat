@@ -41,3 +41,8 @@ cd client
 npm install
 npm start
 ```
+
+Run the tests by running the following command:
+```bash
+npm test
+```

@@ -64,7 +64,7 @@ export const SendButton = styled.button`
 
 export const PageRefBadge = styled.span`
   display: inline-block;
-  margin-left: 10px;
+  margin-left: 5px;
   padding: 2px 6px;
   background-color: ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.white};
