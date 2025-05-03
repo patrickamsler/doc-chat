@@ -51,7 +51,7 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
 
     try {
       const response = await sendMessage(token, inputValue);
-      console.log(response.documents)
+      console.log(response)
       const botMessage: MessageType = {
         id: Date.now() + 1,
         text: response.answer,
@@ -77,19 +77,13 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
     }
   };
 
-  const handleBadgeClick = (pageIndex?: number) => {
-    if (pageIndex) {
-      onBadgeClick(pageIndex)
-    }
-  };
-
   return (
       <ChatContainer>
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} isUser={message.isUser}>
-                  {parseMessageWithPageRefBadges(message.text, handleBadgeClick)}
+                  {parseMessageWithPageRefBadges(message.text, onBadgeClick)}
                 </Message>
             ))}
             <div ref={messagesEndRef} />
