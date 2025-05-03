@@ -26,7 +26,7 @@ describe('FileUpload Component', () => {
     // Create a file and directly trigger the change event on the input
     const file = new File(['dummy content'], 'test.pdf', { type: 'application/pdf' });
     const input = screen.getByTestId('file-input');
-    await userEvent.upload(input, file);
+    userEvent.upload(input, file);
 
     await waitFor(() => {
       expect(uploadFile).toHaveBeenCalledWith(file);
