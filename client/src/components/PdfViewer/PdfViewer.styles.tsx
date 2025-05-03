@@ -3,7 +3,6 @@ import styled from "styled-components";
 export const PdfContainer = styled.div`
     flex: 1;
     border: 1px solid ${props => props.theme.colors.border};
-    border-radius: 8px;
     overflow: hidden;
     height: 100%;
 `;

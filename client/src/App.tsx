@@ -6,7 +6,7 @@ import Chat from './components/Chat/Chat';
 import PdfViewer from './components/PdfViewer/PdfViewer';
 import GlobalStyle from './GlobalStyle';
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
-import { AppContainer, Title, Subtitle, ContentContainer, ContentPanel } from './App.styles';
+import { AppContainer, Title, Subtitle, ContentContainer, ContentPanel, FileUploadContainer } from './App.styles';
 
 
 const App: React.FC = () => {
@@ -33,16 +33,17 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <GlobalStyle/>
         <AppContainer>
-          <Title>Doc Chat</Title>
-          <Subtitle>Upload a PDF and chat with its contents</Subtitle>
-
           {!token ? (
-              <FileUpload onFileUploaded={handleFileUploaded}/>
+              <FileUploadContainer>
+                <Title>Doc Chat</Title>
+                <Subtitle>Upload a PDF and chat with its contents</Subtitle>
+                <FileUpload onFileUploaded={handleFileUploaded}/>
+              </FileUploadContainer>
           ) : (
               <ContentContainer>
                 <ContentPanel>
                   {fileUrl && <PdfViewer fileUrl={fileUrl}
-                                         pageNavigationPluginInstance={pageNavigationPluginInstance} />}
+                                         pageNavigationPluginInstance={pageNavigationPluginInstance}/>}
                 </ContentPanel>
                 <ContentPanel>
                   <Chat

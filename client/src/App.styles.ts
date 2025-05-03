@@ -2,12 +2,18 @@ import styled from "styled-components";
 
 export const AppContainer = styled.div`
     margin: 0 auto;
-    padding: 20px;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    max-width: 1600px;
     overflow: hidden;
+`;
+
+export const FileUploadContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 `;
 
 export const Title = styled.h1`
@@ -30,7 +36,6 @@ export const ContentContainer = styled.div`
     display: flex;
     flex: 1;
     height: 100%;
-    gap: 15px;
     overflow: hidden;
 `;
 

@@ -6,7 +6,6 @@ export const ChatContainer = styled.div`
     height: 100%;
     min-height: 0; /* Ensure it doesn't exceed the parent height */
     border: 1px solid ${props => props.theme.colors.border};
-    border-radius: 8px;
     overflow: hidden;
     background-color: ${props => props.theme.colors.white};
     font-family: ${props => props.theme.fonts.main};
