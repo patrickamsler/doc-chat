@@ -1,6 +1,7 @@
 import React from 'react';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import { PageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
+import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import {
@@ -22,21 +23,33 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInsta
     GoToPreviousPageButton,
   } = pageNavigationPluginInstance;
 
+  const zoomPluginInstance = zoomPlugin();
+  const { ZoomInButton, ZoomOutButton } = zoomPluginInstance;
+
   return (
       <PdfContainer>
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <NavigationBar>
             <NavigationButtonContainer>
-              <GoToPreviousPageButton/>
+              <GoToPreviousPageButton />
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <CurrentPageInput/>
+              <CurrentPageInput />
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <GoToNextPageButton/>
+              <GoToNextPageButton />
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <ZoomOutButton />
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <ZoomInButton />
             </NavigationButtonContainer>
           </NavigationBar>
-          <Viewer fileUrl={fileUrl} plugins={[pageNavigationPluginInstance]}/>
+          <Viewer
+              fileUrl={fileUrl}
+              plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
+          />
         </Worker>
       </PdfContainer>
   );
