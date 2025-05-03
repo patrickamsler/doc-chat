@@ -20,4 +20,6 @@ export const NavigationButtonContainer = styled.div`
     padding: 0 2px;
     display: flex;
     justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 `;
