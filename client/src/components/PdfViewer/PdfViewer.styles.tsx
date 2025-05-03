@@ -12,10 +12,12 @@ export const NavigationBar = styled.div`
     background-color: #eeeeee;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     padding: 4px;
 `;
 
 export const NavigationButtonContainer = styled.div`
     padding: 0 2px;
+    display: flex;
+    justify-content: center;
 `;

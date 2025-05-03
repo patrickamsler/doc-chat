@@ -19,31 +19,35 @@ interface PdfViewerProps {
 const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInstance}) => {
   const {
     CurrentPageInput,
+    NumberOfPages,
     GoToNextPageButton,
     GoToPreviousPageButton,
   } = pageNavigationPluginInstance;
 
   const zoomPluginInstance = zoomPlugin();
-  const { ZoomInButton, ZoomOutButton } = zoomPluginInstance;
+  const {ZoomInButton, ZoomOutButton} = zoomPluginInstance;
 
   return (
       <PdfContainer>
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <NavigationBar>
             <NavigationButtonContainer>
-              <GoToPreviousPageButton />
+              <ZoomOutButton/>
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <CurrentPageInput />
+              <ZoomInButton/>
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <GoToNextPageButton />
+              <GoToPreviousPageButton/>
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <ZoomOutButton />
+              <CurrentPageInput/>
             </NavigationButtonContainer>
             <NavigationButtonContainer>
-              <ZoomInButton />
+              / <NumberOfPages/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <GoToNextPageButton/>
             </NavigationButtonContainer>
           </NavigationBar>
           <Viewer
