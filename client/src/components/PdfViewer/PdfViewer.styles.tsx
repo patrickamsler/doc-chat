@@ -1,10 +1,8 @@
 import styled from "styled-components";
 
-export const PdfContainer = styled.div`
+export const PdfViewerContainer = styled.div`
     flex: 1;
-    border: 1px solid ${props => props.theme.colors.border};
-    overflow: hidden;
-    height: 100%;
+    overflow-y: auto; /* Forces the vertical scrollbar */
 `;
 
 export const NavigationBar = styled.div`

@@ -5,7 +5,7 @@ import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import {
-  PdfContainer,
+  PdfViewerContainer,
   NavigationBar,
   NavigationButtonContainer
 } from "./PdfViewer.styles";
@@ -28,34 +28,34 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInsta
   const {ZoomInButton, ZoomOutButton} = zoomPluginInstance;
 
   return (
-      <PdfContainer>
-        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-          <NavigationBar>
-            <NavigationButtonContainer>
-              <ZoomOutButton/>
-            </NavigationButtonContainer>
-            <NavigationButtonContainer>
-              <ZoomInButton/>
-            </NavigationButtonContainer>
-            <NavigationButtonContainer>
-              <GoToPreviousPageButton/>
-            </NavigationButtonContainer>
-            <NavigationButtonContainer>
-              <CurrentPageInput/>
-            </NavigationButtonContainer>
-            <NavigationButtonContainer>
-              / <NumberOfPages/>
-            </NavigationButtonContainer>
-            <NavigationButtonContainer>
-              <GoToNextPageButton/>
-            </NavigationButtonContainer>
-          </NavigationBar>
+      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+        <NavigationBar>
+          <NavigationButtonContainer>
+            <ZoomOutButton/>
+          </NavigationButtonContainer>
+          <NavigationButtonContainer>
+            <ZoomInButton/>
+          </NavigationButtonContainer>
+          <NavigationButtonContainer>
+            <GoToPreviousPageButton/>
+          </NavigationButtonContainer>
+          <NavigationButtonContainer>
+            <CurrentPageInput/>
+          </NavigationButtonContainer>
+          <NavigationButtonContainer>
+            / <NumberOfPages/>
+          </NavigationButtonContainer>
+          <NavigationButtonContainer>
+            <GoToNextPageButton/>
+          </NavigationButtonContainer>
+        </NavigationBar>
+        <PdfViewerContainer>
           <Viewer
               fileUrl={fileUrl}
               plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
           />
-        </Worker>
-      </PdfContainer>
+        </PdfViewerContainer>
+      </Worker>
   );
 };
 
