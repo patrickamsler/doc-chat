@@ -5,7 +5,7 @@ import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import {
-  PdfViewerContainer,
+  ViewerContainer,
   NavigationBar,
   NavigationButtonContainer
 } from "./PdfViewer.styles";
@@ -49,12 +49,12 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInsta
             <GoToNextPageButton/>
           </NavigationButtonContainer>
         </NavigationBar>
-        <PdfViewerContainer>
+        <ViewerContainer>
           <Viewer
               fileUrl={fileUrl}
               plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
           />
-        </PdfViewerContainer>
+        </ViewerContainer>
       </Worker>
   );
 };

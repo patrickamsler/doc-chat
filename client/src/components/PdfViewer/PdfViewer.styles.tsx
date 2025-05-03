@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const PdfViewerContainer = styled.div`
+export const ViewerContainer = styled.div`
     flex: 1;
     overflow-y: auto; /* Forces the vertical scrollbar */
 `;
