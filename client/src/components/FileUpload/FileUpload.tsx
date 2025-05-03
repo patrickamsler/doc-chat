@@ -44,6 +44,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
             type="file"
             ref={fileInputRef}
             accept=".pdf"
+            data-testid="file-input"
             onChange={handleFileChange}
         />
       </UploadContainer>
