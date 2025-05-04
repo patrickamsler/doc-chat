@@ -22,7 +22,6 @@ export const FileNameContainer = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 40%;
 `;
 
 export const NavigationControls = styled.div`
@@ -36,4 +35,5 @@ export const NavigationButtonContainer = styled.div`
     justify-content: center;
     font-family: Arial, sans-serif;
     font-size: 14px;
+    white-space: nowrap;
 `;
