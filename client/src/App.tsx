@@ -12,10 +12,12 @@ import { AppContainer, Title, Subtitle, ContentContainer, ContentPanel, FileUplo
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string>("");
 
   const handleFileUploaded = (newToken: string, fileUrl: string) => {
     setToken(newToken);
     setFileUrl(fileUrl);
+    setFileName(fileName);
   };
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
@@ -43,6 +45,7 @@ const App: React.FC = () => {
               <ContentContainer>
                 <ContentPanel>
                   {fileUrl && <PdfViewer fileUrl={fileUrl}
+                                         fileName={fileName}
                                          pageNavigationPluginInstance={pageNavigationPluginInstance}/>}
                 </ContentPanel>
                 <ContentPanel>

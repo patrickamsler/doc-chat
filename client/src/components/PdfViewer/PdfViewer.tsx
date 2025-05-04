@@ -13,10 +13,11 @@ import {
 
 interface PdfViewerProps {
   fileUrl: string;
+  fileName: string;
   pageNavigationPluginInstance: PageNavigationPlugin;
 }
 
-const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, pageNavigationPluginInstance}) => {
+const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, fileName, pageNavigationPluginInstance}) => {
   const {
     CurrentPageInput,
     NumberOfPages,

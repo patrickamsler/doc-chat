@@ -8,7 +8,7 @@ import {
 
 
 interface FileUploadProps {
-  onFileUploaded: (token: string, fileUrl: string) => void;
+  onFileUploaded: (token: string, fileUrl: string, fileName: string) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
@@ -27,7 +27,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
       setIsUploading(true);
       const response = await uploadFile(file);
       const fileUrl = URL.createObjectURL(file);
-      onFileUploaded(response.token, fileUrl);
+      onFileUploaded(response.token, fileUrl, file.name);
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
