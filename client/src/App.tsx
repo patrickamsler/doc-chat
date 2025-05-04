@@ -14,10 +14,10 @@ const App: React.FC = () => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
 
-  const handleFileUploaded = (newToken: string, fileUrl: string) => {
+  const handleFileUploaded = (newToken: string, newFileUrl: string, newFileName: string) => {
     setToken(newToken);
-    setFileUrl(fileUrl);
-    setFileName(fileName);
+    setFileUrl(newFileUrl);
+    setFileName(newFileName);
   };
 
   const pageNavigationPluginInstance = pageNavigationPlugin();

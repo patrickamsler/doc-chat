@@ -10,8 +10,24 @@ export const NavigationBar = styled.div`
     background-color: #eeeeee;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 4px;
+`;
+
+export const FileNameContainer = styled.div`
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding-left: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40%;
+`;
+
+export const NavigationControls = styled.div`
+    display: flex;
+    align-items: center;
 `;
 
 export const NavigationButtonContainer = styled.div`

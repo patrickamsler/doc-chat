@@ -7,9 +7,10 @@ import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import {
   ViewerContainer,
   NavigationBar,
-  NavigationButtonContainer
+  NavigationButtonContainer,
+  FileNameContainer,
+  NavigationControls
 } from "./PdfViewer.styles";
-
 
 interface PdfViewerProps {
   fileUrl: string;
@@ -31,24 +32,29 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, fileName, pageNavigationP
   return (
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
         <NavigationBar>
-          <NavigationButtonContainer>
-            <ZoomOutButton/>
-          </NavigationButtonContainer>
-          <NavigationButtonContainer>
-            <ZoomInButton/>
-          </NavigationButtonContainer>
-          <NavigationButtonContainer>
-            <GoToPreviousPageButton/>
-          </NavigationButtonContainer>
-          <NavigationButtonContainer>
-            <CurrentPageInput/>
-          </NavigationButtonContainer>
-          <NavigationButtonContainer>
-            / <NumberOfPages/>
-          </NavigationButtonContainer>
-          <NavigationButtonContainer>
-            <GoToNextPageButton/>
-          </NavigationButtonContainer>
+          <FileNameContainer title={fileName}>
+            {fileName}
+          </FileNameContainer>
+          <NavigationControls>
+            <NavigationButtonContainer>
+              <ZoomOutButton/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <ZoomInButton/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <GoToPreviousPageButton/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <CurrentPageInput/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              / <NumberOfPages/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <GoToNextPageButton/>
+            </NavigationButtonContainer>
+          </NavigationControls>
         </NavigationBar>
         <ViewerContainer>
           <Viewer
