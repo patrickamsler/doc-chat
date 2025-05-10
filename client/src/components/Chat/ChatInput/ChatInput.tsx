@@ -30,7 +30,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+      e.preventDefault(); // prevent inserting a new line in the textarea
       onSendMessage();
     }
   };
