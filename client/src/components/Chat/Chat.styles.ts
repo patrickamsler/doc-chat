@@ -19,43 +19,6 @@ export const MessagesContainer = styled.div`
     color: ${props => props.theme.colors.text};
 `;
 
-export const InputContainer = styled.div`
-    display: flex;
-    padding: 15px;
-    background-color: ${props => props.theme.colors.white};
-`;
-
-export const MessageInput = styled.input`
-    flex: 1;
-    padding: 10px;
-    border: 1px solid ${props => props.theme.colors.border};
-    border-radius: 4px;
-    font-size: 16px;
-    color: ${props => props.theme.colors.text};
-    font-family: ${props => props.theme.fonts.main};
-`;
-
-export const SendButton = styled.button`
-  margin-left: 10px;
-  padding: 10px 15px;
-  background-color: ${props => props.theme.colors.primary};
-  color: ${props => props.theme.colors.white};
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: ${props => props.theme.fonts.main};
-
-  &:hover {
-    background-color: ${props => props.theme.colors.secondary};
-  }
-
-  &:disabled {
-    background-color: ${props => props.theme.colors.disabled};
-    cursor: not-allowed;
-  }
-`;
-
 export const PageRefBadge = styled.span`
   display: inline-block;
   margin-left: 5px;

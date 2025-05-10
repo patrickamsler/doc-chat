@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import { sendMessage } from '../../services/api';
 import { parseMessageWithPageRefBadges } from './ChatMessageParser'
-import {
-  ChatContainer,
-  InputContainer,
-  Message,
-  MessageInput,
-  MessagesContainer,
-  MessagesList,
-  SendButton
-} from './Chat.styles';
+import ChatInput from './ChatInput/ChatInput';
+import { ChatContainer, Message, MessagesContainer, MessagesList } from './Chat.styles';
 
 interface ChatProps {
   token: string;
@@ -71,12 +64,6 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
     }
   };
 
-  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
   return (
       <ChatContainer>
         <MessagesContainer>
@@ -89,17 +76,12 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
             <div ref={messagesEndRef} />
           </MessagesList>
         </MessagesContainer>
-        <InputContainer>
-          <MessageInput
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              onKeyDown={onKeyPress}
-              placeholder="Type your message..."
-          />
-          <SendButton onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
-            {isLoading ? 'Sending...' : 'Send'}
-          </SendButton>
-        </InputContainer>
+        <ChatInput
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+        />
       </ChatContainer>
   );
 };

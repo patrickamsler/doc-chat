@@ -1,0 +1,57 @@
+import React, { useRef, useEffect } from 'react';
+import { InputContainer, MessageInput, SendButton } from './ChatInput.styles';
+
+interface ChatInputProps {
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  onSendMessage: () => void;
+  isLoading: boolean;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({
+                                               inputValue,
+                                               setInputValue,
+                                               onSendMessage,
+                                               isLoading
+                                             }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = '10px';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [inputValue]);
+
+  const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSendMessage();
+    }
+  };
+
+  return (
+      <InputContainer>
+        <MessageInput
+            ref={textareaRef}
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
+            onKeyDown={onKeyPress}
+            placeholder="Type your message..."
+        />
+        <SendButton
+            onClick={onSendMessage}
+            disabled={isLoading || !inputValue.trim()}
+        >
+          {isLoading ? 'Sending...' : 'Send'}
+        </SendButton>
+      </InputContainer>
+  );
+};
+
+export default ChatInput;
