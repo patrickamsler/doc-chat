@@ -28,7 +28,6 @@ describe("parseMessageWithPageRefBadges", () => {
         </ThemeProvider>
     );
 
-    console.log(container.innerHTML)
     const firstChild = container.firstChild
     expect(firstChild?.nodeName).toBe("DIV");
     expect(firstChild?.childNodes.length).toBe(3);
@@ -48,7 +47,6 @@ describe("parseMessageWithPageRefBadges", () => {
         </ThemeProvider>
     );
 
-    console.log(container.innerHTML)
     const spans = container.querySelectorAll("span");
     expect(spans.length).toBe(3);
     expect(spans[0].textContent).toBe("See page for details.");
