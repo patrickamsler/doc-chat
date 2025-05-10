@@ -15,7 +15,7 @@ export const MessagesContainer = styled.div`
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: ${props => props.theme.colors.background};
+    background-color: ${props => props.theme.colors.white};
     color: ${props => props.theme.colors.text};
 `;
 
@@ -23,7 +23,6 @@ export const InputContainer = styled.div`
     display: flex;
     padding: 15px;
     background-color: ${props => props.theme.colors.white};
-    border-top: 1px solid ${props => props.theme.colors.border};
 `;
 
 export const MessageInput = styled.input`
@@ -36,7 +35,7 @@ export const MessageInput = styled.input`
     font-family: ${props => props.theme.fonts.main};
 
     &:disabled {
-        background-color: ${props => props.theme.colors.background};
+        background-color: ${props => props.theme.colors.disabled};
     }
 `;
 
