@@ -95,7 +95,6 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
               onChange={e => setInputValue(e.target.value)}
               onKeyDown={onKeyPress}
               placeholder="Type your message..."
-              disabled={isLoading}
           />
           <SendButton onClick={handleSendMessage} disabled={isLoading || !inputValue.trim()}>
             {isLoading ? 'Sending...' : 'Send'}

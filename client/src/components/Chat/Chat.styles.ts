@@ -33,10 +33,6 @@ export const MessageInput = styled.input`
     font-size: 16px;
     color: ${props => props.theme.colors.text};
     font-family: ${props => props.theme.fonts.main};
-
-    &:disabled {
-        background-color: ${props => props.theme.colors.disabled};
-    }
 `;
 
 export const SendButton = styled.button`
