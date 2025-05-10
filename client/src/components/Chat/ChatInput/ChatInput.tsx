@@ -42,7 +42,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
             onKeyDown={onKeyPress}
-            placeholder="Type your message..."
+            placeholder="Ask any question..."
         />
         <SendButton
             onClick={onSendMessage}
