@@ -19,7 +19,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
-      textarea.style.height = '10px';
+      textarea.style.height = '22px';
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };

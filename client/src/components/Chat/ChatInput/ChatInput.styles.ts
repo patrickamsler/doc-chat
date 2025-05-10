@@ -8,9 +8,9 @@ export const InputContainer = styled.div`
 
 export const MessageInput = styled.textarea`
     flex: 1;
-    min-height: 10px;
-    max-height: 150px; /* Approximately 6-7 lines */
-    padding: 10px;
+    min-height: 22px;
+    max-height: 150px;
+    padding: 10px 10px 0 10px;
     border: 1px solid ${props => props.theme.colors.border};
     border-radius: 4px;
     font-size: 16px;
