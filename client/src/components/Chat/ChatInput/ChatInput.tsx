@@ -14,12 +14,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [textareaHeight, setTextareaHeight] = useState(22); // initial height
 
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = '22px';
       textarea.style.height = `${textarea.scrollHeight}px`;
+      // Use offsetHeight if scrollHeight exceeds maxHeight (scrollbar visible)
+      const computed = window.getComputedStyle(textarea);
+      const maxHeight = parseInt(computed.maxHeight || '150', 10);
+      const visibleHeight = Math.min(textarea.scrollHeight, maxHeight, textarea.offsetHeight);
+      setTextareaHeight(visibleHeight);
     }
   };
 
@@ -54,6 +60,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         onClick={handleSend}
         disabled={isLoading || !inputValue.trim()}
         aria-label={isLoading ? "Sending..." : "Send"}
+        $height={textareaHeight}
       >
         {isLoading ? (
           <FontAwesomeIcon icon={faSpinner} spin />
@@ -66,3 +73,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
+

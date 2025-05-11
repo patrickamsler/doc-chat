@@ -21,10 +21,11 @@ export const MessageInput = styled.textarea`
     line-height: 1.5;
 `;
 
-export const SendButton = styled.button`
-  margin-left: 10px;
-  width: 40px;
-  height: 40px;
+export const SendButton = styled.button<{ $height?: number }>`
+  margin-left: 5px;
+  width: 60px;
+  min-height: 22px;
+  height: ${({ $height }) => ($height ? `${$height}px` : '40px')};
   padding: 0;
   display: flex;
   align-items: center;
@@ -52,3 +53,4 @@ export const SendButton = styled.button`
     height: 20px;
   }
 `;
+
