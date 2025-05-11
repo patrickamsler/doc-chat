@@ -7,8 +7,6 @@ import { theme } from "../../../theme";
 describe('ChatInput', () => {
   const setup = (propsOverride = {}) => {
     const props = {
-      inputValue: '',
-      setInputValue: jest.fn(),
       onSendMessage: jest.fn(),
       isLoading: false,
       ...propsOverride,
@@ -33,48 +31,54 @@ describe('ChatInput', () => {
     expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument();
   });
 
-  it('calls setInputValue on input change', () => {
-    const setInputValue = jest.fn();
-    setup({ setInputValue });
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'Hello' },
-    });
-    expect(setInputValue).toHaveBeenCalledWith('Hello');
+  it('updates input value on change', () => {
+    setup();
+    const textbox = screen.getByRole('textbox');
+    fireEvent.change(textbox, { target: { value: 'Hello' } });
+    expect((textbox as HTMLTextAreaElement).value).toBe('Hello');
   });
 
-  it('calls onSendMessage on send button click', () => {
+  it('calls onSendMessage with input value on send button click', () => {
     const onSendMessage = jest.fn();
-    setup({ inputValue: 'Hi', onSendMessage });
+    setup({ onSendMessage });
+    const textbox = screen.getByRole('textbox');
+    fireEvent.change(textbox, { target: { value: 'Hi' } });
     fireEvent.click(screen.getByRole('button', { name: /send/i }));
-    expect(onSendMessage).toHaveBeenCalled();
+    expect(onSendMessage).toHaveBeenCalledWith('Hi');
   });
 
   it('disables send button when loading or input is empty', () => {
-    setup({ inputValue: '', isLoading: false });
+    setup({ isLoading: false });
     expect(screen.getAllByRole('button', { name: /send/i })[0]).toBeDisabled();
     cleanup();
 
-    setup({ inputValue: '   ', isLoading: false });
+    setup({ isLoading: false });
+    const textbox = screen.getByRole('textbox');
+    fireEvent.change(textbox, { target: { value: '   ' } });
     expect(screen.getAllByRole('button', { name: /send/i })[0]).toBeDisabled();
     cleanup();
 
-    setup({ inputValue: 'Hello', isLoading: true });
+    setup({ isLoading: true });
+    const textbox2 = screen.getByRole('textbox');
+    fireEvent.change(textbox2, { target: { value: 'Hello' } });
     expect(screen.getAllByRole('button', { name: /send/i })[0]).toBeDisabled();
     cleanup();
   });
 
-  it('calls onSendMessage on Enter key (without shift)', () => {
+  it('calls onSendMessage with input value on Enter key (without shift)', () => {
     const onSendMessage = jest.fn();
-    setup({ inputValue: 'Hello', onSendMessage });
+    setup({ onSendMessage });
     const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 'Hello' } });
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: false });
-    expect(onSendMessage).toHaveBeenCalled();
+    expect(onSendMessage).toHaveBeenCalledWith('Hello');
   });
 
   it('does not call onSendMessage on Shift+Enter', () => {
     const onSendMessage = jest.fn();
-    setup({ inputValue: 'Hello', onSendMessage });
+    setup({ onSendMessage });
     const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: 'Hello' } });
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: true });
     expect(onSendMessage).not.toHaveBeenCalled();
   });

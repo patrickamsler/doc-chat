@@ -17,7 +17,6 @@ interface MessageType {
 
 const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
-  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,21 +28,20 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+  const handleSendMessage = async (input: string) => {
+    if (!input.trim()) return;
 
     const userMessage: MessageType = {
       id: Date.now(),
-      text: inputValue,
+      text: input,
       isUser: true,
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
     setIsLoading(true);
 
     try {
-      const response = await sendMessage(token, inputValue);
+      const response = await sendMessage(token, input);
       console.log(response)
       const botMessage: MessageType = {
         id: Date.now() + 1,
@@ -77,8 +75,6 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
           </MessagesList>
         </MessagesContainer>
         <ChatInput
-            inputValue={inputValue}
-            setInputValue={setInputValue}
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
         />
