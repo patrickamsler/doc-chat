@@ -21,11 +21,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     if (textarea) {
       textarea.style.height = '22px';
       textarea.style.height = `${textarea.scrollHeight}px`;
-      // Use offsetHeight if scrollHeight exceeds maxHeight (scrollbar visible)
-      const computed = window.getComputedStyle(textarea);
-      const maxHeight = parseInt(computed.maxHeight || '150', 10);
-      const visibleHeight = Math.min(textarea.scrollHeight, maxHeight, textarea.offsetHeight);
-      setTextareaHeight(visibleHeight);
+      // Use offsetHeight to match the rendered height (including when scrollbar is visible)
+      setTextareaHeight(textarea.offsetHeight);
     }
   };
 
