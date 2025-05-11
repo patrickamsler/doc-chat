@@ -27,14 +27,16 @@ describe('ChatInput', () => {
 
   it('renders input and send button', () => {
     setup();
-    expect(screen.getByPlaceholderText(/ask any question/i)).toBeInTheDocument();
+    const textbox = screen.getByRole('textbox');
+    expect(textbox).toBeInTheDocument();
+    expect(textbox).toHaveAttribute('placeholder', 'Ask any question...');
     expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument();
   });
 
   it('calls setInputValue on input change', () => {
     const setInputValue = jest.fn();
     setup({ setInputValue });
-    fireEvent.change(screen.getByPlaceholderText(/ask any question/i), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' },
     });
     expect(setInputValue).toHaveBeenCalledWith('Hello');
@@ -64,7 +66,7 @@ describe('ChatInput', () => {
   it('calls onSendMessage on Enter key (without shift)', () => {
     const onSendMessage = jest.fn();
     setup({ inputValue: 'Hello', onSendMessage });
-    const textarea = screen.getByPlaceholderText(/ask any question/i);
+    const textarea = screen.getByRole('textbox');
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: false });
     expect(onSendMessage).toHaveBeenCalled();
   });
@@ -72,7 +74,7 @@ describe('ChatInput', () => {
   it('does not call onSendMessage on Shift+Enter', () => {
     const onSendMessage = jest.fn();
     setup({ inputValue: 'Hello', onSendMessage });
-    const textarea = screen.getByPlaceholderText(/ask any question/i);
+    const textarea = screen.getByRole('textbox');
     fireEvent.keyDown(textarea, { key: 'Enter', code: 'Enter', shiftKey: true });
     expect(onSendMessage).not.toHaveBeenCalled();
   });
