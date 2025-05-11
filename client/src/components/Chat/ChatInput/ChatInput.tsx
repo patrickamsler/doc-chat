@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { InputContainer, MessageInput, SendButton } from './ChatInput.styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 interface ChatInputProps {
   onSendMessage: (input: string) => void;
@@ -51,8 +53,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <SendButton
         onClick={handleSend}
         disabled={isLoading || !inputValue.trim()}
+        aria-label={isLoading ? "Sending..." : "Send"}
       >
-        {isLoading ? 'Sending...' : 'Send'}
+        {isLoading ? (
+          <FontAwesomeIcon icon={faSpinner} spin />
+        ) : (
+          <FontAwesomeIcon icon={faPaperPlane} />
+        )}
       </SendButton>
     </InputContainer>
   );

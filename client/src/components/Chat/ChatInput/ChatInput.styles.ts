@@ -23,13 +23,18 @@ export const MessageInput = styled.textarea`
 
 export const SendButton = styled.button`
   margin-left: 10px;
-  padding: 10px 15px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.white};
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   font-family: ${props => props.theme.fonts.main};
 
   &:hover {
@@ -39,5 +44,11 @@ export const SendButton = styled.button`
   &:disabled {
     background-color: ${props => props.theme.colors.disabled};
     cursor: not-allowed;
+  }
+
+  svg {
+    /* Make sure the icon is centered and sized appropriately */
+    width: 20px;
+    height: 20px;
   }
 `;
