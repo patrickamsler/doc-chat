@@ -11,6 +11,21 @@ export const ChatContainer = styled.div`
     font-family: ${props => props.theme.fonts.main};
 `;
 
+export const ChatNavigationBar = styled.div`
+    align-items: center;
+    height: 30px;
+    display: flex;
+    justify-content: flex-start;
+    padding: 4px 12px;
+`;
+
+export const ChatNavigationTitle = styled.div`
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+`;
+
 export const MessagesContainer = styled.div`
     flex: 1;
     padding: 20px;

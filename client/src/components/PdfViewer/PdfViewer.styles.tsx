@@ -7,17 +7,16 @@ export const ViewerContainer = styled.div`
 
 export const NavigationBar = styled.div`
     align-items: center;
-    background-color: #eeeeee;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     padding: 4px;
+    height: 30px;
 `;
 
 export const FileNameContainer = styled.div`
     font-family: Arial, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 700;
     padding-left: 8px;
     overflow: hidden;
     text-overflow: ellipsis;

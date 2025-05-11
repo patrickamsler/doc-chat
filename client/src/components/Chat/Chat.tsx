@@ -2,7 +2,14 @@ import React, { useRef, useEffect, useState } from 'react';
 import { sendMessage } from '../../services/api';
 import { parseMessageWithPageRefBadges } from './ChatMessageParser'
 import ChatInput from './ChatInput/ChatInput';
-import { ChatContainer, Message, MessagesContainer, MessagesList } from './Chat.styles';
+import {
+  ChatContainer,
+  Message,
+  MessagesContainer,
+  MessagesList,
+  ChatNavigationBar,
+  ChatNavigationTitle
+} from './Chat.styles';
 
 interface ChatProps {
   token: string;
@@ -64,6 +71,9 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
 
   return (
       <ChatContainer>
+        <ChatNavigationBar>
+          <ChatNavigationTitle>Chat</ChatNavigationTitle>
+        </ChatNavigationBar>
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
