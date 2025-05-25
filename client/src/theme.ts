@@ -15,10 +15,10 @@ export const theme = {
     grey800: '#424242', // Grey 800 – primary body text (light bg)
     grey900: '#212121', // Grey 900 – headings / highest emphasis
 
-    // Legacy / utility keys
     accent:    '#B0BEC5', // Blue-Grey 200 – subtle accent
     textDark:  '#171919', // Custom dark heading colour
     lightText: '#E5E8F5', // Text on indigo buttons
+
     white:     '#FFFFFF', // Pure white
     border:    '#E0E0E0', // Default light border
     disabled:  '#CCCCCC'  // Disabled control background,

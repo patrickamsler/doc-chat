@@ -51,7 +51,7 @@ export const Message = styled.div<{ isUser: boolean }>`
     margin: 5px 0;
     border-radius: 18px;
     align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-    background-color: ${props => props.isUser ? props.theme.colors.grey100 : props.theme.colors.grey100};
+    background-color: ${props => props.isUser ? props.theme.colors.grey100 : props.theme.colors.white};
     color: ${props => props.isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
     margin-left: ${props => props.isUser ? 'auto' : '0'};
     margin-right: ${props => !props.isUser ? 'auto' : '0'};
