@@ -18,7 +18,7 @@ export const UploadButton = styled.button`
     }
 
     &:disabled {
-        background-color: ${props => props.theme.colors.disabled};
+        background-color: ${props => props.theme.colors.grey400};
         cursor: not-allowed;
     }
 `;

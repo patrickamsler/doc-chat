@@ -5,7 +5,7 @@ export const ChatContainer = styled.div`
     flex-direction: column;
     height: 100%;
     min-height: 0; /* Ensure it doesn't exceed the parent height */
-    border: 1px solid ${props => props.theme.colors.border};
+    border: 1px solid ${props => props.theme.colors.grey300};
     overflow: hidden;
     background-color: ${props => props.theme.colors.white};
     font-family: ${props => props.theme.fonts.main};

@@ -11,7 +11,7 @@ export const MessageInput = styled.textarea`
     min-height: 22px;
     max-height: 150px;
     padding: 10px 10px 0 10px;
-    border: 1px solid ${props => props.theme.colors.border};
+    border: 1px solid ${props => props.theme.colors.grey300};
     border-radius: 4px;
     font-size: 16px;
     color: ${props => props.theme.colors.textDark};
@@ -48,7 +48,7 @@ export const SendButton = styled.button<{ $height?: number }>`
   }
 
   &:disabled {
-    background-color: ${props => props.theme.colors.disabled};
+    background-color: ${props => props.theme.colors.grey400};
     cursor: not-allowed;
   }
 

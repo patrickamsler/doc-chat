@@ -18,10 +18,7 @@ export const theme = {
     accent:    '#B0BEC5', // Blue-Grey 200 – subtle accent
     textDark:  '#171919', // Custom dark heading colour
     lightText: '#E5E8F5', // Text on indigo buttons
-
     white:     '#FFFFFF', // Pure white
-    border:    '#E0E0E0', // Default light border
-    disabled:  '#CCCCCC'  // Disabled control background,
   },
   fonts: {
     main: 'Arial, sans-serif',
