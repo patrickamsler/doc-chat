@@ -19,6 +19,11 @@ export const MessageInput = styled.textarea`
     resize: none; /* Prevent manual resizing */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
     line-height: 1.5;
+    
+    &:focus {
+        outline: none;
+        border-color: ${props => props.theme.colors.primaryA0};
+    }
 `;
 
 export const SendButton = styled.button<{ $height?: number }>`
@@ -30,7 +35,7 @@ export const SendButton = styled.button<{ $height?: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.colors.primary};
+  background-color: ${props => props.theme.colors.primaryA0};
   color: ${props => props.theme.colors.white};
   border: none;
   border-radius: 4px;
@@ -39,7 +44,7 @@ export const SendButton = styled.button<{ $height?: number }>`
   font-family: ${props => props.theme.fonts.main};
 
   &:hover {
-    background-color: ${props => props.theme.colors.secondary};
+    background-color: ${props => props.theme.colors.primaryA2};
   }
 
   &:disabled {
