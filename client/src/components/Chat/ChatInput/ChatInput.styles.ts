@@ -14,7 +14,7 @@ export const MessageInput = styled.textarea`
     border: 1px solid ${props => props.theme.colors.border};
     border-radius: 4px;
     font-size: 16px;
-    color: ${props => props.theme.colors.text};
+    color: ${props => props.theme.colors.textDark};
     font-family: ${props => props.theme.fonts.main};
     resize: none; /* Prevent manual resizing */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */

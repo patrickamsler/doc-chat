@@ -18,7 +18,7 @@ export const FileUploadContainer = styled.div`
 
 export const Title = styled.h1`
     text-align: center;
-    color: ${props => props.theme.colors.text};
+    color: ${props => props.theme.colors.textDark};
     margin-bottom: 5px;
     margin-top: 30px;
     font-family: ${props => props.theme.fonts.main};
@@ -26,7 +26,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
     text-align: center;
-    color: ${props => props.theme.colors.lightText};
+    color: ${props => props.theme.colors.textDark};
     margin-top: 0;
     margin-bottom: 20px;
     font-family: ${props => props.theme.fonts.main};

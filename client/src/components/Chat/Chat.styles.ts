@@ -31,7 +31,7 @@ export const MessagesContainer = styled.div`
     padding: 20px;
     overflow-y: auto;
     background-color: ${props => props.theme.colors.white};
-    color: ${props => props.theme.colors.text};
+    color: ${props => props.theme.colors.textDark};
 `;
 
 export const PageRefBadge = styled.span`
@@ -52,7 +52,7 @@ export const Message = styled.div<{ isUser: boolean }>`
     border-radius: 18px;
     align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
     background-color: ${props => props.isUser ? props.theme.colors.accent : props.theme.colors.accent};
-    color: ${props => props.isUser ? props.theme.colors.text : props.theme.colors.text};
+    color: ${props => props.isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
     margin-left: ${props => props.isUser ? 'auto' : '0'};
     margin-right: ${props => !props.isUser ? 'auto' : '0'};
     font-family: ${props => props.theme.fonts.main};
