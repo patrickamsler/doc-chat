@@ -38,8 +38,8 @@ export const PageRefBadge = styled.span`
   display: inline-block;
   margin-left: 5px;
   padding: 2px 6px;
-  background-color: ${props => props.theme.colors.primaryA0};
-  color: ${props => props.theme.colors.white};
+  background-color: ${props => props.theme.colors.accent};
+  color: ${props => props.theme.colors.textDark};
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
@@ -51,7 +51,7 @@ export const Message = styled.div<{ isUser: boolean }>`
     margin: 5px 0;
     border-radius: 18px;
     align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-    background-color: ${props => props.isUser ? props.theme.colors.accent : props.theme.colors.accent};
+    background-color: ${props => props.isUser ? props.theme.colors.grey100 : props.theme.colors.grey100};
     color: ${props => props.isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
     margin-left: ${props => props.isUser ? 'auto' : '0'};
     margin-right: ${props => !props.isUser ? 'auto' : '0'};
