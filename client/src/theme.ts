@@ -21,7 +21,8 @@ export const theme = {
     white:     '#FFFFFF', // Pure white
   },
   fonts: {
-    main: 'Arial, sans-serif',
+    body: '"Roboto", "Helvetica Neue", Arial, sans-serif',
+    mono: '"Roboto Mono", "Menlo", monospace'
   },
 };
 

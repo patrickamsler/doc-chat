@@ -14,7 +14,7 @@ export const NavigationBar = styled.div`
 `;
 
 export const FileNameContainer = styled.div`
-    font-family: Arial, sans-serif;
+    font-family: ${props => props.theme.fonts.body}
     font-size: 16px;
     font-weight: 700;
     padding-left: 8px;
@@ -32,7 +32,7 @@ export const NavigationButtonContainer = styled.div`
     padding: 0 2px;
     display: flex;
     justify-content: center;
-    font-family: Arial, sans-serif;
+    font-family: ${props => props.theme.fonts.body}
     font-size: 14px;
     white-space: nowrap;
 `;

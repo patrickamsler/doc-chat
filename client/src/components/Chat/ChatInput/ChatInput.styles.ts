@@ -15,7 +15,7 @@ export const MessageInput = styled.textarea`
     border-radius: 4px;
     font-size: 16px;
     color: ${props => props.theme.colors.textDark};
-    font-family: ${props => props.theme.fonts.main};
+    font-family: ${props => props.theme.fonts.body};
     resize: none; /* Prevent manual resizing */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
     line-height: 1.5;
@@ -41,7 +41,7 @@ export const SendButton = styled.button<{ $height?: number }>`
   border-radius: 4px;
   cursor: pointer;
   font-size: 20px;
-  font-family: ${props => props.theme.fonts.main};
+  font-family: ${props => props.theme.fonts.body};
 
   &:hover {
     background-color: ${props => props.theme.colors.primaryA2};

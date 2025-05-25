@@ -8,7 +8,7 @@ export const ChatContainer = styled.div`
     border: 1px solid ${props => props.theme.colors.grey300};
     overflow: hidden;
     background-color: ${props => props.theme.colors.white};
-    font-family: ${props => props.theme.fonts.main};
+    font-family: ${props => props.theme.fonts.body};
 `;
 
 export const ChatNavigationBar = styled.div`
@@ -20,7 +20,7 @@ export const ChatNavigationBar = styled.div`
 `;
 
 export const ChatNavigationTitle = styled.div`
-    font-family: Arial, sans-serif;
+    font-family: ${props => props.theme.fonts.body}
     font-size: 16px;
     font-weight: 700;
     white-space: nowrap;
@@ -55,7 +55,7 @@ export const Message = styled.div<{ isUser: boolean }>`
     color: ${props => props.isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
     margin-left: ${props => props.isUser ? 'auto' : '0'};
     margin-right: ${props => !props.isUser ? 'auto' : '0'};
-    font-family: ${props => props.theme.fonts.main};
+    font-family: ${props => props.theme.fonts.body};
     position: relative;
     text-align: left;
     word-wrap: break-word;
@@ -64,5 +64,5 @@ export const Message = styled.div<{ isUser: boolean }>`
 export const MessagesList = styled.div`
     display: flex;
     flex-direction: column;
-    font-family: ${props => props.theme.fonts.main};
+    font-family: ${props => props.theme.fonts.body};
 `;
