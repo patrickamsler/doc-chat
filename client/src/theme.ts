@@ -16,8 +16,8 @@ export const theme = {
     grey900: '#212121', // Grey 900 – headings / highest emphasis
 
     accent:    '#B0BEC5', // Blue-Grey 200 – subtle accent
-    textDark:  '#171919', // Custom dark heading colour
-    lightText: '#E5E8F5', // Text on indigo buttons
+    textDark:  '#212121', // Custom dark heading colour
+    lightText: '#FFFFFF', // Text on indigo buttons
     white:     '#FFFFFF', // Pure white
   },
   fonts: {
