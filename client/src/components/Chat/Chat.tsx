@@ -10,6 +10,9 @@ import {
   ChatNavigationBar,
   ChatNavigationTitle
 } from './Chat.styles';
+import { faRobot } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTheme } from 'styled-components';
 
 interface ChatProps {
   token: string;
@@ -22,13 +25,14 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
+const Chat: React.FC<ChatProps> = ({token, onBadgeClick}) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
   };
 
   useEffect(() => {
@@ -78,10 +82,15 @@ const Chat: React.FC<ChatProps> = ({ token, onBadgeClick }) => {
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} isUser={message.isUser}>
+                  {!message.isUser && (
+                      <FontAwesomeIcon icon={faRobot}
+                                       style={{marginRight: 8, color: theme.colors.primaryA0}}
+                      />
+                  )}
                   {parseMessageWithPageRefBadges(message.text, onBadgeClick)}
                 </Message>
             ))}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef}/>
           </MessagesList>
         </MessagesContainer>
         <ChatInput
