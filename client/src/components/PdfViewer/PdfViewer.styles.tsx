@@ -32,7 +32,6 @@ export const NavigationButtonContainer = styled.div`
     padding: 0 2px;
     display: flex;
     justify-content: center;
-    font-family: ${props => props.theme.fonts.body}
     font-size: 14px;
     white-space: nowrap;
 `;
