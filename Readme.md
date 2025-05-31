@@ -32,6 +32,11 @@ Start the server by running the following command:
 python -m src.doc_chat.app
 ```
 
+Run the tests by running the following command:
+```bash
+pytest
+```
+
 ### Frontend
 
 Build and run the frontend by running the following commands:
