@@ -1,7 +1,7 @@
 import os
 import secrets
 import chromadb
-from chromadb import DEFAULT_TENANT
+from chromadb import DEFAULT_TENANT, DEFAULT_DATABASE
 from chromadb import Settings
 from chromadb.utils import embedding_functions
 from datetime import datetime
@@ -26,6 +26,14 @@ class MultiTenantVectorStore:
         except Exception as e:
             self._adminClient.create_database(database, DEFAULT_TENANT)
         return database
+
+    def list_all_databases(self):
+        """
+        List all user databases
+        """
+        return [db["name"] for db in self._adminClient.list_databases()
+                if db.get("tenant") == DEFAULT_TENANT
+                and db["name"] != DEFAULT_DATABASE]
 
     def create_document_collection(self, user_id: str, document_splits: list):
         if not document_splits:
