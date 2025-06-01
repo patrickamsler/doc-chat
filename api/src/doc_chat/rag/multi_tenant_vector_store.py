@@ -70,12 +70,15 @@ class MultiTenantVectorStore:
 
     def create_document_collection(self, user_id: str,
           document_splits: list) -> str:
-        if not document_splits:
-            raise ValueError("document_splits cannot be empty")
+        """
+        Create a new document collection for a user and add document splits to it.
         # each user has their own chroma database
-        client = self._get_chroma_client(user_id)
         # we create a new collection for each PDF upload
         # the splits of the PDF will be added as chroma documents
+        """
+        if not document_splits:
+            raise ValueError("document_splits cannot be empty")
+        client = self._get_chroma_client(user_id)
         collection_id = self._create_collection_id()
         collection = client.get_or_create_collection(
             name=collection_id,
@@ -89,6 +92,18 @@ class MultiTenantVectorStore:
             ids=[f"doc_{i}" for i, _ in enumerate(document_splits)],
         )
         return collection_id
+
+    def retrieve_documents(self, user_id: str, collection_id: str,
+          query: str, k: int = 2) -> list:
+        """
+        Retrieve documents based on similarity for a user.
+        """
+        client = self._get_chroma_client(user_id)
+        collection = client.get_collection(collection_id)
+        return collection.query(
+            query_texts=[query],
+            n_results=k
+        )
 
     @staticmethod
     def _create_collection_id() -> str:
