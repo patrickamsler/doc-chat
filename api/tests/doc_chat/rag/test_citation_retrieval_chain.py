@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import MagicMock
 
 from doc_chat.rag.citation_retrieval_chain import CitationRetrievalChain
