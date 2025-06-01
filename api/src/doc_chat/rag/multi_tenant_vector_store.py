@@ -1,11 +1,12 @@
 import os
-import secrets
 from datetime import datetime
 
 import chromadb
 from chromadb import DEFAULT_TENANT, DEFAULT_DATABASE
 from chromadb import Settings
 from chromadb.utils import embedding_functions
+
+from doc_chat.token_util import create_token
 
 CHROMA_PERSIST_DIRECTORY_ENV = os.getenv("CHROMA_TMP_DIR")
 
@@ -79,32 +80,40 @@ class MultiTenantVectorStore:
         if not document_splits:
             raise ValueError("document_splits cannot be empty")
         client = self._get_chroma_client(user_id)
-        collection_id = self._create_collection_id()
+        collection_id = create_token()
         collection = client.get_or_create_collection(
             name=collection_id,
             metadata={
-                "created": str(datetime.now())
+                "createdAt": str(datetime.now())
             },
             embedding_function=self.embedding_function,
         )
         collection.add(
             documents=[split.page_content for split in document_splits],
             ids=[f"doc_{i}" for i, _ in enumerate(document_splits)],
+            metadatas=[{
+                "createdAt": str(datetime.now()),
+                "page": split.metadata.get("page")
+            } for split in document_splits]
         )
         return collection_id
 
     def retrieve_documents(self, user_id: str, collection_id: str,
-          query: str, k: int = 2) -> list:
+          query: str, k: int = 1) -> list:
         """
         Retrieve documents based on similarity for a user.
         """
         client = self._get_chroma_client(user_id)
         collection = client.get_collection(collection_id)
-        return collection.query(
+        results = collection.query(
             query_texts=[query],
             n_results=k
         )
-
-    @staticmethod
-    def _create_collection_id() -> str:
-        return secrets.token_urlsafe(16)
+        docs = []
+        for i, doc in enumerate(results['documents'][0]):
+            docs.append({
+                "id": results['ids'][0][i],
+                "content": doc,
+                "metadata": results['metadatas'][0][i],
+            })
+        return docs

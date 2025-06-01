@@ -7,22 +7,24 @@ from doc_chat.rag.multi_tenant_vector_store import MultiTenantVectorStore
 
 
 class DummySplit:
-    def __init__(self, content):
+    def __init__(self, content, page=0):
         self.page_content = content
+        self.metadata = {"page": page}
 
 
 @pytest.fixture
-def temp_chroma_dir():
-    d = tempfile.mkdtemp()
-    print("Temporary directory created:", d)
-    yield d
-    shutil.rmtree(d)
+def store():
+    temp_dir = tempfile.mkdtemp()
+    print("Temporary directory created:", temp_dir)
+
+    store = MultiTenantVectorStore(chroma_persist_directory=temp_dir,
+                                   embedding_model=None)
+    yield store
+    shutil.rmtree(temp_dir)
 
 
-@pytest.fixture
-def store(temp_chroma_dir):
-    return MultiTenantVectorStore(chroma_persist_directory=temp_chroma_dir,
-                                  embedding_model=None)
+def create_splits(content_list: list[str]) -> list[DummySplit]:
+    return [DummySplit(content, i) for i, content in enumerate(content_list)]
 
 
 def test_get_or_create_db_creates_and_returns_db(store):
@@ -73,8 +75,8 @@ def test_get_collections_returns_empty_list_for_new_user(store):
 def test_get_collections_returns_collections(store):
     # given
     user_id = "user_a"
-    splits1 = [DummySplit("page one"), DummySplit("page two")]
-    splits2 = [DummySplit("page one"), DummySplit("page two")]
+    splits1 = create_splits(["page one", "page two"])
+    splits2 = create_splits(["page three", "page four"])
     store.create_document_collection(user_id, splits1)
     store.create_document_collection(user_id, splits2)
 
@@ -89,7 +91,7 @@ def test_get_collections_returns_collections(store):
 def test_create_document_collection(store):
     # given
     user_id = "user_b"
-    splits = [DummySplit("page one"), DummySplit("page two")]
+    splits = create_splits(["page one", "page two"])
 
     # when
     collection_id = store.create_document_collection(user_id, splits)
@@ -98,7 +100,7 @@ def test_create_document_collection(store):
     assert isinstance(collection_id, str)
 
     # Try to create again with different splits, should get a new collection
-    splits2 = [DummySplit("page three")]
+    splits2 = create_splits(["page three"])
 
     # when
     collection_id2 = store.create_document_collection(user_id, splits2)
@@ -113,5 +115,44 @@ def test_create_document_collection_empty_document_split_raises(store):
     with pytest.raises(ValueError):
         store.create_document_collection(user_id, [])
 
+
 def test_retrieve_documents(store):
-    user_id = "user_d"
+    # given
+    user_id = "user_a"
+    splits = create_splits(["This is a document about oranges",
+                            "This is a document about pineapple",
+                            "This is a document about cherries"])
+    collection_id = store.create_document_collection(user_id, splits)
+
+    # when
+    query = "This is a document about Hawaii"
+    retrieved_docs = store.retrieve_documents(user_id, collection_id,
+                                              query, k=1)
+    # then
+    assert len(retrieved_docs) == 1
+
+    doc = retrieved_docs[0]
+    assert doc['content'] == "This is a document about pineapple"
+    assert doc['id'] == "doc_1"
+    assert doc['metadata']['page'] == 1
+    assert doc['metadata']['createdAt'] is not None
+
+
+def test_retrieve_documents_retrieve_multiple_docs(store):
+    # given
+    user_id = "user_a"
+    splits = create_splits(["This is a document about oranges",
+                            "This is a document about pineapple",
+                            "This is a document about cherries"])
+    collection_id = store.create_document_collection(user_id, splits)
+
+    # when
+    query = "This is a document about Hawaii"
+    retrieved_docs = store.retrieve_documents(user_id, collection_id,
+                                              query, k=5)
+
+    # then
+    assert len(retrieved_docs) == 3
+
+    expected_ids = {"doc_0", "doc_2", "doc_1"}
+    assert {doc['id'] for doc in retrieved_docs} == expected_ids
