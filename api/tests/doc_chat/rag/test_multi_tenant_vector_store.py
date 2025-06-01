@@ -132,7 +132,7 @@ def test_retrieve_documents(store):
     assert len(retrieved_docs) == 1
 
     doc = retrieved_docs[0]
-    assert doc['content'] == "This is a document about pineapple"
+    assert doc['page_content'] == "This is a document about pineapple"
     assert doc['id'] == "doc_1"
     assert doc['metadata']['page'] == 1
     assert doc['metadata']['createdAt'] is not None

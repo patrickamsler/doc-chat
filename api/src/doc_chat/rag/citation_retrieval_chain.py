@@ -25,8 +25,9 @@ class CitationRetrievalChain:
         prompt = PromptTemplate.from_template(prompt_template)
         self._chain = prompt | llm
 
-    def invoke(self, query):
-        documents = self._retriever.get_relevant_documents(query)
+    def invoke(self, query, documents=None):
+        if documents is None:
+            documents = self._retriever.get_relevant_documents(query) # TODO remove this line and dependency on retriever
         context = self.create_context(documents)
         answer = self._chain.invoke({"context": context, "question": query})
         answer = answer.strip()

@@ -113,7 +113,7 @@ class MultiTenantVectorStore:
         for i, doc in enumerate(results['documents'][0]):
             docs.append({
                 "id": results['ids'][0][i],
-                "content": doc,
+                "page_content": doc,
                 "metadata": results['metadatas'][0][i],
             })
         return docs
