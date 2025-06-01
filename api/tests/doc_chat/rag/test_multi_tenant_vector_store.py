@@ -21,7 +21,8 @@ def temp_chroma_dir():
 
 @pytest.fixture
 def store(temp_chroma_dir):
-    return MultiTenantVectorStore(chroma_persist_directory=temp_chroma_dir)
+    return MultiTenantVectorStore(chroma_persist_directory=temp_chroma_dir,
+                                  embedding_model=None)
 
 
 def test_get_or_create_db_creates_and_returns_db(store):

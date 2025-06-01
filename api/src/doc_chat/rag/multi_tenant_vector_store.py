@@ -12,13 +12,24 @@ CHROMA_PERSIST_DIRECTORY_ENV = os.getenv("CHROMA_TMP_DIR")
 
 class MultiTenantVectorStore:
 
-    def __init__(self, chroma_persist_directory=CHROMA_PERSIST_DIRECTORY_ENV):
+    def __init__(
+          self,
+          chroma_persist_directory=CHROMA_PERSIST_DIRECTORY_ENV,
+          embedding_model='text-embedding-3-small'
+    ):
         self._chroma_persist_directory = chroma_persist_directory
         self._adminClient = chromadb.AdminClient(Settings(
             is_persistent=True,
             persist_directory=chroma_persist_directory,
         ))
-        self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
+        if not embedding_model:
+            # By default, Chroma uses the Sentence Transformers all-MiniLM-L6-v2
+            self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
+        else:
+            self.embedding_function = embedding_functions.OpenAIEmbeddingFunction(
+                api_key=os.environ["OPENAI_API_KEY"],
+                model_name=embedding_model
+            )
 
     def _get_chroma_client(self, user_id: str) -> chromadb.PersistentClient:
         """
@@ -57,7 +68,8 @@ class MultiTenantVectorStore:
         client = self._get_chroma_client(user_id)
         return [c.__str__() for c in client.list_collections()]
 
-    def create_document_collection(self, user_id: str, document_splits: list) -> str:
+    def create_document_collection(self, user_id: str,
+          document_splits: list) -> str:
         if not document_splits:
             raise ValueError("document_splits cannot be empty")
         # each user has their own chroma database
