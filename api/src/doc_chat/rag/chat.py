@@ -13,7 +13,7 @@ class QueryResponse(TypedDict):
     answer: str
     documents: List[DocumentsResponse]
 
-
+# TODO: remove this class and replace with ChatService
 class Chat:
     def __init__(self, file_path: str, token: str):
         self.file_path = file_path

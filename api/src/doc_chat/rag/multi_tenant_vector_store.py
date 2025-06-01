@@ -6,23 +6,32 @@ from chromadb import DEFAULT_TENANT, DEFAULT_DATABASE
 from chromadb import Settings
 from chromadb.utils import embedding_functions
 
-from doc_chat.token_util import create_token
-
-CHROMA_PERSIST_DIRECTORY_ENV = os.getenv("CHROMA_TMP_DIR")
+class VectorStoreDocument:
+    def __init__(self, id, content, metadata):
+        self.id = id
+        self.page_content = content
+        self.metadata = metadata
 
 
 class MultiTenantVectorStore:
 
     def __init__(
           self,
-          chroma_persist_directory=CHROMA_PERSIST_DIRECTORY_ENV,
+          chroma_persist_directory=None,
           embedding_model='text-embedding-3-small'
     ):
-        self._chroma_persist_directory = chroma_persist_directory
+        if not chroma_persist_directory:
+            self._chroma_persist_directory = os.getenv("CHROMA_TMP_DIR")
+        else:
+            self._chroma_persist_directory = chroma_persist_directory
+        print(
+            f"Using Chroma persist directory: {self._chroma_persist_directory}")
+
         self._adminClient = chromadb.AdminClient(Settings(
             is_persistent=True,
-            persist_directory=chroma_persist_directory,
+            persist_directory=self._chroma_persist_directory,
         ))
+
         if not embedding_model:
             # By default, Chroma uses the Sentence Transformers all-MiniLM-L6-v2
             self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
@@ -69,7 +78,7 @@ class MultiTenantVectorStore:
         client = self._get_chroma_client(user_id)
         return [c.__str__() for c in client.list_collections()]
 
-    def create_document_collection(self, user_id: str,
+    def create_document_collection(self, user_id: str, collection_id: str,
           document_splits: list) -> str:
         """
         Create a new document collection for a user and add document splits to it.
@@ -80,7 +89,6 @@ class MultiTenantVectorStore:
         if not document_splits:
             raise ValueError("document_splits cannot be empty")
         client = self._get_chroma_client(user_id)
-        collection_id = create_token()
         collection = client.get_or_create_collection(
             name=collection_id,
             metadata={
@@ -96,24 +104,24 @@ class MultiTenantVectorStore:
                 "page": split.metadata.get("page")
             } for split in document_splits]
         )
-        return collection_id
 
     def retrieve_documents(self, user_id: str, collection_id: str,
-          query: str, k: int = 1) -> list:
+          query: str, k: int = 1) -> list[VectorStoreDocument]:
         """
         Retrieve documents based on similarity for a user.
         """
         client = self._get_chroma_client(user_id)
-        collection = client.get_collection(collection_id)
+        collection = client.get_collection(name=collection_id,
+                                           embedding_function=self.embedding_function)
         results = collection.query(
             query_texts=[query],
             n_results=k
         )
         docs = []
         for i, doc in enumerate(results['documents'][0]):
-            docs.append({
-                "id": results['ids'][0][i],
-                "page_content": doc,
-                "metadata": results['metadatas'][0][i],
-            })
+            docs.append(VectorStoreDocument(
+                id=results['ids'][0][i],
+                content=doc,
+                metadata=results['metadatas'][0][i],
+            ))
         return docs

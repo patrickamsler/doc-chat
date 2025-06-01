@@ -1,18 +1,23 @@
 import os
-import secrets
 
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
-from doc_chat.rag.chat import Chat
+from doc_chat.rag.chat_service import ChatService
+from doc_chat.token_util import create_token
+
+# Load environment variables before anything else
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
 ALLOWED_EXTENSIONS = {'pdf'}
+DEFAULT_USER_ID = 'default_user'
 
-chats_session = {}
+chat_service = ChatService()
 
 @app.route('/chat', methods=['POST'])
 def upload_file():
@@ -33,10 +38,8 @@ def upload_file():
     file_path = save_file(file, token)
     print("saved file: ", file_path)
 
-    chat = Chat(file_path=file_path, token=token)
-    print("created chat", chat)
+    chat_service.create_document_chat(DEFAULT_USER_ID, token, file_path)
 
-    chats_session[token] = chat
     return jsonify({
         "token": token,
         "message": "File uploaded successfully"
@@ -46,17 +49,10 @@ def upload_file():
 def query():
     token = request.json.get('token')
     question = request.json.get('question')
-    if token not in chats_session:
-        return jsonify({"error": "Invalid token"}), 400
+    app.logger.info(f"Received query for token: {token} with question: {question}")
 
-    chat = chats_session[token]
-    print("For token: ", token)
-    print("Load chat: ", chat)
-    response = chat.query(question)
+    response = chat_service.query(DEFAULT_USER_ID, token, question)
     return jsonify(response), 200
-
-def create_token() -> str:
-    return secrets.token_urlsafe(16)
 
 def save_file(file, token) -> str:
     filename = secure_filename(file.filename)

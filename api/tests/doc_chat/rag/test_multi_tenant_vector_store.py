@@ -4,6 +4,7 @@ import tempfile
 import pytest
 
 from doc_chat.rag.multi_tenant_vector_store import MultiTenantVectorStore
+from doc_chat.token_util import create_token
 
 
 class DummySplit:
@@ -77,8 +78,8 @@ def test_get_collections_returns_collections(store):
     user_id = "user_a"
     splits1 = create_splits(["page one", "page two"])
     splits2 = create_splits(["page three", "page four"])
-    store.create_document_collection(user_id, splits1)
-    store.create_document_collection(user_id, splits2)
+    store.create_document_collection(user_id, create_token(), splits1)
+    store.create_document_collection(user_id, create_token(), splits2)
 
     # when
     collections = store.get_collections(user_id)
@@ -92,28 +93,26 @@ def test_create_document_collection(store):
     # given
     user_id = "user_b"
     splits = create_splits(["page one", "page two"])
+    collection_id1 = create_token()
 
     # when
-    collection_id = store.create_document_collection(user_id, splits)
-
-    # then
-    assert isinstance(collection_id, str)
+    store.create_document_collection(user_id, collection_id1, splits)
 
     # Try to create again with different splits, should get a new collection
     splits2 = create_splits(["page three"])
+    collection_id2 = create_token()
 
     # when
-    collection_id2 = store.create_document_collection(user_id, splits2)
+    store.create_document_collection(user_id, collection_id2, splits2)
 
     # then
-    assert collection_id != collection_id2
     assert len(store.get_collections(user_id)) == 2
 
 
 def test_create_document_collection_empty_document_split_raises(store):
     user_id = "user_c"
     with pytest.raises(ValueError):
-        store.create_document_collection(user_id, [])
+        store.create_document_collection(user_id, "1233", [])
 
 
 def test_retrieve_documents(store):
@@ -122,7 +121,8 @@ def test_retrieve_documents(store):
     splits = create_splits(["This is a document about oranges",
                             "This is a document about pineapple",
                             "This is a document about cherries"])
-    collection_id = store.create_document_collection(user_id, splits)
+    collection_id = create_token()
+    store.create_document_collection(user_id, collection_id, splits)
 
     # when
     query = "This is a document about Hawaii"
@@ -132,10 +132,10 @@ def test_retrieve_documents(store):
     assert len(retrieved_docs) == 1
 
     doc = retrieved_docs[0]
-    assert doc['page_content'] == "This is a document about pineapple"
-    assert doc['id'] == "doc_1"
-    assert doc['metadata']['page'] == 1
-    assert doc['metadata']['createdAt'] is not None
+    assert doc.page_content == "This is a document about pineapple"
+    assert doc.id == "doc_1"
+    assert doc.metadata['page'] == 1
+    assert doc.metadata['createdAt'] is not None
 
 
 def test_retrieve_documents_retrieve_multiple_docs(store):
@@ -144,7 +144,8 @@ def test_retrieve_documents_retrieve_multiple_docs(store):
     splits = create_splits(["This is a document about oranges",
                             "This is a document about pineapple",
                             "This is a document about cherries"])
-    collection_id = store.create_document_collection(user_id, splits)
+    collection_id = create_token()
+    store.create_document_collection(user_id, collection_id, splits)
 
     # when
     query = "This is a document about Hawaii"
@@ -155,4 +156,4 @@ def test_retrieve_documents_retrieve_multiple_docs(store):
     assert len(retrieved_docs) == 3
 
     expected_ids = {"doc_0", "doc_2", "doc_1"}
-    assert {doc['id'] for doc in retrieved_docs} == expected_ids
+    assert {doc.id for doc in retrieved_docs} == expected_ids
