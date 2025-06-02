@@ -1,16 +1,19 @@
 import os
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict
 
 import chromadb
 from chromadb import DEFAULT_TENANT, DEFAULT_DATABASE
 from chromadb import Settings
 from chromadb.utils import embedding_functions
 
+
+@dataclass
 class VectorStoreDocument:
-    def __init__(self, id, content, metadata):
-        self.id = id
-        self.page_content = content
-        self.metadata = metadata
+    id: str
+    page_content: str
+    metadata: Dict[str, Any]
 
 
 class MultiTenantVectorStore:
@@ -121,7 +124,7 @@ class MultiTenantVectorStore:
         for i, doc in enumerate(results['documents'][0]):
             docs.append(VectorStoreDocument(
                 id=results['ids'][0][i],
-                content=doc,
+                page_content=doc,
                 metadata=results['metadatas'][0][i],
             ))
         return docs

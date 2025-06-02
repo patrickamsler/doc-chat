@@ -20,7 +20,7 @@ class ChatService:
           question: str) -> QueryResponse:
         docs = self._vector_store.retrieve_documents(user_id=user_id,
                                                      collection_id=collection_id,
-                                                     query=question, k=2)
+                                                     query=question, k=5)
         response = self._retrieval_chain.invoke(question, docs)
         response_documents = [
             {'page': doc.metadata['page'], 'content': doc.page_content}
