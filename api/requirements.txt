@@ -33,6 +33,7 @@ decorator==5.2.1
 defusedxml==0.7.1
 Deprecated==1.2.18
 distro==1.9.0
+-e git+ssh://git@github.com/patrickamsler/doc-chat.git@e6976c323611fb2ef5f049eda658a31ebcf81a0a#egg=doc_chat&subdirectory=api
 dotenv==0.9.9
 durationpy==0.9
 executing==2.2.0
@@ -40,6 +41,7 @@ fastapi==0.115.11
 fastjsonschema==2.21.1
 filelock==3.18.0
 Flask==3.1.0
+flask-cors==5.0.1
 flatbuffers==25.2.10
 fqdn==1.5.1
 frozenlist==1.5.0
@@ -57,6 +59,7 @@ humanfriendly==10.0
 idna==3.10
 importlib_metadata==8.6.1
 importlib_resources==6.5.2
+iniconfig==2.1.0
 ipykernel==6.29.5
 ipython==9.0.2
 ipython_pygments_lexers==1.1.1
@@ -128,6 +131,7 @@ pandocfilters==1.5.1
 parso==0.8.4
 pexpect==4.9.0
 platformdirs==4.3.6
+pluggy==1.6.0
 posthog==3.21.0
 prometheus_client==0.21.1
 prompt_toolkit==3.0.50
@@ -146,9 +150,11 @@ Pygments==2.19.1
 pypdf==5.4.0
 PyPika==0.48.9
 pyproject_hooks==1.2.0
+pytest==8.3.5
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-json-logger==3.3.0
+python-multipart==0.0.20
 PyYAML==6.0.2
 pyzmq==26.3.0
 referencing==0.36.2

@@ -29,8 +29,12 @@ pip install -e .
 
 Start the server by running the following command:
 ```bash
-python -m src.doc_chat.app
+ uvicorn doc_chat.main:app --reload
 ```
+
+- Redoc will be available at `http://127.0.0.1:8000/redoc`
+- Swagger UI will be available at `http://127.0.0.1:8000/docs`
+
 
 Run the tests by running the following command:
 ```bash
