@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from werkzeug.utils import secure_filename
 
+from doc_chat.rag.chat import QueryResponse
 from doc_chat.rag.chat_service import ChatService
 from doc_chat.token_util import create_token
 
@@ -44,8 +45,11 @@ class ChatQueryRequest(BaseModel):
     token: str
     question: str
 
+class UploadFileResponse(BaseModel):
+    token: str
+    message: str
 
-@app.post("/chat")
+@app.post("/chat", response_model=UploadFileResponse)
 async def upload_file(file: UploadFile = File(...)):
     if file.filename == '':
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,18 +62,19 @@ async def upload_file(file: UploadFile = File(...)):
     token = create_token()
     logger.info(f"Created token: {token}")
 
-    file_path = await save_file(file, token)
+    file_path = save_file(file, token)
     logger.info(f"Saved file: {file_path}")
 
     chat_service.create_document_chat(DEFAULT_USER_ID, token, file_path)
 
     return JSONResponse(
-        content={"token": token, "message": "File uploaded successfully"},
+        content=UploadFileResponse(token=token,
+                                   message="File uploaded successfully"),
         status_code=status.HTTP_201_CREATED
     )
 
 
-@app.post('/chat/query')
+@app.post('/chat/query', response_model=QueryResponse)
 def query(request: ChatQueryRequest):
     token = request.token
     question = request.question
@@ -79,12 +84,11 @@ def query(request: ChatQueryRequest):
     return JSONResponse(content=response, status_code=status.HTTP_200_OK)
 
 
-async def save_file(file, token) -> str:
+def save_file(file, token) -> str:
     filename = secure_filename(file.filename)
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER")
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     file_path = os.path.join(UPLOAD_FOLDER, token + '_' + filename)
-    # Write file asynchronously in chunks
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     return str(file_path)
