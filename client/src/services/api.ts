@@ -9,7 +9,7 @@ export const uploadFile = async (file: File): Promise<UploadFileResponse> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await axios.post(`${API_URL}/chat`, formData, {
+  const response = await axios.post(`${API_URL}/chats`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -19,7 +19,7 @@ export const uploadFile = async (file: File): Promise<UploadFileResponse> => {
 };
 
 export const sendMessage = async (token: string, question: string): Promise<QueryResponse> => {
-  const response = await axios.post(`${API_URL}/chat/query`, {
+  const response = await axios.post(`${API_URL}/chats/query`, {
     token,
     question,
   });
