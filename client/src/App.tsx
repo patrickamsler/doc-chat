@@ -11,23 +11,23 @@ import { initAuth } from './services/api'; // Add this import
 
 
 const App: React.FC = () => {
-  const [token, setToken] = useState<string | null>(null);
+  const [chatId, setChatId] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
 
-  const hasInitAuth = useRef(false);
+  const isAuthInitialized = useRef(false);
 
   useEffect(() => {
-    if (!hasInitAuth.current) {
-      hasInitAuth.current = true;
+    if (!isAuthInitialized.current) {
+      isAuthInitialized.current = true;
       // Call /auth/init on app mount
       console.log("Initializing authentication...");
       initAuth();
     }
   }, []);
 
-  const handleFileUploaded = (newToken: string, newFileUrl: string, newFileName: string) => {
-    setToken(newToken);
+  const handleFileUploaded = (chatId: string, newFileUrl: string, newFileName: string) => {
+    setChatId(chatId);
     setFileUrl(newFileUrl);
     setFileName(newFileName);
   };
@@ -47,7 +47,7 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <GlobalStyle/>
         <AppContainer>
-          {!token ? (
+          {!chatId ? (
               <FileUploadContainer>
                 <Title>Doc Chat</Title>
                 <Subtitle>Upload a PDF and chat with its contents</Subtitle>
@@ -62,7 +62,7 @@ const App: React.FC = () => {
                 </ContentPanel>
                 <ContentPanel>
                   <Chat
-                      token={token}
+                      chatId={chatId}
                       onBadgeClick={handleBadgeClick}
                   />
                 </ContentPanel>

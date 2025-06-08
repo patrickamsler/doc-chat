@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from 'styled-components';
 
 interface ChatProps {
-  token: string;
+  chatId: string;
   onBadgeClick: (pageRef: number) => void;
 }
 
@@ -25,7 +25,7 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({token, onBadgeClick}) => {
+const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ const Chat: React.FC<ChatProps> = ({token, onBadgeClick}) => {
     setIsLoading(true);
 
     try {
-      const response = await sendMessage(token, input);
+      const response = await sendMessage(chatId, input);
       console.log(response)
       const botMessage: MessageType = {
         id: Date.now() + 1,

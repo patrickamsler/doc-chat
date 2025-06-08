@@ -15,6 +15,7 @@ LANGSMITH_TRACING=true
 LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 LANGSMITH_API_KEY=<your-langsmith-api-key>
 LANGSMITH_PROJECT=doc-chat
+GUEST_SIGNING_SECRET=<the-secret-key-for-guest-authentication>
 UPLOAD_FOLDER=/tmp/doc-chat/uploads
 CHROMA_TMP_DIR=/tmp/doc-chat/chroma
 ```

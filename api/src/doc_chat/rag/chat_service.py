@@ -8,18 +8,21 @@ from ..llm import create_llm
 class ChatService:
     def __init__(self):
         self._vector_store = MultiTenantVectorStore()
-        self._retrieval_chain = CitationRetrievalChain(retriever=None, # TODO: use vector store as retriever
+        self._retrieval_chain = CitationRetrievalChain(retriever=None,
+                                                       # TODO: use vector store as retriever
                                                        llm=create_llm())
 
-    def create_document_chat(self, user_id: str, token: str, file_path: str):
+    def create_document_chat(self, user_id: str, chat_id: str, file_path: str):
         doc_loader = DocumentLoader(file_path)
         _, splits = doc_loader.load_and_split()
-        self._vector_store.create_document_collection(user_id, token, splits)
+        self._vector_store.create_document_collection(user_id=user_id,
+                                                      collection_id=chat_id,
+                                                      document_splits=splits)
 
-    def query(self, user_id: str, collection_id: str,
+    def query(self, user_id: str, chat_id: str,
           question: str) -> QueryResponse:
         docs = self._vector_store.retrieve_documents(user_id=user_id,
-                                                     collection_id=collection_id,
+                                                     collection_id=chat_id,
                                                      query=question, k=5)
         response = self._retrieval_chain.invoke(question, docs)
         response_documents = [

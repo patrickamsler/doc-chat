@@ -13,7 +13,7 @@ logger = logging.getLogger("auth_routes")
 @auth_router.post("/init")
 async def init(request: Request):
     """
-    Check if the user is authenticated. If not, create a guest cookie
+    Check if the user is authenticated (has a guest cookie). If not, it sets a guest cookie
     """
     if is_user_authenticated(request):
         return Response(status_code=200)
@@ -26,7 +26,7 @@ async def init(request: Request):
         key=GUEST_COOKIE,
         value=cookie_val,
         httponly=True,
-        secure=False, # TODO set to true in production
+        secure=False,  # TODO set to true in production
         samesite="lax",
         max_age=GUEST_TTL,
         domain="127.0.0.1",

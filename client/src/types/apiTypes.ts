@@ -1,5 +1,5 @@
 export interface UploadFileResponse {
-  token: string;
+  chatId: string;
   message: string;
 }
 

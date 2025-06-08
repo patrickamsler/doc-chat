@@ -19,9 +19,9 @@ export const uploadFile = async (file: File): Promise<UploadFileResponse> => {
   return response.data;
 };
 
-export const sendMessage = async (token: string, question: string): Promise<QueryResponse> => {
+export const sendMessage = async (chatId: string, question: string): Promise<QueryResponse> => {
   const response = await axios.post(`${API_URL}/chats/query`, {
-    token,
+    chatId,
     question,
   }, {
     withCredentials: true
