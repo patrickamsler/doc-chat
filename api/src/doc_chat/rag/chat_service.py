@@ -1,9 +1,18 @@
-from .chat import QueryResponse
+from typing import List, TypedDict
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .multi_tenant_vector_store import MultiTenantVectorStore
 from ..llm import create_llm
 
+class DocumentsResponse(TypedDict):
+    page: int
+    content: str
+
+
+class QueryResponse(TypedDict):
+    question: str
+    answer: str
+    documents: List[DocumentsResponse]
 
 class ChatService:
     def __init__(self):

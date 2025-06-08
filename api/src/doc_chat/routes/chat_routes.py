@@ -9,8 +9,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from doc_chat.file_util import save_file, allowed_file
-from doc_chat.rag.chat import QueryResponse
-from doc_chat.rag.chat_service import ChatService
+from doc_chat.rag.chat_service import ChatService, QueryResponse
 from doc_chat.security.security_helper import get_current_user, User
 
 chat_router = APIRouter()
