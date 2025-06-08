@@ -81,8 +81,18 @@ class MultiTenantVectorStore:
         client = self._get_chroma_client(user_id)
         return [c.__str__() for c in client.list_collections()]
 
+    def get_collection_metadata(self, user_id: str, collection_id: str) -> chromadb.Collection:
+        """
+        Get a specific collection for a user.
+        """
+        client = self._get_chroma_client(user_id)
+        collection = client.get_collection(name=collection_id)
+        if not collection:
+            raise ValueError(f"Collection {collection_id} not found for user {user_id}")
+        return collection.metadata
+
     def create_document_collection(self, user_id: str, collection_id: str,
-          document_splits: list) -> str:
+          document_splits: list, file_name: str):
         """
         Create a new document collection for a user and add document splits to it.
         # each user has their own chroma database
@@ -95,7 +105,8 @@ class MultiTenantVectorStore:
         collection = client.get_or_create_collection(
             name=collection_id,
             metadata={
-                "createdAt": str(datetime.now())
+                "created": str(datetime.now()),
+                "file_name": file_name
             },
             embedding_function=self.embedding_function,
         )
@@ -103,8 +114,8 @@ class MultiTenantVectorStore:
             documents=[split.page_content for split in document_splits],
             ids=[f"doc_{i}" for i, _ in enumerate(document_splits)],
             metadatas=[{
-                "createdAt": str(datetime.now()),
-                "page": split.metadata.get("page")
+                "created": str(datetime.now()),
+                "page": split.metadata.get("page"),
             } for split in document_splits]
         )
 

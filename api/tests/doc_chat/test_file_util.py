@@ -29,8 +29,8 @@ def test_save_file(monkeypatch):
 
         # Check if the file was saved correctly
         assert os.path.exists(file_path)
-        assert os.path.basename(file_path) == f"{chat_id}.pdf"
-        assert os.path.dirname(file_path) == os.path.join(temp_dir, user_id)
+        assert os.path.basename(file_path) == f"doc_{chat_id}.pdf"
+        assert os.path.dirname(file_path) == os.path.join(temp_dir, "user_" + user_id)
     finally:
         # Clean up the created folder and all its contents
         shutil.rmtree(temp_dir)

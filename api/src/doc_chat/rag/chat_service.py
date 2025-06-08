@@ -1,18 +1,9 @@
-from typing import List, TypedDict
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .multi_tenant_vector_store import MultiTenantVectorStore
+from ..api_types import QueryResponse, ChatsResponse, Chat
 from ..llm import create_llm
 
-class DocumentsResponse(TypedDict):
-    page: int
-    content: str
-
-
-class QueryResponse(TypedDict):
-    question: str
-    answer: str
-    documents: List[DocumentsResponse]
 
 class ChatService:
     def __init__(self):
@@ -21,12 +12,14 @@ class ChatService:
                                                        # TODO: use vector store as retriever
                                                        llm=create_llm())
 
-    def create_document_chat(self, user_id: str, chat_id: str, file_path: str):
+    def create_document_chat(self, user_id: str, chat_id: str,
+          file_path: str, file_name: str = None):
         doc_loader = DocumentLoader(file_path)
         _, splits = doc_loader.load_and_split()
         self._vector_store.create_document_collection(user_id=user_id,
                                                       collection_id=chat_id,
-                                                      document_splits=splits)
+                                                      document_splits=splits,
+                                                      file_name=file_name)
 
     def query(self, user_id: str, chat_id: str,
           question: str) -> QueryResponse:
@@ -43,4 +36,22 @@ class ChatService:
             question=question,
             answer=answer,
             documents=response_documents
+        )
+
+    def find_all_chats(self, user_id: str) -> ChatsResponse:
+        collections = self._vector_store.get_collections(user_id)
+
+        chats = []
+        for collection_id in collections:
+            metadata = self._vector_store.get_collection_metadata(user_id, collection_id)
+            print(metadata)
+            chats.append(Chat(
+                chatId=collection_id,
+                fileName=metadata['file_name'] if 'file_name' in metadata else None,
+                createdAt=metadata['created'] if 'created' in metadata else None
+            ))
+
+        return ChatsResponse(
+            userId=user_id,
+            chats=chats
         )

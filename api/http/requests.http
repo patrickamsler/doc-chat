@@ -1,41 +1,27 @@
-POST http://127.0.0.1:5000/chat
+POST http://127.0.0.1:8000/auth/init
+
+###
+
+POST http://127.0.0.1:8000/chatsx
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
 Content-Disposition: form-data; name="file"; filename="WP102544 - Exec_Over - IBM JSR 352 Java Batch.pdf"
 Content-Type: application/pdf
+Cookie: gSess=ODI4N2Q5MDYtZGYxZS00MzExLWFlZTYtOWY2YzU2MzhhODk4OjE3NDk0MDIxOTI.sFkn7m90tDP9tvCf0DYq1XDNkdet0tLu9Ya2CZuVShQ
 
 < ../data/pdf/WP102544 - Exec_Over - IBM JSR 352 Java Batch.pdf
 --boundary--
 
 ###
 
-POST http://127.0.0.1:5000/chat
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="file"; filename="Lambdas.pdf"
-Content-Type: application/pdf
-
-< ../data/pdf/Lambdas.pdf
---boundary--
-
-###
-
-POST http://127.0.0.1:5000/chat/query
+POST http://127.0.0.1:8000/chats/query
 Content-Type: application/json
+Cookie: gSess=ODI4N2Q5MDYtZGYxZS00MzExLWFlZTYtOWY2YzU2MzhhODk4OjE3NDk0MDIxOTI.sFkn7m90tDP9tvCf0DYq1XDNkdet0tLu9Ya2CZuVShQ
 
 {
-  "token": "Xo_Y90BIlrWmX5ZL9P0CZw",
+  "chatId": "Xo_Y90BIlrWmX5ZL9P0CZw",
   "question": "What is this book about?"
 }
 
 ###
-
-POST http://127.0.0.1:5000/chat/query
-Content-Type: application/json
-
-{
-  "token": "z8E8l9Z8LjxGuJTm104wDw",
-  "question": "What is this book about?"
-}

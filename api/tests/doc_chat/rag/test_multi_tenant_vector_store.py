@@ -78,8 +78,8 @@ def test_get_collections_returns_collections(store):
     user_id = "user_a"
     splits1 = create_splits(["page one", "page two"])
     splits2 = create_splits(["page three", "page four"])
-    store.create_document_collection(user_id, create_token(), splits1)
-    store.create_document_collection(user_id, create_token(), splits2)
+    store.create_document_collection(user_id, create_token(), splits1, "test1.pdf")
+    store.create_document_collection(user_id, create_token(), splits2, "test2.pdf")
 
     # when
     collections = store.get_collections(user_id)
@@ -89,6 +89,21 @@ def test_get_collections_returns_collections(store):
     assert len(collections) == 2
 
 
+def test_get_collection_metadata(store):
+    # given
+    user_id = "user_a"
+    splits = create_splits(["page one", "page two"])
+    collection_id = create_token()
+    store.create_document_collection(user_id, collection_id, splits, "test.pdf")
+
+    # when
+    metadata = store.get_collection_metadata(user_id, collection_id)
+
+    # then
+    assert metadata["created"] is not None
+    assert metadata['file_name'] == "test.pdf"
+
+
 def test_create_document_collection(store):
     # given
     user_id = "user_b"
@@ -96,14 +111,14 @@ def test_create_document_collection(store):
     collection_id1 = create_token()
 
     # when
-    store.create_document_collection(user_id, collection_id1, splits)
+    store.create_document_collection(user_id, collection_id1, splits, "test.pdf")
 
     # Try to create again with different splits, should get a new collection
     splits2 = create_splits(["page three"])
     collection_id2 = create_token()
 
     # when
-    store.create_document_collection(user_id, collection_id2, splits2)
+    store.create_document_collection(user_id, collection_id2, splits2, "test2.pdf")
 
     # then
     assert len(store.get_collections(user_id)) == 2
@@ -112,7 +127,7 @@ def test_create_document_collection(store):
 def test_create_document_collection_empty_document_split_raises(store):
     user_id = "user_c"
     with pytest.raises(ValueError):
-        store.create_document_collection(user_id, "1233", [])
+        store.create_document_collection(user_id, "1233", [], "test.pdf")
 
 
 def test_retrieve_documents(store):
@@ -122,7 +137,7 @@ def test_retrieve_documents(store):
                             "This is a document about pineapple",
                             "This is a document about cherries"])
     collection_id = create_token()
-    store.create_document_collection(user_id, collection_id, splits)
+    store.create_document_collection(user_id, collection_id, splits, "test.pdf")
 
     # when
     query = "This is a document about Hawaii"
@@ -135,7 +150,7 @@ def test_retrieve_documents(store):
     assert doc.page_content == "This is a document about pineapple"
     assert doc.id == "doc_1"
     assert doc.metadata['page'] == 1
-    assert doc.metadata['createdAt'] is not None
+    assert doc.metadata['created'] is not None
 
 
 def test_retrieve_documents_retrieve_multiple_docs(store):
@@ -145,7 +160,7 @@ def test_retrieve_documents_retrieve_multiple_docs(store):
                             "This is a document about pineapple",
                             "This is a document about cherries"])
     collection_id = create_token()
-    store.create_document_collection(user_id, collection_id, splits)
+    store.create_document_collection(user_id, collection_id, splits, "test.pdf")
 
     # when
     query = "This is a document about Hawaii"
