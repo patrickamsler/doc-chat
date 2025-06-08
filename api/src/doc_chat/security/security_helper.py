@@ -70,13 +70,6 @@ def _verify_guest_cookie_and_return_user(raw_cookie: str) -> Optional[User]:
 async def get_current_user(
       request: Request
 ) -> User:
-    """
-    Accept either:
-      * Authorization: Bearer <JWT>
-      * Cookie: gSess=<signed guest token>
-    Raise 401 if neither validates.
-    """
-
     # TODO At the moment, we only support guest users via cookies.
     raw_cookie = request.cookies.get(GUEST_COOKIE)
     if raw_cookie:
