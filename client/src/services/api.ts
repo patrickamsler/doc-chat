@@ -29,3 +29,9 @@ export const sendMessage = async (token: string, question: string): Promise<Quer
 
   return response.data;
 };
+
+export const initAuth = async (): Promise<void> => {
+  await axios.post(`${API_URL}/auth/init`, {}, {
+    withCredentials: true,
+  });
+};

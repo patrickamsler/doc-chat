@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme';
 import FileUpload from './components/FileUpload/FileUpload';
@@ -7,12 +7,24 @@ import PdfViewer from './components/PdfViewer/PdfViewer';
 import GlobalStyle from './GlobalStyle';
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 import { AppContainer, Title, Subtitle, ContentContainer, ContentPanel, FileUploadContainer } from './App.styles';
+import { initAuth } from './services/api'; // Add this import
 
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
+
+  const hasInitAuth = useRef(false);
+
+  useEffect(() => {
+    if (!hasInitAuth.current) {
+      hasInitAuth.current = true;
+      // Call /auth/init on app mount
+      console.log("Initializing authentication...");
+      initAuth();
+    }
+  }, []);
 
   const handleFileUploaded = (newToken: string, newFileUrl: string, newFileName: string) => {
     setToken(newToken);

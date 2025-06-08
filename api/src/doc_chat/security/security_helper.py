@@ -67,7 +67,7 @@ def _verify_guest_cookie_and_return_user(raw_cookie: str) -> Optional[User]:
     return User(id=uid, is_guest=True)
 
 
-async def get_current_user(
+def get_current_user(
       request: Request
 ) -> User:
     # TODO At the moment, we only support guest users via cookies.
@@ -79,3 +79,18 @@ async def get_current_user(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Not authenticated")
 
+
+def is_user_authenticated(
+      request: Request
+) -> bool:
+    """
+    Check if the user is authenticated.
+    Returns True if the user is authenticated, False otherwise.
+    """
+    try:
+        get_current_user(request)
+        return True
+    except HTTPException as e:
+        if e.status_code == status.HTTP_401_UNAUTHORIZED:
+            return False
+        raise e

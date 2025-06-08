@@ -50,10 +50,10 @@ async def upload_file(
                             detail="Invalid file")
 
     token = create_token()
-    logger.info(f"Created token: {token} for user: {user.id}")
+    logger.info(f"User {user.id} uploading file with token={token}")
 
     file_path = save_file(file, token)
-    logger.info(f"Saved file: {file_path}")
+    logger.info(f"File saved at {file_path} for token={token}")
 
     chat_service.create_document_chat(DEFAULT_USER_ID, token, file_path)
 
@@ -70,7 +70,7 @@ def query(
 ):
     token = request.token
     question = request.question
-    logger.info(f"query with token={token}, question={question} for user={user.id}")
+    logger.info(f"User {user.id} querying with token={token} and question='{question}'")
 
     response = chat_service.query(DEFAULT_USER_ID, token, question)
     return JSONResponse(content=response, status_code=status.HTTP_200_OK)
