@@ -4,7 +4,7 @@ import shutil
 
 from dotenv import load_dotenv
 from fastapi import APIRouter
-from fastapi import File, UploadFile, HTTPException
+from fastapi import File, UploadFile, HTTPException, Depends
 from fastapi import status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 
 from doc_chat.rag.chat import QueryResponse
 from doc_chat.rag.chat_service import ChatService
+from doc_chat.security.security_helper import get_current_user, User
 from doc_chat.token_util import create_token
 
 chat_router = APIRouter()
@@ -36,7 +37,10 @@ class UploadFileResponse(BaseModel):
 
 
 @chat_router.post("", response_model=UploadFileResponse)
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(
+      file: UploadFile = File(...),
+      user: User = Depends(get_current_user)
+):
     if file.filename == '':
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="No file selected")
@@ -46,7 +50,7 @@ async def upload_file(file: UploadFile = File(...)):
                             detail="Invalid file")
 
     token = create_token()
-    logger.info(f"Created token: {token}")
+    logger.info(f"Created token: {token} for user: {user.id}")
 
     file_path = save_file(file, token)
     logger.info(f"Saved file: {file_path}")
@@ -60,10 +64,13 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 @chat_router.post('/query', response_model=QueryResponse)
-def query(request: ChatQueryRequest):
+def query(
+      request: ChatQueryRequest,
+      user: User = Depends(get_current_user)
+):
     token = request.token
     question = request.question
-    logger.debug(f"read_item called with token={token}, question={question}")
+    logger.info(f"query with token={token}, question={question} for user={user.id}")
 
     response = chat_service.query(DEFAULT_USER_ID, token, question)
     return JSONResponse(content=response, status_code=status.HTTP_200_OK)

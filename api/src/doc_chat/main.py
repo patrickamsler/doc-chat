@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -44,8 +45,9 @@ async def ensure_guest_cookie(request: Request, call_next):
     ):
         return await call_next(request)
     else:
+        guest_uid = uuid.uuid4()
         logger.info("Creating guest cookie for new user session")
-        cookie_val = create_guest_cookie() # Create a new guest user
+        cookie_val = create_guest_cookie(guest_uid)
         response: Response = await call_next(request)
         response.set_cookie(
             key=GUEST_COOKIE,
