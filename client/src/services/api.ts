@@ -13,6 +13,7 @@ export const uploadFile = async (file: File): Promise<UploadFileResponse> => {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
+    withCredentials: true,
   });
 
   return response.data;
@@ -22,6 +23,8 @@ export const sendMessage = async (token: string, question: string): Promise<Quer
   const response = await axios.post(`${API_URL}/chats/query`, {
     token,
     question,
+  }, {
+    withCredentials: true
   });
 
   return response.data;

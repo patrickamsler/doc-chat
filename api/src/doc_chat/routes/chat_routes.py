@@ -29,11 +29,13 @@ class ChatQueryRequest(BaseModel):
     token: str
     question: str
 
+
 class UploadFileResponse(BaseModel):
     token: str
     message: str
 
-@chat_router.post("/", response_model=UploadFileResponse)
+
+@chat_router.post("", response_model=UploadFileResponse)
 async def upload_file(file: UploadFile = File(...)):
     if file.filename == '':
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -51,11 +53,10 @@ async def upload_file(file: UploadFile = File(...)):
 
     chat_service.create_document_chat(DEFAULT_USER_ID, token, file_path)
 
-    return JSONResponse(
-        content=UploadFileResponse(token=token,
-                                   message="File uploaded successfully"),
-        status_code=status.HTTP_201_CREATED
-    )
+    response_model = UploadFileResponse(token=token,
+                                        message="File uploaded successfully")
+    return JSONResponse(content=response_model.model_dump(),
+                        status_code=status.HTTP_201_CREATED)
 
 
 @chat_router.post('/query', response_model=QueryResponse)
