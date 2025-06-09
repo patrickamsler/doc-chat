@@ -35,3 +35,16 @@ export const initAuth = async (): Promise<void> => {
     withCredentials: true,
   });
 };
+
+export const downloadFile = async (chatId: string): Promise<{ url: string; fileName: string }> => {
+  const response = await axios.get(`${API_URL}/chats/${chatId}/file`, {
+    responseType: 'blob',
+    withCredentials: true,
+  });
+
+  const disposition = response.headers['content-disposition'] || '';
+  const fileNameMatch = disposition.match(/filename="?([^";]+)"?/);
+  const fileName = fileNameMatch ? fileNameMatch[1] : `document.pdf`;
+  const url = URL.createObjectURL(response.data);
+  return { url, fileName };
+};
