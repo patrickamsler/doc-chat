@@ -19,7 +19,7 @@ async def init(request: Request):
         return Response(status_code=200)
 
     logger.info("Creating guest cookie for new user session")
-    guest_uid = uuid.uuid4()
+    guest_uid = uuid.uuid4().hex
     cookie_val = create_guest_cookie(guest_uid)
     response = Response(status_code=200)
     response.set_cookie(

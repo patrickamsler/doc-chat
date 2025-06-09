@@ -33,7 +33,7 @@ async def upload_file(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Invalid file")
 
-    chat_id = str(uuid.uuid4())
+    chat_id = str(uuid.uuid4().hex)
     logger.info(f"User {user.id} uploading file with chat_id={chat_id}")
 
     file_path = save_file(file, user.id, chat_id)
