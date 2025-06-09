@@ -7,6 +7,7 @@ export const UploadContainer = styled.div`
 export const UploadButton = styled.button`
     background-color: ${props => props.theme.colors.primaryA0};
     color: ${props => props.theme.colors.white};
+    width: 100%;
     padding: 10px 15px;
     border: none;
     border-radius: 4px;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { uploadFile } from '../../services/api';
 import {
   UploadContainer,
@@ -11,8 +11,11 @@ interface FileUploadProps {
   onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
 }
 
+import { SidebarContext } from '../Sidebar/SidebarContext';
+
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const { close } = useContext(SidebarContext);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
@@ -28,6 +31,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
       const response = await uploadFile(file);
       const fileUrl = URL.createObjectURL(file);
       onFileUploaded(response.chatId, fileUrl, file.name);
+      close();
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {

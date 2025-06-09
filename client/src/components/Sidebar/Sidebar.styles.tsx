@@ -10,13 +10,13 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
   transform: translateX(${props => (props.$open ? '0' : '-100%')});
   transition: transform 0.3s ease-in-out;
   z-index: 999;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 20px;
 `;
 
-export const ToggleButton = styled.button`
+export const ToggleButton = styled.button<{ $open: boolean }>`
   position: fixed;
   top: 6px;
   left: 5px;
@@ -28,6 +28,7 @@ export const ToggleButton = styled.button`
   width: 25px;
   height: 25px;
   cursor: pointer;
+  display: ${props => (props.$open ? 'none' : 'block')};
 `;
 
 export const DocumentList = styled.ul`
@@ -35,7 +36,6 @@ export const DocumentList = styled.ul`
   padding: 0;
   margin: 0;
   flex: 1;
-  overflow-y: auto;
 `;
 
 export const DocumentItem = styled.li`
@@ -53,4 +53,30 @@ export const Timestamp = styled.span`
   display: block;
   font-size: 12px;
   color: ${props => props.theme.colors.grey500};
+`;
+
+export const SidebarHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
+export const HeaderIcon = styled.img`
+  width: 24px;
+  height: 24px;
+`;
+
+export const CloseButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+`;
+
+export const DocumentTitle = styled.span`
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
