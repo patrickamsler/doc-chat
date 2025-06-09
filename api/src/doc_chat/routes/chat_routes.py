@@ -50,7 +50,7 @@ async def upload_file(
                         status_code=status.HTTP_201_CREATED)
 
 
-@chat_router.get("/{chatId}/file")
+@chat_router.get("/{chat_id}/file")
 def download_file(
       chat_id: str,
       user: User = Depends(get_current_user)
