@@ -50,7 +50,7 @@ describe('Chat component', () => {
   });
 
   it('calls onBadgeClick when a page reference badge is clicked', async () => {
-    (sendMessage as jest.Mock).mockResolvedValueOnce({ answer: 'See <<1>>' });
+    (sendMessage as jest.Mock).mockResolvedValueOnce({ answer: 'See <<42>>' });
     const { onBadgeClick } = setup('chat1');
 
     const textbox = screen.getByRole('textbox');
@@ -58,10 +58,10 @@ describe('Chat component', () => {
     userEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(screen.getByText('2')).toBeInTheDocument();
+      expect(screen.getByText('43')).toBeInTheDocument();
     });
-    userEvent.click(screen.getByText('2'));
-    expect(onBadgeClick).toHaveBeenCalledWith(1);
+    userEvent.click(screen.getByText('43')); // badge text is '43' because it is 1-based index
+    expect(onBadgeClick).toHaveBeenCalledWith(42); // 0-based index in the function
   });
 });
 
