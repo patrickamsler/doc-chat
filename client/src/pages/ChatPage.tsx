@@ -27,9 +27,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ files }) => {
     if (!chatId) return;
     const info = files[chatId];
     if (info) {
+      console.log("Using cached file info for chatId:", chatId);
       setFileUrl(info.url);
       setFileName(info.name);
     } else {
+      console.log("Downloading file for chatId:", chatId);
       downloadFile(chatId)
         .then(({ url, fileName }) => {
           setFileUrl(url);
