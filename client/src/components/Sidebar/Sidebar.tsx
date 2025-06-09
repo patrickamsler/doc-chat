@@ -4,7 +4,16 @@ import FileUpload from '../FileUpload/FileUpload';
 import { downloadFile, getChats } from '../../services/api';
 import { ChatInfo } from '../../types/apiTypes';
 import { SidebarContext } from './SidebarContext';
-import { SidebarContainer, ToggleButton, DocumentList, DocumentItem, Timestamp } from './Sidebar.styles';
+import {
+  SidebarContainer,
+  ToggleButton,
+  DocumentList,
+  DocumentItem,
+  Timestamp,
+  SidebarHeader,
+  CloseButton,
+  DocumentTitle,
+} from './Sidebar.styles';
 
 interface SidebarProps {
   onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
@@ -12,6 +21,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
   const { isOpen, toggle, close } = useContext(SidebarContext);
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -29,6 +39,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
       .catch(() => setError('Failed to load documents'));
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) { // close sidebar if clicked outside
+        close();
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [isOpen]);
+
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
       const { url, fileName } = await downloadFile(doc.chatId);
@@ -42,8 +63,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
 
   return (
     <>
-      <ToggleButton onClick={toggle}>☰</ToggleButton>
-      <SidebarContainer $open={isOpen}>
+      <ToggleButton onClick={toggle} $open={isOpen}>☰</ToggleButton>
+      <SidebarContainer ref={sidebarRef} $open={isOpen}>
+        <SidebarHeader>
+          <CloseButton onClick={close}>X</CloseButton>
+        </SidebarHeader>
         <FileUpload onFileUploaded={(id, url, name) => {
           onFileReady(id, url, name);
           navigate(`/chat/${id}`);
@@ -54,8 +78,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
         <DocumentList>
           {documents.map(doc => (
             <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
-              <span>{doc.fileName}</span>
-              <Timestamp>{new Date(doc.createdAt).toLocaleString()}</Timestamp>
+              <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
+              <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
             </DocumentItem>
           ))}
         </DocumentList>
