@@ -5,7 +5,7 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
   top: 0;
   bottom: 0;
   left: 0;
-  width: 250px;
+  width: 400px;
   background-color: ${props => props.theme.colors.grey100};
   transform: translateX(${props => (props.$open ? '0' : '-100%')});
   transition: transform 0.3s ease-in-out;
@@ -18,15 +18,15 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
 
 export const ToggleButton = styled.button`
   position: fixed;
-  top: 10px;
-  left: 10px;
+  top: 6px;
+  left: 5px;
   z-index: 1000;
   background: ${props => props.theme.colors.primaryA0};
   color: ${props => props.theme.colors.white};
   border: none;
   border-radius: 4px;
-  width: 40px;
-  height: 40px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
 `;
 
