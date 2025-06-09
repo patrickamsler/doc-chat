@@ -81,7 +81,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
-                <Message key={message.id} isUser={message.isUser}>
+                <Message key={message.id} $isUser={message.isUser}>
                   {!message.isUser && (
                       <FontAwesomeIcon icon={faRobot}
                                        style={{marginRight: 8, color: theme.colors.primaryA0}}
