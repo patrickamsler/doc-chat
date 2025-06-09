@@ -45,16 +45,16 @@ export const PageRefBadge = styled.span`
   cursor: pointer;
 `;
 
-export const Message = styled.div<{ isUser: boolean }>`
+export const Message = styled.div<{ $isUser: boolean }>`
     max-width: 70%;
     padding: 10px 15px;
     margin: 5px 0;
     border-radius: 18px;
-    align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-    background-color: ${props => props.isUser ? props.theme.colors.grey200 : props.theme.colors.white};
-    color: ${props => props.isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
-    margin-left: ${props => props.isUser ? 'auto' : '0'};
-    margin-right: ${props => !props.isUser ? 'auto' : '0'};
+    align-self: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
+    background-color: ${props => props.$isUser ? props.theme.colors.grey200 : props.theme.colors.white};
+    color: ${props => props.$isUser ? props.theme.colors.textDark : props.theme.colors.textDark};
+    margin-left: ${props => props.$isUser ? 'auto' : '0'};
+    margin-right: ${props => !props.$isUser ? 'auto' : '0'};
     font-family: ${props => props.theme.fonts.body};
     position: relative;
     text-align: left;
