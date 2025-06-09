@@ -37,8 +37,8 @@ describe('Chat component', () => {
     setup();
 
     const textbox = screen.getByRole('textbox');
-    await userEvent.type(textbox, 'Hello');
-    await userEvent.click(screen.getByRole('button'));
+    userEvent.type(textbox, 'Hello');
+    userEvent.click(screen.getByRole('button'));
 
     expect(sendMessage).toHaveBeenCalledWith('chat1', 'Hello');
     // user message should appear immediately
@@ -54,13 +54,13 @@ describe('Chat component', () => {
     const { onBadgeClick } = setup('chat1');
 
     const textbox = screen.getByRole('textbox');
-    await userEvent.type(textbox, 'Hello');
-    await userEvent.click(screen.getByRole('button'));
+    userEvent.type(textbox, 'Hello');
+    userEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
       expect(screen.getByText('2')).toBeInTheDocument();
     });
-    await userEvent.click(screen.getByText('2'));
+    userEvent.click(screen.getByText('2'));
     expect(onBadgeClick).toHaveBeenCalledWith(1);
   });
 });
