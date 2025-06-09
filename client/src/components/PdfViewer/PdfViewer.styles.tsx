@@ -17,7 +17,7 @@ export const FileNameContainer = styled.div`
     font-family: ${props => props.theme.fonts.body}
     font-size: 16px;
     font-weight: 700;
-    margin-left: 30px;
+    margin-left: 35px;
     padding-left: 8px;
     overflow: hidden;
     text-overflow: ellipsis;

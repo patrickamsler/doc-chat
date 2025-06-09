@@ -11,11 +11,9 @@ import {
   DocumentItem,
   Timestamp,
   SidebarHeader,
-  HeaderIcon,
   CloseButton,
   DocumentTitle,
 } from './Sidebar.styles';
-import logo from '../../logo.svg';
 
 interface SidebarProps {
   onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
@@ -44,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
   useEffect(() => {
     if (!isOpen) return;
     const handleClick = (e: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) { // close sidebar if clicked outside
         close();
       }
     };
@@ -68,7 +66,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
       <ToggleButton onClick={toggle} $open={isOpen}>☰</ToggleButton>
       <SidebarContainer ref={sidebarRef} $open={isOpen}>
         <SidebarHeader>
-          <HeaderIcon src={logo} alt="logo" />
           <CloseButton onClick={close}>X</CloseButton>
         </SidebarHeader>
         <FileUpload onFileUploaded={(id, url, name) => {
@@ -82,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
           {documents.map(doc => (
             <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
               <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
-              <Timestamp>{new Date(doc.createdAt).toLocaleString()}</Timestamp>
+              <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
             </DocumentItem>
           ))}
         </DocumentList>
