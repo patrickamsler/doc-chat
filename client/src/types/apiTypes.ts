@@ -13,3 +13,14 @@ export interface QueryResponse {
   answer: string;
   documents: DocumentResponse[];
 }
+
+export interface ChatInfo {
+  chatId: string;
+  fileName: string;
+  createdAt: string;
+}
+
+export interface ChatsResponse {
+  userId: string;
+  chats: ChatInfo[];
+}
