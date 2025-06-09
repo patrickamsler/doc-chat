@@ -13,8 +13,8 @@ global.URL.createObjectURL = jest.fn(() => 'mocked-file-url');
 
 describe('FileUpload Component', () => {
   it('uploads a file and calls onFileUploaded', async () => {
-    const fakeToken = '12345';
-    (uploadFile as jest.Mock).mockResolvedValueOnce({ token: fakeToken });
+    const fakeChatId = '12345';
+    (uploadFile as jest.Mock).mockResolvedValueOnce({ chatId: fakeChatId });
     const onFileUploaded = jest.fn();
 
     render(
@@ -32,9 +32,12 @@ describe('FileUpload Component', () => {
       expect(uploadFile).toHaveBeenCalledWith(file);
     });
 
-    // TODO - Check if the file URL is created correctly
-    // await waitFor(() => {
-    //   expect(onFileUploaded).toHaveBeenCalledWith(fakeToken, expect.any(String));
-    // });
+    await waitFor(() => {
+      expect(onFileUploaded).toHaveBeenCalledWith(
+        fakeChatId,
+        'mocked-file-url',
+        'test.pdf'
+      );
+    });
   });
 });
