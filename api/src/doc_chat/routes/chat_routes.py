@@ -1,16 +1,17 @@
 import logging
 import uuid
+import os
 
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi import File, UploadFile, HTTPException, Depends
 from fastapi import status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from werkzeug.utils import secure_filename
 
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
     ChatQueryRequest, ChatsResponse
-from doc_chat.file_util import save_file, allowed_file
+from doc_chat.file_util import save_file, allowed_file, build_file_path
 from doc_chat.rag.chat_service import ChatService
 from doc_chat.security.security_helper import get_current_user, User
 
@@ -19,6 +20,7 @@ load_dotenv()
 
 logger = logging.getLogger("chat_routes")
 chat_service = ChatService()
+
 
 @chat_router.post("", response_model=UploadFileResponse)
 async def upload_file(
@@ -48,6 +50,23 @@ async def upload_file(
                         status_code=status.HTTP_201_CREATED)
 
 
+@chat_router.get("/{chat_id}/file")
+def download_file(
+      chat_id: str,
+      user: User = Depends(get_current_user)
+):
+    file_path = build_file_path(user_id=user.id, chat_id=chat_id)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    filename=os.path.basename(file_path)
+    return FileResponse(
+        file_path,
+        media_type="application/pdf",
+        filename=filename
+    )
+
+
 @chat_router.post('/query', response_model=QueryResponse)
 def query(
       request: ChatQueryRequest,
@@ -59,7 +78,8 @@ def query(
         f"User {user.id} querying with chat_id={chat_id} and question='{question}'")
 
     response = chat_service.query(user.id, chat_id, question)
-    return JSONResponse(content=response.model_dump(), status_code=status.HTTP_200_OK)
+    return JSONResponse(content=response.model_dump(),
+                        status_code=status.HTTP_200_OK)
 
 
 @chat_router.get('', response_model=ChatsResponse)

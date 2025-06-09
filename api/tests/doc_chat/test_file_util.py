@@ -7,7 +7,21 @@ import pytest
 from fastapi import UploadFile
 from io import BytesIO
 
-from doc_chat.file_util import save_file, allowed_file
+from doc_chat.file_util import save_file, allowed_file, build_file_path
+
+
+@pytest.mark.usefixtures("monkeypatch")
+def test_build_file_path(monkeypatch):
+    # given
+    monkeypatch.setenv("UPLOAD_FOLDER", "/tmp/uploads")
+    user_id = uuid.uuid4().hex
+    chat_id = uuid.uuid4().hex
+
+    # when
+    file_path = build_file_path(user_id, chat_id)
+
+    # then
+    assert file_path == "/tmp/uploads/user_" + user_id + "/doc_" + chat_id + ".pdf"
 
 
 @pytest.mark.usefixtures("monkeypatch")
@@ -30,7 +44,8 @@ def test_save_file(monkeypatch):
         # Check if the file was saved correctly
         assert os.path.exists(file_path)
         assert os.path.basename(file_path) == f"doc_{chat_id}.pdf"
-        assert os.path.dirname(file_path) == os.path.join(temp_dir, "user_" + user_id)
+        assert os.path.dirname(file_path) == os.path.join(temp_dir,
+                                                          "user_" + user_id)
     finally:
         # Clean up the created folder and all its contents
         shutil.rmtree(temp_dir)
