@@ -53,7 +53,6 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
 
     try {
       const response = await sendMessage(chatId, input);
-      console.log(response)
       const botMessage: MessageType = {
         id: Date.now() + 1,
         text: response.answer,
