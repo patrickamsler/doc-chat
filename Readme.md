@@ -1,4 +1,7 @@
+![CI](https://github.com/patrickamsler/doc-chat/actions/workflows/ci.yml/badge.svg?branch=master)
+
 # Doc Chat
+
 
 ## How to run the project locally
 
