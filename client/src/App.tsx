@@ -26,21 +26,21 @@ const App: React.FC = () => {
   }, []);
 
   const handleFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
-    setFiles(prev => ({ ...prev, [chatId]: { url: fileUrl, name: fileName } }));
+    setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
     navigate(`/chat/${chatId}`);
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <AppContainer>
-        <Routes>
-          <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded} />} />
-          <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded} />} />
-          <Route path="/chat/:chatId" element={<ChatPage files={files} />} />
-        </Routes>
-      </AppContainer>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle/>
+        <AppContainer>
+          <Routes>
+            <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
+            <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
+            <Route path="/chat/:chatId" element={<ChatPage files={files}/>}/>
+          </Routes>
+        </AppContainer>
+      </ThemeProvider>
   );
 };
 
