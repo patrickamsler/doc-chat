@@ -35,6 +35,7 @@ const App: React.FC = () => {
       <GlobalStyle />
       <AppContainer>
         <Routes>
+          <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded} />} />
           <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded} />} />
           <Route path="/chat/:chatId" element={<ChatPage files={files} />} />
         </Routes>

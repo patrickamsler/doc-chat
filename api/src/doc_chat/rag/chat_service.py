@@ -38,18 +38,21 @@ class ChatService:
             documents=response_documents
         )
 
+    def find_chat(self, user_id: str, chat_id: str) -> Chat:
+        metadata = self._vector_store.get_collection_metadata(user_id, chat_id)
+        return Chat(
+            chatId=chat_id,
+            fileName=metadata['file_name'] if 'file_name' in metadata else None,
+            createdAt=metadata['created'] if 'created' in metadata else None
+        )
+
     def find_all_chats(self, user_id: str) -> ChatsResponse:
         collections = self._vector_store.get_collections(user_id)
 
         chats = []
         for collection_id in collections:
-            metadata = self._vector_store.get_collection_metadata(user_id, collection_id)
-            print(metadata)
-            chats.append(Chat(
-                chatId=collection_id,
-                fileName=metadata['file_name'] if 'file_name' in metadata else None,
-                createdAt=metadata['created'] if 'created' in metadata else None
-            ))
+            chat = self.find_chat(user_id, collection_id)
+            chats.append(chat)
 
         return ChatsResponse(
             userId=user_id,

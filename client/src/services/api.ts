@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { QueryResponse, UploadFileResponse } from '../types/apiTypes';
 
 const API_URL = process.env.REACT_APP_API_URL || (() => {
@@ -42,9 +42,9 @@ export const downloadFile = async (chatId: string): Promise<{ url: string; fileN
     withCredentials: true,
   });
 
-  const disposition = response.headers['content-disposition'] || '';
-  const fileNameMatch = disposition.match(/filename="?([^";]+)"?/);
-  const fileName = fileNameMatch ? fileNameMatch[1] : `document.pdf`;
+  const disposition = response.headers["content-disposition"] || '';
+  const filenameMatch = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/i);
+  const fileName = filenameMatch ? decodeURIComponent(filenameMatch[1]) : 'Document';
   const url = URL.createObjectURL(response.data);
   return { url, fileName };
 };

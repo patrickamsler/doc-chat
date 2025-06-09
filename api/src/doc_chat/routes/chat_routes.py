@@ -59,11 +59,12 @@ def download_file(
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
 
-    filename=os.path.basename(file_path)
+    chat = chat_service.find_chat(user.id, chat_id)
+
     return FileResponse(
         file_path,
         media_type="application/pdf",
-        filename=filename
+        filename=chat.fileName
     )
 
 
