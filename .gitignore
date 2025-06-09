@@ -5,3 +5,5 @@
 *.swo
 *.iml
 /.idea/
+
+out/
