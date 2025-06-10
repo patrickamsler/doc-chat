@@ -31,12 +31,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   }, [inputValue]);
 
   const handleSend = () => {
+    if (isLoading) return;
     if (!inputValue.trim()) return;
     onSendMessage(inputValue);
     setInputValue('');
   };
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isLoading) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
