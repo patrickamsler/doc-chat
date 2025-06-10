@@ -9,11 +9,12 @@ import {
 
 interface FileUploadProps {
   onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
+  onFileUploadStart?: () => void;
 }
 
 import { SidebarContext } from '../Sidebar/SidebarContext';
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded, onFileUploadStart }) => {
   const [isUploading, setIsUploading] = useState(false);
   const { close } = useContext(SidebarContext);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -28,6 +29,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
 
     try {
       setIsUploading(true);
+      onFileUploadStart?.();
       const response = await uploadFile(file);
       const fileUrl = URL.createObjectURL(file);
       onFileUploaded(response.chatId, fileUrl, file.name);

@@ -19,8 +19,8 @@ interface SidebarProps {
   onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
-  const { isOpen, toggle, close } = useContext(SidebarContext);
+const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
+  const {isOpen, toggle, close} = useContext(SidebarContext);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +29,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
   useEffect(() => {
     if (!isOpen) return;
     getChats()
-      .then(res => {
-        const sorted = [...res.chats].sort(
+    .then(res => {
+      const sorted = [...res.chats].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-        setDocuments(sorted);
-        setError(null);
-      })
-      .catch(() => setError('Failed to load documents'));
+      );
+      setDocuments(sorted);
+      setError(null);
+    })
+    .catch(() => setError('Failed to load documents'));
   }, [isOpen]);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
 
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
-      const { url, fileName } = await downloadFile(doc.chatId);
+      const {url, fileName} = await downloadFile(doc.chatId);
       onFileReady(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
       close();
@@ -61,30 +61,36 @@ const Sidebar: React.FC<SidebarProps> = ({ onFileReady }) => {
     }
   };
 
+  const onFileUploadStart = () => {
+    //close() TODO handle file upload start if needed
+  }
+
+  const onFileUploaded = (id: string, url: string, name: string) => {
+    onFileReady(id, url, name);
+    navigate(`/chat/${id}`);
+    close(); // close sidebar after file upload
+  }
+
   return (
-    <>
-      <ToggleButton onClick={toggle} $open={isOpen}>☰</ToggleButton>
-      <SidebarContainer ref={sidebarRef} $open={isOpen}>
-        <SidebarHeader>
-          <CloseButton onClick={close}>X</CloseButton>
-        </SidebarHeader>
-        <FileUpload onFileUploaded={(id, url, name) => {
-          onFileReady(id, url, name);
-          navigate(`/chat/${id}`);
-          close();
-        }} />
-        {error && <div>{error}</div>}
-        {!error && documents.length === 0 && <div>No documents</div>}
-        <DocumentList>
-          {documents.map(doc => (
-            <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
-              <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
-              <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
-            </DocumentItem>
-          ))}
-        </DocumentList>
-      </SidebarContainer>
-    </>
+      <>
+        <ToggleButton onClick={toggle} $open={isOpen}>☰</ToggleButton>
+        <SidebarContainer ref={sidebarRef} $open={isOpen}>
+          <SidebarHeader>
+            <CloseButton onClick={close}>X</CloseButton>
+          </SidebarHeader>
+          <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>
+          {error && <div>{error}</div>}
+          {!error && documents.length === 0 && <div>No documents</div>}
+          <DocumentList>
+            {documents.map(doc => (
+                <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
+                  <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
+                  <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
+                </DocumentItem>
+            ))}
+          </DocumentList>
+        </SidebarContainer>
+      </>
   );
 };
 

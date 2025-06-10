@@ -8,7 +8,7 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
     width: 400px;
     background-color: ${props => props.theme.colors.grey50};
     transform: translateX(${props => (props.$open ? '0' : '-100%')});
-    transition: transform 0.3s ease-in-out;
+    transition: ${props => (props.$open ? 'transform 0.2s ease-in-out' : 'none')};
     z-index: 999;
     overflow: hidden;
     display: flex;
