@@ -16,6 +16,13 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
     padding: 10px;
 `;
 
+export const SidebarContent = styled.div`
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+`;
+
 export const ToggleButton = styled.button<{ $open: boolean }>`
     position: fixed;
     top: 6px;

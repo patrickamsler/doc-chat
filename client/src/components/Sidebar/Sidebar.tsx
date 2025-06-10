@@ -12,6 +12,7 @@ import {
   SidebarHeader,
   CloseButton,
   DocumentTitle,
+  SidebarContent,
 } from './Sidebar.styles';
 
 interface SidebarProps {
@@ -80,17 +81,19 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
           <SidebarHeader>
             <CloseButton onClick={closeSidebar}>X</CloseButton>
           </SidebarHeader>
-          <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>
-          {error && <div>{error}</div>}
-          {!error && documents.length === 0 && <div>No documents</div>}
-          <DocumentList>
-            {documents.map(doc => (
-                <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
-                  <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
-                  <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
-                </DocumentItem>
-            ))}
-          </DocumentList>
+          <SidebarContent>
+            <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>
+            {error && <div>{error}</div>}
+            {!error && documents.length === 0 && <div>No documents</div>}
+            <DocumentList>
+              {documents.map(doc => (
+                  <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
+                    <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
+                    <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
+                  </DocumentItem>
+              ))}
+            </DocumentList>
+          </SidebarContent>
         </SidebarContainer>
       </>
   );
