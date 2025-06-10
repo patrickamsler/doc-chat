@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileUpload from '../FileUpload/FileUpload';
 import { downloadFile, getChats } from '../../services/api';
