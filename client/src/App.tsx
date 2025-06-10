@@ -8,7 +8,6 @@ import UploadPage from './pages/UploadPage';
 import ChatPage from './pages/ChatPage';
 import { initAuth } from './services/api';
 import Sidebar from './components/Sidebar/Sidebar';
-import { SidebarProvider } from './components/Sidebar/SidebarContext';
 
 interface FileInfo {
   url: string;
@@ -34,17 +33,15 @@ const App: React.FC = () => {
 
   return (
       <ThemeProvider theme={theme}>
-        <SidebarProvider>
-          <GlobalStyle/>
-          <Sidebar onFileReady={handleFileUploaded} />
-          <AppContainer>
-            <Routes>
-              <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
-              <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
-              <Route path="/chat/:chatId" element={<ChatPage files={files}/>}/>
-            </Routes>
-          </AppContainer>
-        </SidebarProvider>
+        <GlobalStyle/>
+        <Sidebar onFileReady={handleFileUploaded}/>
+        <AppContainer>
+          <Routes>
+            <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
+            <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
+            <Route path="/chat/:chatId" element={<ChatPage files={files}/>}/>
+          </Routes>
+        </AppContainer>
       </ThemeProvider>
   );
 };

@@ -1,10 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { uploadFile } from '../../services/api';
-import {
-  UploadContainer,
-  UploadButton,
-  FileInput,
-} from './FileUpload.styles'
+import { FileInput, UploadButton, UploadContainer, } from './FileUpload.styles'
 
 
 interface FileUploadProps {
@@ -12,11 +8,8 @@ interface FileUploadProps {
   onFileUploadStart?: () => void;
 }
 
-import { SidebarContext } from '../Sidebar/SidebarContext';
-
 const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded, onFileUploadStart }) => {
   const [isUploading, setIsUploading] = useState(false);
-  const { close } = useContext(SidebarContext);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
@@ -33,7 +26,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded, onFileUploadSta
       const response = await uploadFile(file);
       const fileUrl = URL.createObjectURL(file);
       onFileUploaded(response.chatId, fileUrl, file.name);
-      close();
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import FileUpload from '../FileUpload/FileUpload';
 import { downloadFile, getChats } from '../../services/api';
 import { ChatInfo } from '../../types/apiTypes';
-import { SidebarContext } from './SidebarContext';
 import {
   SidebarContainer,
   ToggleButton,
@@ -20,7 +19,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
-  const {isOpen, toggle, close} = useContext(SidebarContext);
+  const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
     if (!isOpen) return;
     const handleClick = (e: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) { // close sidebar if clicked outside
-        close();
+        closeSidebar();
       }
     };
     document.addEventListener('mousedown', handleClick);
@@ -55,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
       const {url, fileName} = await downloadFile(doc.chatId);
       onFileReady(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
-      close();
+      closeSidebar();
     } catch (err) {
       console.error(err);
     }
@@ -68,15 +67,18 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
   const onFileUploaded = (id: string, url: string, name: string) => {
     onFileReady(id, url, name);
     navigate(`/chat/${id}`);
-    close(); // close sidebar after file upload
+    closeSidebar(); // close sidebar after file upload
   }
+
+  const toggleSidebar = () => setIsOpen(prev => !prev);
+  const closeSidebar = () => setIsOpen(false);
 
   return (
       <>
-        <ToggleButton onClick={toggle} $open={isOpen}>☰</ToggleButton>
+        <ToggleButton onClick={toggleSidebar} $open={isOpen}>☰</ToggleButton>
         <SidebarContainer ref={sidebarRef} $open={isOpen}>
           <SidebarHeader>
-            <CloseButton onClick={close}>X</CloseButton>
+            <CloseButton onClick={closeSidebar}>X</CloseButton>
           </SidebarHeader>
           <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>
           {error && <div>{error}</div>}
