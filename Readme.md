@@ -6,6 +6,8 @@ Doc Chat lets you talk to your PDF documents. It uses retrieval-augmented
 generation (RAG) to find relevant pages and answer your questions about the
 files you uploaded.
 
+Screenshot:
+
 <img src="doc/images/demo.png" alt="Demo screenshot" width="800"/>
 
 ## Table of Contents
