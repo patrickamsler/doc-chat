@@ -2,6 +2,32 @@
 
 # Doc Chat
 
+Doc Chat lets you talk to your PDF documents. It uses retrieval-augmented
+generation (RAG) to find relevant pages and answer your questions about the
+files you uploaded.
+
+![Demo screenshot](doc/images/demo.png)
+
+## Table of Contents
+- [Description](#description)
+- [How to run the project locally](#how-to-run-the-project-locally)
+  - [API backend](#api-backend)
+  - [Frontend](#frontend)
+
+## Description
+* Doc Chat is a RAG (Retrieval-Augmented Generation) application that allows
+  users to chat with PDF documents.
+* It uses ChromaDB to store the documents in the backend and perform vector
+  search.
+* For the frontend a React client is used.
+* For answer generation, GPT-4o-mini is used.
+* The answer includes references to the specific PDF pages used. Users can
+  click the references to jump directly to those pages.
+* Users can upload and store multiple documents.
+* Currently, only guest mode using a browser cookie is supported.
+* This means that if a user switches browsers, their data will not be
+  available.
+* Signup/login functionality will be added later.
 
 ## How to run the project locally
 
