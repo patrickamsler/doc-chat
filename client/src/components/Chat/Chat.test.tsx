@@ -12,13 +12,13 @@ jest.mock('../../services/api', () => ({
 
 const setup = (chatId = 'chat1', propsOverride = {}) => {
   const onBadgeClick = jest.fn();
-  const props = { chatId, onBadgeClick, ...propsOverride };
+  const props = {chatId, onBadgeClick, ...propsOverride};
   render(
-    <ThemeProvider theme={theme}>
-      <Chat {...props} />
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <Chat {...props} />
+      </ThemeProvider>
   );
-  return { onBadgeClick };
+  return {onBadgeClick};
 };
 
 
@@ -33,7 +33,7 @@ describe('Chat component', () => {
   });
 
   it('sends a message and displays the response', async () => {
-    (sendMessage as jest.Mock).mockResolvedValueOnce({ answer: 'Hi there' });
+    (sendMessage as jest.Mock).mockResolvedValueOnce({answer: 'Hi there'});
     setup();
 
     const textbox = screen.getByRole('textbox');
@@ -50,18 +50,21 @@ describe('Chat component', () => {
   });
 
   it('calls onBadgeClick when a page reference badge is clicked', async () => {
-    (sendMessage as jest.Mock).mockResolvedValueOnce({ answer: 'See <<42>>' });
-    const { onBadgeClick } = setup('chat1');
+    (sendMessage as jest.Mock).mockResolvedValueOnce({
+      answer: 'See <<doc_42>>',
+      documents: [{id: 'doc_42', page: 13, content: 'test document'}],
+    });
+    const {onBadgeClick} = setup('chat1');
 
     const textbox = screen.getByRole('textbox');
     userEvent.type(textbox, 'Hello');
     userEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(screen.getByText('43')).toBeInTheDocument();
+      expect(screen.getByText('14')).toBeInTheDocument();
     });
-    userEvent.click(screen.getByText('43')); // badge text is '43' because it is 1-based index
-    expect(onBadgeClick).toHaveBeenCalledWith(42); // 0-based index in the function
+    userEvent.click(screen.getByText('14')); // badge text is '43' because it is 1-based index
+    expect(onBadgeClick).toHaveBeenCalledWith(13); // 0-based index in the function
   });
 });
 

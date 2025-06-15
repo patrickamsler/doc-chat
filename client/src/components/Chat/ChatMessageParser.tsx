@@ -1,21 +1,28 @@
 import React from "react";
 import { PageRefBadge } from "./Chat.styles";
+import { DocumentResponse } from "../../types/apiTypes";
 
 export const parseMessageWithPageRefBadges = (
     message: string,
+    documents: DocumentResponse[],
     onBadgeClick: (pageRef: number) => void
 ): React.ReactNode => {
-  const parts = message.split(/(<<\d+>>)/g).map(part => part.trim()); // Split and trim parts
+  const parts = message.split(/(<<\s*doc_\d+\s*>>)/g).map(part => part.trim()); // Split and trim parts
 
   return parts
   .filter(part => part !== "") // Remove empty strings or whitespaces
   .map((part, index) => {
-    const match = part.match(/<<(\d+)>>/); // Check if part is a <<>> reference
+    const match = part.match(/<<\s*(doc_\d+)\s*>>/); // Check if part is a <<>> reference
     if (match) {
-      const pageRef = parseInt(match[1], 10); // Extract the page number
+      const docId = match[1]; // Construct the document ID
+      const document = documents.find(doc => doc.id === docId);
+      const pageIndex = document?.page
+      if (pageIndex === undefined) {
+        return null
+      }
       return (
-          <PageRefBadge key={index} onClick={() => onBadgeClick(pageRef)}>
-            {pageRef + 1}
+          <PageRefBadge key={index} onClick={() => onBadgeClick(pageIndex)}>
+            {pageIndex + 1}
           </PageRefBadge>
       );
     }

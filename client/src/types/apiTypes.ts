@@ -4,6 +4,7 @@ export interface UploadFileResponse {
 }
 
 export interface DocumentResponse {
+  id: string;
   page: number;
   content: string;
 }

@@ -13,6 +13,7 @@ import {
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from 'styled-components';
+import { DocumentResponse } from "../../types/apiTypes";
 
 interface ChatProps {
   chatId: string;
@@ -22,6 +23,7 @@ interface ChatProps {
 interface MessageType {
   id: number;
   text: string;
+  documents: DocumentResponse[];
   isUser: boolean;
 }
 
@@ -45,6 +47,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
     const userMessage: MessageType = {
       id: Date.now(),
       text: input,
+      documents: [],
       isUser: true,
     };
 
@@ -56,6 +59,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
       const botMessage: MessageType = {
         id: Date.now() + 1,
         text: response.answer,
+        documents: response.documents || [],
         isUser: false,
       };
       setMessages(prev => [...prev, botMessage]);
@@ -64,6 +68,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
       const errorMessage: MessageType = {
         id: Date.now() + 1,
         text: 'Sorry, there was an error processing your request.',
+        documents: [],
         isUser: false,
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -86,7 +91,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
                                        style={{marginRight: 8, color: theme.colors.primaryA0}}
                       />
                   )}
-                  {parseMessageWithPageRefBadges(message.text, onBadgeClick)}
+                  {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
                 </Message>
             ))}
             <div ref={messagesEndRef}/>

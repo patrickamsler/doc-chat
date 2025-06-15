@@ -1,7 +1,7 @@
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .multi_tenant_vector_store import MultiTenantVectorStore
-from ..api_types import QueryResponse, ChatsResponse, Chat
+from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
 
 
@@ -28,7 +28,9 @@ class ChatService:
                                                      query=question, k=5)
         response = self._retrieval_chain.invoke(question, docs)
         response_documents = [
-            {'page': doc.metadata['page'], 'content': doc.page_content}
+            DocumentsResponse(id=doc.id,
+                              page=doc.metadata['page'],
+                              content=doc.page_content)
             for doc in response['source_documents']
         ]
         answer = response['answer']

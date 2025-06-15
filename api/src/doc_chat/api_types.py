@@ -18,6 +18,7 @@ class ChatsResponse(BaseModel):
     chats: list[Chat]
 
 class DocumentsResponse(BaseModel):
+    id: str
     page: int
     content: str
 

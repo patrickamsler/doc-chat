@@ -3,15 +3,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider } from "styled-components"; // Import ThemeProvider
 import { parseMessageWithPageRefBadges } from "./ChatMessageParser";
 import { theme } from "../../theme";
+import { DocumentResponse } from "../../types/apiTypes";
 
 describe("parseMessageWithPageRefBadges", () => {
   it("renders plain text correctly", () => {
     const message = "This is a test message.";
+    const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
     const { container } = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, onBadgeClick)}</div>
+          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
@@ -19,16 +21,21 @@ describe("parseMessageWithPageRefBadges", () => {
   });
 
   it("renders PageRefBadge for <<>> references", () => {
-    const message = "See page <<1>> for details.";
+    const message = "See page <<doc_10>> for details.";
+    const documents: DocumentResponse[] = [
+        { id: "doc_10", page: 1, content: "Document 1" }, // this is the document reference
+        { id: "doc_20", page: 3, content: "Document 2" } // this is not referenced
+    ];
     const onBadgeClick = jest.fn();
 
     const { container } = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, onBadgeClick)}</div>
+          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
     const firstChild = container.firstChild
+
     expect(firstChild?.nodeName).toBe("DIV");
     expect(firstChild?.childNodes.length).toBe(3);
     expect(firstChild?.childNodes[0].nodeName).toBe("SPAN");
@@ -38,29 +45,37 @@ describe("parseMessageWithPageRefBadges", () => {
   });
 
   it("renders multiple PageRefBadges", () => {
-    const message = "See page for details. <<42>> <<12>>";
+    const message = "See page for details. <<doc_42>> <<doc_12>>";
+    const documents: DocumentResponse[] = [
+      { id: "doc_10", page: 1, content: "Document 1" },
+      { id: "doc_12", page: 5, content: "Document 2" },
+      { id: "doc_42", page: 17, content: "Document 3" }
+    ];
     const onBadgeClick = jest.fn();
 
     const { container } = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, onBadgeClick)}</div>
+          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
     const spans = container.querySelectorAll("span");
     expect(spans.length).toBe(3);
     expect(spans[0].textContent).toBe("See page for details.");
-    expect(spans[1].textContent).toBe("43");
-    expect(spans[2].textContent).toBe("13");
+    expect(spans[1].textContent).toBe("18");
+    expect(spans[2].textContent).toBe("6");
   });
 
   it("calls onBadgeClick with the correct page number when badge is clicked", () => {
-    const message = "See page <<1>> for details.";
+    const message = "See page <<doc_1>> for details.";
+    const documents: DocumentResponse[] = [
+      { id: "doc_1", page: 1, content: "Document 1" },
+    ];
     const onBadgeClick = jest.fn();
 
     render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, onBadgeClick)}</div>
+          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 

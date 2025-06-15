@@ -3,6 +3,8 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores.base import BaseRetriever
 from langchain_core.language_models import BaseLLM
 
+from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
+
 prompt_template = """
 You are an assistant who answers questions **only** from the texts provided below.
 
@@ -25,9 +27,10 @@ class CitationRetrievalChain:
         prompt = PromptTemplate.from_template(prompt_template)
         self._chain = prompt | llm
 
-    def invoke(self, query, documents=None):
+    def invoke(self, query, documents: list[VectorStoreDocument] = None):
         if documents is None:
-            documents = self._retriever.get_relevant_documents(query) # TODO remove this line and dependency on retriever
+            # TODO remove this line and dependency on retriever
+            documents = self._retriever.get_relevant_documents(query)
         context = self.create_context(documents)
         answer = self._chain.invoke({"context": context, "question": query})
         answer = answer.strip()
@@ -47,12 +50,12 @@ class CitationRetrievalChain:
 
     @staticmethod
     def replace_txt_with_page_numbers(answer, documents):
-        page_numbers = []
+        page_ids = []
         for doc in documents:
-            page_numbers.append(doc.metadata['page'])
+            page_ids.append(doc.id)
 
-        for i in range(len(page_numbers)):
+        for i in range(len(page_ids)):
             answer = answer.replace(f"[TXT{i + 1}]",
-                                    f"<<{str(page_numbers[i])}>>")
+                                    f"<<{str(page_ids[i])}>>")
 
         return answer

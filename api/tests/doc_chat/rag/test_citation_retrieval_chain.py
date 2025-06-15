@@ -1,11 +1,17 @@
 from unittest.mock import MagicMock
 
 from doc_chat.rag.citation_retrieval_chain import CitationRetrievalChain
+from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
 
-class DummyDoc:
-    def __init__(self, content, page):
-        self.page_content = content
-        self.metadata = {'page': page}
+
+def create_doc(doc_id: str, page_content: str,
+      page: int) -> VectorStoreDocument:
+    return VectorStoreDocument(
+        id=doc_id,
+        page_content=page_content,
+        metadata={'page': page}
+    )
+
 
 def make_chain_with_mocked_llm():
     retriever = MagicMock()
@@ -14,11 +20,12 @@ def make_chain_with_mocked_llm():
     chain._chain = MagicMock()
     return chain
 
+
 def test_create_context():
     # given
     docs = [
-        DummyDoc("First doc content.", 1),
-        DummyDoc("Second doc content.", 2)
+        create_doc("doc_2", "First doc content.", 1),
+        create_doc("doc_5", "Second doc content.", 2)
     ]
 
     # when
@@ -30,27 +37,30 @@ def test_create_context():
         "[TXT2]\nSecond doc content.\n\n"
     )
 
+
 def test_replace_txt_with_page_numbers():
     # given
     docs = [
-        DummyDoc("irrelevant", 5),
-        DummyDoc("irrelevant", 7)
+        create_doc("doc_2", "irrelevant", 5),
+        create_doc("doc_3", "irrelevant", 7)
     ]
     answer = "Some answer. [TXT1][TXT2]"
 
     # when
-    replaced = CitationRetrievalChain.replace_txt_with_page_numbers(answer, docs)
+    replaced = CitationRetrievalChain.replace_txt_with_page_numbers(answer,
+                                                                    docs)
 
     # then
-    assert "<<5>>" in replaced
-    assert "<<7>>" in replaced
+    assert "<<doc_2>>" in replaced
+    assert "<<doc_3>>" in replaced
     assert "[TXT1]" not in replaced
+
 
 def test_invoke_calls_chain_and_formats_answer():
     # given
     docs = [
-        DummyDoc("Doc1", 10),
-        DummyDoc("Doc2", 20)
+        create_doc("doc_5", "content 1", 10),
+        create_doc("doc_7", "content 2", 20)
     ]
     chain = make_chain_with_mocked_llm()
     chain._chain.invoke.return_value = "The answer is here. [TXT1][TXT2]  "
@@ -59,7 +69,7 @@ def test_invoke_calls_chain_and_formats_answer():
     result = chain.invoke("What is the answer?", documents=docs)
 
     # then
-    assert result['answer'] == "The answer is here. <<10>><<20>>"
+    assert result['answer'] == "The answer is here. <<doc_5>><<doc_7>>"
     assert result['source_documents'] == docs
 
     chain._chain.invoke.assert_called_once()
