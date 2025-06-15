@@ -45,8 +45,9 @@ const ChatPage: React.FC<ChatPageProps> = ({files}) => {
     }
   }, [chatId, files]);
 
-  const handleBadgeClick = (pageRef: number) => {
+  const handleBadgeClick = (pageRef: number, content: string) => {
     if (jumpToPage) {
+      console.log(content)
       jumpToPage(pageRef);
     }
   };

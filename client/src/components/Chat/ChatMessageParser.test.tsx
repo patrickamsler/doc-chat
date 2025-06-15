@@ -82,6 +82,6 @@ describe("parseMessageWithPageRefBadges", () => {
     const badge = screen.getByText("2"); // page number is incremented by 1
     fireEvent.click(badge);
 
-    expect(onBadgeClick).toHaveBeenCalledWith(1); // page number index
+    expect(onBadgeClick).toHaveBeenCalledWith(1, "Document 1"); // page number index
   });
 });

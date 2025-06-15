@@ -17,7 +17,7 @@ import { DocumentResponse } from "../../types/apiTypes";
 
 interface ChatProps {
   chatId: string;
-  onBadgeClick: (pageRef: number) => void;
+  onBadgeClick: (pageRef: number, content: string) => void;
 }
 
 interface MessageType {

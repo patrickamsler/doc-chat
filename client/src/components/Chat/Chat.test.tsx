@@ -64,7 +64,7 @@ describe('Chat component', () => {
       expect(screen.getByText('14')).toBeInTheDocument();
     });
     userEvent.click(screen.getByText('14')); // badge text is '43' because it is 1-based index
-    expect(onBadgeClick).toHaveBeenCalledWith(13); // 0-based index in the function
+    expect(onBadgeClick).toHaveBeenCalledWith(13, 'test document'); // 0-based index in the function
   });
 });
 
