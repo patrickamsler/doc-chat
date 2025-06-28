@@ -14,6 +14,13 @@ Citation rules
    • Example (multiple sources):  Coffee was first cultivated in Yemen. [TXT3][TXT4]
 2. If the answer cannot be found in the texts, reply exactly:  I don’t know
 
+Output format (very important)
+• Begin your reply **immediately** with the answer itself.  
+• **Do not** add “Answer:”, “Here is the answer:”, or any other preamble.  
+• End with the required citations only.
+• Bad: `Answer: The river is the Seine. [TXT2]`  
+• Good: `The river is the Seine. [TXT2]`
+
 {context}
 
 "Question:```{question}```"
