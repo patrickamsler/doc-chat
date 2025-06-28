@@ -1,4 +1,4 @@
-document_index,question,answer,answer_predicted
+document_index,question,answer,generated_answer
 0,Which enemy types wield an AK-47?,Assault-rifle wielding Bullet and Tankers wield AK-47s.,"Answer: The enemy types that wield an AK-47 are Bullet Kin, Veteran Bullet Kin, Bandana Bullet Kin, and Tankers. <<doc_0>><<doc_2>>"
 0,What makes jammed enemies different?,"Jammed Keybullet Kin drop 2 keys instead of 1, jammed Chance Kins have a chance to drop twice the loot, and jammed red-Caped Bullet Kin deal contact damage. Additionally, Jammed Keybullet Kin Jammed variations run faster and will take less time to teleport away from the player if they are not destroyed quickly.","Answer: Jammed enemies have a chance to drop more loot upon death compared to their non-jammed counterparts. For example, Jammed Keybullet Kin drop 2 keys instead of 1, and Jammed Chance Kin have a chance to drop twice the loot. <<doc_8>><<doc_9>>"
 1,What enemies are encountered in the second encounter?,26 kobolds and 1 kobold inventor are encountered in the second encounter.,The enemies encountered in the second encounter are 26 kobolds and 1 kobold inventor. <<doc_2>>

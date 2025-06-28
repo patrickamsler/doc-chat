@@ -1,4 +1,4 @@
-document_index,question,answer,answer_predicted
+document_index,question,answer,generated_answer
 0,What do keybullet kin drop?,Keybullet kin drop a key upon death.,Keybullet Kin drop keys upon death. <<doc_8>><<doc_7>>
 0,What kind of gun does the bandana bullet kin use?,The bandana bullet kin wields a machine pistol.,The Bandana Bullet Kin wields Machine Pistols. <<doc_2>>
 1,What do the giants look like?,"One giant is burly, grey-skinned, and 20 feet tall. It wears heavy dark iron armour covered in metal torns. It is leaning against a chamber wall, carrying what looks to be two tower shields nearly as tall as itself, both bearing

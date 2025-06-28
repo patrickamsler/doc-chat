@@ -27,16 +27,23 @@ class CitationRetrievalChain:
         prompt = PromptTemplate.from_template(prompt_template)
         self._chain = prompt | llm
 
-    def invoke(self, query, documents: list[VectorStoreDocument] = None):
+    def invoke(
+          self, query,
+          documents: list[VectorStoreDocument] = None,
+          include_references_in_answer: bool = True
+    ):
         if documents is None:
             # TODO remove this line and dependency on retriever
             documents = self._retriever.get_relevant_documents(query)
         context = self.create_context(documents)
         answer = self._chain.invoke({"context": context, "question": query})
         answer = answer.strip()
-        answer = self.replace_txt_with_page_numbers(answer, documents)
+        answer, referenced_docs = self.replace_txt_with_page_numbers(answer,
+                                                                     documents,
+                                                                     include_references_in_answer)
         return {
             'answer': answer,
+            'referenced_documents': referenced_docs,
             'source_documents': documents
         }
 
@@ -49,13 +56,20 @@ class CitationRetrievalChain:
         return ''.join(context_parts)
 
     @staticmethod
-    def replace_txt_with_page_numbers(answer, documents):
+    def replace_txt_with_page_numbers(answer, documents, include_references):
         page_ids = []
+        referenced_docs = []
+
         for doc in documents:
             page_ids.append(doc.id)
 
         for i in range(len(page_ids)):
-            answer = answer.replace(f"[TXT{i + 1}]",
-                                    f"<<{str(page_ids[i])}>>")
+            text_ref = f"[TXT{i + 1}]"
+            if text_ref in answer:
+                referenced_docs.append(page_ids[i])
+                if include_references:
+                    answer = answer.replace(text_ref, f"<<{str(page_ids[i])}>>")
+                else:
+                    answer = answer.replace(text_ref, "")
 
-        return answer
+        return answer.strip(), referenced_docs
