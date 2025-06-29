@@ -40,14 +40,25 @@ def write_pdf(
 def read_pdf_info(file_path: str):
     reader = PdfReader(file_path)
     num_pages = len(reader.pages)
-    word_count = 0
+    total_word_count = 0
+    total_char_count = 0
 
     for page in reader.pages:
         text = page.extract_text()
         if text:
-            word_count += len(text.split())
+            words = text.split()
+            word_count = len(words)
+            char_count = len(text)
+            total_word_count += word_count
+            total_char_count += char_count
+
+    avg_words_per_page = total_word_count / num_pages if num_pages > 0 else 0
+    avg_chars_per_page = total_char_count / num_pages if num_pages > 0 else 0
 
     return {
         "num_pages": num_pages,
-        "word_count": word_count
+        "total_word_count": total_word_count,
+        "avg_words_per_page": avg_words_per_page,
+        "total_char_count": total_char_count,
+        "avg_chars_per_page": avg_chars_per_page
     }

@@ -7,11 +7,11 @@ class DocumentLoader:
         self._file_path = file_path
 
     def load_and_split(self,
-          chuck_size: int = 1000,
-          check_overlap=150) -> tuple[list, list]:
+          chunk_size: int = 1000,
+          chunk_overlap: int = 150) -> tuple[list, list]:
         loader = PyPDFLoader(self._file_path)
         documents = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=chuck_size,
-                                                       chunk_overlap=check_overlap)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
+                                                       chunk_overlap=chunk_overlap)
         splits = text_splitter.split_documents(documents)
         return documents, splits
