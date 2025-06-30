@@ -1,9 +1,12 @@
+from dotenv import load_dotenv, find_dotenv
 from langchain.chains import LLMChain
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from pydantic import Field, conint
+
+_ = load_dotenv(find_dotenv())
 
 
 class EvaluationFeedback(BaseModel):
@@ -16,13 +19,12 @@ class EvaluationFeedback(BaseModel):
         description="An integer score between 1 and 5, strictly following the score rubric."
     )
 
+
 user_prompt_template = """
 ###Task Description:
 An instruction (might include an Input inside it), a response to evaluate, a reference answer that gets a score of 5, and a score rubric representing a evaluation criteria are given.
 1. Write a detailed feedback that assess the quality of the response strictly based on the given score rubric, not evaluating in general.
 2. After writing a feedback, write a score that is an integer between 1 and 5. You should refer to the score rubric.
-3. The output format should look as follows: \"{{write a feedback for criteria}} [RESULT] {{an integer number between 1 and 5}}\"
-4. Please do not generate any other opening, closing, and explanations. Be sure to include [RESULT] in your output.
 
 ###The instruction to evaluate:
 {instruction}
@@ -47,14 +49,17 @@ Score 5: The response is completely correct, accurate, and factual.
 
 def evaluate_response(instruction: str, reference_answer: str,
       generated_answer: str) -> EvaluationFeedback:
-    print("Evaluating response...")
-    print("Instruction:", instruction, "Reference Answer:", reference_answer, "Generated Answer:", generated_answer)
+    print("Evaluating response... "
+          "Instruction:", instruction,
+          "Reference Answer:", reference_answer,
+          "Generated Answer:", generated_answer)
+
     llm = ChatOpenAI(
-        model="gpt-4o",
+        model="gpt-4o-2024-08-06",
         temperature=0.0,
         top_p=1.0,
         max_tokens=2048
-    )
+    ).with_structured_output(EvaluationFeedback, method="json_schema")
 
     prompt = ChatPromptTemplate.from_messages([
         SystemMessagePromptTemplate.from_template(
@@ -65,11 +70,19 @@ def evaluate_response(instruction: str, reference_answer: str,
 
     evaluation_chain = prompt | llm
 
-    result = evaluation_chain.invoke({
+    result: EvaluationFeedback = evaluation_chain.invoke({
         "instruction": instruction,
         "generated_answer": generated_answer,
         "reference_answer": reference_answer
     })
+    return result
 
-    feedback, score = result.content.split("[RESULT]")
-    return EvaluationFeedback(feedback=feedback.strip(), score=int(score.strip()))
+
+if __name__ == "__main__":
+    _ = load_dotenv(find_dotenv())
+    eval_result = evaluate_response(
+        instruction="What do keybullet kin drop?",
+        reference_answer="Keybullet kin drop a key upon death.",
+        generated_answer="Keybullet Kin drop a key upon death."
+    )
+    print(eval_result)
