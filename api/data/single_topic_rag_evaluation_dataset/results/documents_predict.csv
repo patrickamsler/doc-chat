@@ -1,4 +1,4 @@
-index,source_url,text,num_pages,total_word_count,avg_words_per_page,total_char_count,avg_chars_per_page,num_splits
+index,source_url,text,num_pages,total_word_count,avg_words_per_page,total_char_count,avg_chars_per_page
 0,https://enterthegungeon.fandom.com/wiki/Bullet_Kin,"Bullet Kin
 Bullet Kin are one of the most common enemies. They slowly walk towards the player, occasionally firing a single bullet. They can flip tables and use them as cover. They will also deal contact damage if the player touches them.
 
@@ -146,7 +146,7 @@ Red-Caped Bullet Kin's design may be based on The Kid from I Wanna Be The Guy.
 Rooms created by the Drill can have a Red-Caped Bullet Kin spawn inside them, even if a Red-Caped Bullet Kin has already appeared on that floor.
 It's possible for Red-Caped Bullet Kin to appear in the Aimless Void and Secret Floors such as the Oubliette.
 Red-Caped Bullet Kin are not attacked by companions.
-Red-Caped Bullet Kin will teleport away if the room contains an enemy that cannot be killed, such as Gunreapers or Dead Blows.",4,1846.0,461.0,10611.0,2652.0,13
+Red-Caped Bullet Kin will teleport away if the room contains an enemy that cannot be killed, such as Gunreapers or Dead Blows.",4,1846.0,461.0,10611.0,2652.0
 1,https://www.dropbox.com/scl/fi/ljtdg6eaucrbf1aksw5rm/c2%20-%20session%2050%20-%20underground.docx?rlkey=ioqwgkd14i5xk20i3fp38nzgs&e=1&dl=0,"---The Paths through the Underground/Underdark---(9 days of travel)
 Wandering through the dark tunnels, the rushing sounds of the underground river begin to fade as it diverges from the cavern. You walk on for miles, the smell of hard water and wet earth. Natural chambers and cavern passways are chained together by the stretches of burrowed earth left in the wake of this massive worm-like creature. Clusters of crystal and other beautiful minerals occasionally line the walls and ceilings of the chambers, glittering with the little light you have to shove back the darkness.
 
@@ -177,7 +177,7 @@ When seeing the group, they bark and growl. (if noticed, they appear rather fear
 
 If asked about tunnel “Big worm eat through! Bring ingoeth! In and out, gone quick, leave mess!”
 
-They must parlay with them, avoiding a battle with a significant trade, or intimidation. Otherwise, a fight ensues! Either way, two kobolds are too scared and freeze up. They are brothers Spurt and Bex, scavenger kobolds. They are timid, but know the tunnels well...ish?",2,471.0,235.0,2738.0,1369.0,4
+They must parlay with them, avoiding a battle with a significant trade, or intimidation. Otherwise, a fight ensues! Either way, two kobolds are too scared and freeze up. They are brothers Spurt and Bex, scavenger kobolds. They are timid, but know the tunnels well...ish?",2,471.0,235.0,2738.0,1369.0
 2,https://bytes-and-nibbles.web.app/bytes/stici-note-part-1-planning-and-prototyping,"Semantic and Textual Inference Chatbot Interface (STICI-Note) - Part 1: Planning and Prototyping
 
 The start of my RAG to riches story
@@ -327,7 +327,7 @@ In this blog, I built a locally run prototype for my chatbot for querying unstru
 
 It’s such a shame that after I had done the research and written all of the code, while I was writing this blog, I read about llmware, a very promising Python framework for building RAG pipelines with small models (sound familiar?). It was even chosen for GitHub Accelerator 2024, a competition for open-source projects on GitHub where chosen projects are given funding, mentorship, and access to resources to help them grow their project. Since I had already built the prototype in LangChain, it didn’t make much sense to tear it down and rebuild it in a fancy new framework that wasn’t as tried-and-tested. I’d love to try the framework out one day if I build another RAG application after this one.
 
-In the next part of the STICI-note blog series, I will be building an evaluation suite to test and compare different inference models and vector DB configurations, so stay tuned and follow me on LinkedIn to be notified when it comes out!",9,3790.0,421.0,22119.0,2457.0,29
+In the next part of the STICI-note blog series, I will be building an evaluation suite to test and compare different inference models and vector DB configurations, so stay tuned and follow me on LinkedIn to be notified when it comes out!",9,3790.0,421.0,22119.0,2457.0
 3,https://github.com/llmware-ai/llmware,"llmware
 
 Building Enterprise RAG Pipelines with Small, Specialized Models
@@ -656,7 +656,7 @@ Additional test scripts, examples, and defect fixes.
 
 Added test scripts to the github repository for regression testing.
 Minor defect fixes and version update of Pillow to address dependency security alert.
-02 Oct 2023: llmware v0.1.0 Initial release of llmware to open source!!",8,3017.0,377.0,20348.0,2543.0,24
+02 Oct 2023: llmware v0.1.0 Initial release of llmware to open source!!",8,3017.0,377.0,20348.0,2543.0
 4,https://docs.marimo.io/recipes.html,"Recipes
 This page includes code snippets or “recipes” for a variety of common tasks. Use them as building blocks or examples when making your own notebooks.
 
@@ -1027,7 +1027,7 @@ def compute_predictions(problem_parameters):
    ...
 Whenever compute_predictions is called with a value of problem_parameters it has not seen, it will compute the predictions and store them in a cache. The next time it is called with the same parameters, instead of recomputing the predictions, it will return the previously computed value from the cache.
 
-See our best practices guide to learn more.",5,1796.0,359.0,11262.0,2252.0,16
+See our best practices guide to learn more.",5,1796.0,359.0,11262.0,2252.0
 5,https://towardsdatascience.com/how-to-maximize-your-impact-as-a-data-scientist-3881995a9cb1,"How to Maximize Your Impact as a Data Scientist
 
 One of the hardest pills to swallow as an Individual Contributor (IC) at work is that nobody cares about the hard work you put in. They don’t even care about your output; they care about the impact you drive.
@@ -1193,7 +1193,7 @@ Focusing on impact is scary since we leave the world of controllable inputs behi
 
 And isn’t it nice when your work actually feels like it moves the needle?
 
-For more hands-on analytics advice, consider following me here on Medium, on LinkedIn or on Substack.",6,2443.0,407.0,14216.0,2369.0,21
+For more hands-on analytics advice, consider following me here on Medium, on LinkedIn or on Substack.",6,2443.0,407.0,14216.0,2369.0
 6,https://ec.europa.eu/commission/presscorner/detail/en/QANDA_21_1683,"Why do we need to regulate the use of Artificial Intelligence?
 The potential benefits of Artificial Intelligence (AI) for our societies are manifold from improved medical care to better education. Faced with the rapid technological development of AI, the EU decided to act as one to harness these opportunities.
 
@@ -1475,7 +1475,7 @@ The AI Act and the Coordinated Plan on AI are part of the efforts of the Europea
 
 Countries around the world are choosing to use AI as a way to signal their desires for technical advancement due to its utility and potential. AI regulation is only emerging and the EU will take actions to foster the setting of global AI standards in close collaboration with international partners in line with the rules-based multilateral system and the values it upholds. The EU intends to deepen partnerships, coalitions and alliances with EU partners (e.g. Japan, the US, India, Canada, South Korea, Singapore, or the Latin American and Caribbean region) as well as multilateral (e.g. OECD, G7 and G20) and regional organisations (e.g. Council of Europe).
 
-*Updated on 14/12/2023",14,5404.0,386.0,35381.0,2527.0,51
+*Updated on 14/12/2023",14,5404.0,386.0,35381.0,2527.0
 7,https://bg3.wiki/wiki/The_Emperor,"The Emperor is a mind flayer who appears in Baldur's Gate 3. It[note 1] plays a key role in the main story, but its identity is intentionally obscured until later parts of the game, allowing the player to ultimately decide for themselves if they want to know more about it, and whether or not it is trustworthy.
 
 
@@ -1662,7 +1662,7 @@ Footnotes
  This romance behaves somewhat differently from that with companions, as the Emperor generally cannot be interacted with outside of cutscenes, and romantic progression is limited to the final act of the game.
 References
  Dialogue with Ansur.
- The Netherbrain's dialogue to the player at the Morphic Pool.",7,2974.0,424.0,17893.0,2556.0,26
+ The Netherbrain's dialogue to the player at the Morphic Pool.",7,2974.0,424.0,17893.0,2556.0
 8,https://whattocook.substack.com/p/so-into-northern-spain,"so into northern spain!
 our magical urban-plus-outdoor-adventure itinerary
 CAROLINE CHAMBERS
@@ -1772,7 +1772,7 @@ I loved reading about all of your happy places in the comments of last week’s 
 
 Dreamy! And now you can bring your new pair of Lake Pajamas to Boothbay Harbor this summer! Email me your size and address!
 
-Do you have any Spain recs to add? Anyone taking an exciting trip this summer? We’re staying local for most of the summer so that we can enjoy our new cabin, minus our annual two-week Southern voyage to DeBordieu, SC to visit George’s family and Bald Head Island, NC to visit mine!",5,2045.0,409.0,11259.0,2251.0,16
+Do you have any Spain recs to add? Anyone taking an exciting trip this summer? We’re staying local for most of the summer so that we can enjoy our new cabin, minus our annual two-week Southern voyage to DeBordieu, SC to visit George’s family and Bald Head Island, NC to visit mine!",5,2045.0,409.0,11259.0,2251.0
 9,https://dmtalkies.com/the-zone-of-interest-ending-explained-and-summary-2023-film/,"‘The Zone Of Interest’ Ending Explained & Film Summary: What Happens To Rudolf And Hedwig Hoss?
 PUBLISHED
 
@@ -1812,7 +1812,7 @@ The Zone of Interest also sparsely presents a few scenes, in which an unacquaint
 What Happens To Rudolf Hoss?
 During The Zone of Interest‘s ending, Rudolf is seen in his Berlin office as he telephones Hedwig and tells her about his excitement for the concentration camps being built. Rudolf had been given the responsibility of overseeing a new Nazi order in which Hungarian Jews were to be arrested and killed. Although Hedwig refuses to be part of this very direct talk of violence, for she prefers such matters to be in the background, the commander still feels thrilled. He is seen walking down the stairs from his office when suddenly bouts of violent retching hit him on two occasions. In the middle of these two instances, The Zone of Interest briefly moves to modern times, and various reminders of the Holocaust are seen being maintained at the Auschwitz-Birkenau State Museum, right before the place is opened to public visitors. The last scene returns to the past once more, and Rudolf is seen feeling slightly odd, as if someone is watching him, as he continues down the stairs.
 
-The Zone of Interest‘s ending scene seems to suggest that deep in his conscience, Rudolf Hoss does know that his actions can only make one retch, and almost like a fortune-teller, he has an uneasy feeling that his legacy will go down terribly in history. The scene of the museum is a fast jolt back to the right perspective, which had been missing throughout the film. Throughout the entire duration of The Zone of Interest, Rudolf, his family, and his professional associates had all been extremely invested in hiding the evidence and changing the narrative, but ultimately, the thousands of shoes or the torn, ragged uniforms still exist as reminders of the horrible genocide.",5,2326.0,465.0,13469.0,2693.0,17
+The Zone of Interest‘s ending scene seems to suggest that deep in his conscience, Rudolf Hoss does know that his actions can only make one retch, and almost like a fortune-teller, he has an uneasy feeling that his legacy will go down terribly in history. The scene of the museum is a fast jolt back to the right perspective, which had been missing throughout the film. Throughout the entire duration of The Zone of Interest, Rudolf, his family, and his professional associates had all been extremely invested in hiding the evidence and changing the narrative, but ultimately, the thousands of shoes or the torn, ragged uniforms still exist as reminders of the horrible genocide.",5,2326.0,465.0,13469.0,2693.0
 10,https://www.loonyparty.com/about/policy-proposals/,"manicfesto proposals
 26m tonnes of waste plastic bottles are discarded every year in the UK of which only 45% are recycled. The Loony Party has the answer.. Stop making them..
 
@@ -2010,7 +2010,7 @@ R.U. Seerius
 Pensions – triple lock
 In keeping with the Labour Party’s latest bid to get one or two pensioners to vote for them they have brought out a new policy guaranteeing the Triple lock on pensions until 2025 if they get voted in.
 The Loony party of course will go one better and buy a padlock, and as its now safer than a bank,  new mattresses for all pensioners on less than 20p per week.
-R.U. Seerius",4,1745.0,436.0,10060.0,2515.0,14
+R.U. Seerius",4,1745.0,436.0,10060.0,2515.0
 11,https://timdettmers.com/2023/01/30/which-gpu-for-deep-learning/,"Which GPU(s) to Get for Deep Learning: My Experience and Advice for Using GPUs in Deep Learning
 2023-01-30 by Tim Dettmers 1,664 Comments
 
@@ -2418,7 +2418,7 @@ Version History
 Acknowledgments
 I thank Suhail for making me aware of outdated prices on H100 GPUs, Gjorgji Kjosev for pointing out font issues, Anonymous for pointing out that the TMA unit does not exist on Ada GPUs, Scott Gray for pointing out that FP8 tensor cores have no transposed matrix multiplication, and reddit and HackerNews users for pointing out many other improvements.
 
-For past updates of this blog post, I want to thank Mat Kelcey for helping me to debug and test custom code for the GTX 970; I want to thank Sander Dieleman for making me aware of the shortcomings of my GPU memory advice for convolutional nets; I want to thank Hannes Bretschneider for pointing out software dependency problems for the GTX 580; and I want to thank Oliver Griesel for pointing out notebook solutions for AWS instances. I want to thank Brad Nemire for providing me with an RTX Titan for benchmarking purposes. I want to thank Agrin Hilmkil, Ari Holtzman, Gabriel Ilharco, Nam Pho for their excellent feedback on the previous version of this blog post.",24,10660.0,444.0,61861.0,2577.0,86
+For past updates of this blog post, I want to thank Mat Kelcey for helping me to debug and test custom code for the GTX 970; I want to thank Sander Dieleman for making me aware of the shortcomings of my GPU memory advice for convolutional nets; I want to thank Hannes Bretschneider for pointing out software dependency problems for the GTX 580; and I want to thank Oliver Griesel for pointing out notebook solutions for AWS instances. I want to thank Brad Nemire for providing me with an RTX Titan for benchmarking purposes. I want to thank Agrin Hilmkil, Ari Holtzman, Gabriel Ilharco, Nam Pho for their excellent feedback on the previous version of this blog post.",24,10660.0,444.0,61861.0,2577.0
 12,https://gleam.run/cheatsheets/gleam-for-python-users/,"Gleam for Python users
 Hello productive pragmatic Pythonistas!
 
@@ -3053,7 +3053,7 @@ import animal/cat.{Cat, stroke}
 pub fn main() {
   let kitty = Cat(name: ""Nubi"")
   stroke(kitty)
-}",8,3274.0,409.0,19444.0,2430.0,25
+}",8,3274.0,409.0,19444.0,2430.0
 13,https://towardsdatascience.com/gpt-from-scratch-with-mlx-acf2defda30e,"GPT from Scratch with MLX
 Define and train GPT-2 on your MacBook
 Pranav Jadhav
@@ -3873,7 +3873,7 @@ References
 
 [2] A. Radford, J. Wu, R. Child, D. Luan, D. Amodei, I. Sutskever, Language Models are Unsupervised Multitask Learners (2019), OpenAI
 
-[3] Automatic Differentiation — mlx docs",19,7614.0,400.0,50093.0,2636.0,65
+[3] Automatic Differentiation — mlx docs",19,7614.0,400.0,50093.0,2636.0
 14,https://blog.reedsy.com/short-story/a3gstd/,"My eyes felt like galaxies—holding the swirling glow of countless memories—as I took in our childhood home. Its siding looked like remnants of driftwood after a bonfire. I swore I smelled the smoky char of pine creep into my nostrils. It’s wild how the past stays with you like that. It can feel more visceral and real than the tangible things right in front of you.
 
 “Jesus, it feels like just yesterday.” I placed a trembling hand over my heart, struggling to steady my breath.
@@ -4078,7 +4078,7 @@ Dr. Lasko didn’t say a word, but I felt him squeeze my hand, just a little bit
 
 I licked the cracks on my lips as my eyes closed shut, imagining the oaky comfort of bourbon on my tongue. I felt myself drift, and good thing, because I needed the rest. Dr. Lasko and I would be delving into my memories again the following day.
 
-No matter how masochistic it felt, I vowed to keep showing up for the simulations. Even if I never forgave myself for what I did, at least in my memories, I got to see Perry.",7,2971.0,424.0,16488.0,2355.0,24
+No matter how masochistic it felt, I vowed to keep showing up for the simulations. Even if I never forgave myself for what I did, at least in my memories, I got to see Perry.",7,2971.0,424.0,16488.0,2355.0
 15,http://www.chakoteya.net/DoctorWho/40-1.html,"Space Babies
 
 Original Airdate: 11 May 2024
@@ -4735,7 +4735,7 @@ RUBY [OC]: Hey! Come and say hello!
 DOCTOR: Yes. Coming. Tell your mum not to slap me.
 (He sonicks up a quick DNA scan of Ruby Sunday.)
 DOCTOR: Yes, now, the people from my world, they use titles like the Bishop, the Pedant, the Sagi-shi. My name was...
-(He doesn't wait for the results of the scan.)",12,5691.0,474.0,31658.0,2638.0,42
+(He doesn't wait for the results of the scan.)",12,5691.0,474.0,31658.0,2638.0
 16,https://stardewvalleywiki.com/Version_History,"Version History
 (Redirected from Version history)
 Jump to navigationJump to search
@@ -7666,7 +7666,7 @@ You can no longer place chests in the mines.
 Tree seeds no longer incorrectly show a ""Wrong Season"" message.
 Fixed some map issues.
 1.0
-Stardew Valley 1.0 was released on 26 February 2016.",79,34801.0,440.0,211663.0,2679.0,299
+Stardew Valley 1.0 was released on 26 February 2016.",79,34801.0,440.0,211663.0,2679.0
 17,https://alanwake.fandom.com/wiki/Alan_Wake_2,"Alan Wake 2
 Why the hell did you kill Casey? What the hell were you thinking, man?
 This article or a section of this article will contain full, or partial plot spoilers of an Alan Wake game or any other piece of media related to the franchise.
@@ -7814,7 +7814,7 @@ Brett Madden, who played Alice Wake in the first game, sadly passed away in Sept
 While the first game was an action-adventure game that implemented horror elements, Alan Wake 2 is a full-blown survival-horror game.
 Unlike the first game that was published by Microsoft Studios, the sequel is published by Epic Games Publishing.
 The game was initially a digital-only release due to various shifts towards a digital-only market. This was also done to keep the price of the game down at launch. However despite initially saying there were no plans for a physical release, in June 2024 along with a trailer and release date announcement of the first DLC it was revealed that a physical version would be released that October, a year after the digital release. Both a physical version of the digital deluxe version (inclusive of the DLC) and a limited run collector's edition were announced.
-The second entry in Remedy's Max Payne series, Max Payne 2: The Fall of Max Payne, also had two playable protagonists (Max Payne and Mona Sax).",9,3936.0,437.0,22937.0,2548.0,31
+The second entry in Remedy's Max Payne series, Max Payne 2: The Fall of Max Payne, also had two playable protagonists (Max Payne and Mona Sax).",9,3936.0,437.0,22937.0,2548.0
 18,https://www.polygon.com/23691206/best-fantasy-books-sci-fi-2023,"The best sci-fi and fantasy books of 2023
 It’s been a stellar year in speculative fiction
 
@@ -8090,7 +8090,7 @@ Image: Orbit
 CHILDREN OF MEMORY (CHILDREN OF TIME #3) BY ADRIAN TCHAIKOVSKY
 Adrian Tchaikovsky’s highly anticipated third book in the Children of Time trilogy once again delves into some of science fiction’s headiest topics. There are parallels to earlier installments — Tchaikovsky once again uses another hyper-intelligent animal species to examine the idea of what being “alive” really means. But he also takes readers somewhere completely and utterly new, outside the scope of the previous titles, and incredibly difficult to describe without spoiling the premise entirely.
 
-All I can say is hold on for the ride. This is an author who dives head first into Asimov-esque ideas, and who is willing to take the plot in fanciful directions. I still can’t believe that I have recommended a book about sentient spider colonies to so many friends, but here we are. This finale is worth your time. —N. Clark",20,8813.0,440.0,52457.0,2622.0,72
+All I can say is hold on for the ride. This is an author who dives head first into Asimov-esque ideas, and who is willing to take the plot in fanciful directions. I still can’t believe that I have recommended a book about sentient spider colonies to so many friends, but here we are. This finale is worth your time. —N. Clark",20,8813.0,440.0,52457.0,2622.0
 19,https://arxiv.org/pdf/2404.10981,"A Survey on Retrieval-Augmented Text Generation for Large Language
 Models
 Yizheng Huang
@@ -9372,4 +9372,4 @@ Honglei Zhuang, Zhen Qin, Rolf Jagerman, Kai Hui,
 Ji Ma, Jing Lu, Jianmo Ni, Xuanhui Wang, and
 Michael Bendersky. 2023. Rankt5: Fine-Tuning T5
 for Text Ranking with Ranking Losses. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information
-Retrieval. ACM.",29,10472.0,361.0,75990.0,2620.0,100
+Retrieval. ACM.",29,10472.0,361.0,75990.0,2620.0

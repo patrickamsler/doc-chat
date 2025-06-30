@@ -49,10 +49,6 @@ Score 5: The response is completely correct, accurate, and factual.
 
 def evaluate_response(instruction: str, reference_answer: str,
       generated_answer: str) -> EvaluationFeedback:
-    print("Evaluating response... "
-          "Instruction:", instruction,
-          "Reference Answer:", reference_answer,
-          "Generated Answer:", generated_answer)
 
     llm = ChatOpenAI(
         model="gpt-4o-2024-08-06",
@@ -85,4 +81,5 @@ if __name__ == "__main__":
         reference_answer="Keybullet kin drop a key upon death.",
         generated_answer="Keybullet Kin drop a key upon death."
     )
-    print(eval_result)
+    print("Feedback:", eval_result.feedback)
+    print("Score:", eval_result.score)
