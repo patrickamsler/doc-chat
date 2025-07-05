@@ -37,7 +37,6 @@ decorator==5.2.1
 defusedxml==0.7.1
 Deprecated==1.2.18
 distro==1.9.0
--e git+ssh://git@github.com/patrickamsler/doc-chat.git@ca2ce7c8af9b3103db16c27d34b8fbaee0e3f5fd#egg=doc_chat&subdirectory=api
 dotenv==0.9.9
 durationpy==0.9
 executing==2.2.0
