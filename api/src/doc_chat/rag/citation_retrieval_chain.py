@@ -1,11 +1,16 @@
+import logging
+
 from langchain.chains import StuffDocumentsChain, LLMChain
-from langchain_core.prompts import PromptTemplate
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
+    HumanMessagePromptTemplate
+from langchain_core.language_models import BaseChatModel
 from langchain_core.vectorstores.base import BaseRetriever
-from langchain_core.language_models import BaseLLM
 
 from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
 
-prompt_template = """
+logger = logging.getLogger("citation_retrieval_chain")
+
+system_prompt_template = """
 You are an assistant who answers questions **only** from the texts provided below.
 
 Citation rules
@@ -21,6 +26,9 @@ Output format (very important)
 • Bad: `Answer: The river is the Seine. [TXT2]`  
 • Good: `The river is the Seine. [TXT2]`
 
+"""
+
+user_prompt_template = """
 {context}
 
 "Question:```{question}```"
@@ -28,10 +36,13 @@ Output format (very important)
 
 
 class CitationRetrievalChain:
-    def __init__(self, retriever: BaseRetriever, llm: BaseLLM):
+    def __init__(self, retriever: BaseRetriever, llm: BaseChatModel):
         self._retriever = retriever
         self._llm = llm
-        prompt = PromptTemplate.from_template(prompt_template)
+        prompt = ChatPromptTemplate.from_messages([
+            SystemMessagePromptTemplate.from_template(system_prompt_template),
+            HumanMessagePromptTemplate.from_template(user_prompt_template)
+        ])
         self._chain = prompt | llm
 
     def invoke(
@@ -43,11 +54,15 @@ class CitationRetrievalChain:
             # TODO remove this line and dependency on retriever
             documents = self._retriever.get_relevant_documents(query)
         context = self.create_context(documents)
-        answer = self._chain.invoke({"context": context, "question": query})
-        answer = answer.strip()
-        answer, referenced_docs = self.replace_txt_with_page_numbers(answer,
+        result = self._chain.invoke({"context": context, "question": query})
+        content = result.content
+        usage_metadata = result.usage_metadata
+        print(result)
+        answer, referenced_docs = self.replace_txt_with_page_numbers(content,
                                                                      documents,
                                                                      include_references_in_answer)
+        logger.debug("query=%s, answer=%s, referenced_docs=%s usage_metadata=%s",
+                    query, answer, referenced_docs, usage_metadata)
         return {
             'answer': answer,
             'referenced_documents': referenced_docs,

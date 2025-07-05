@@ -13,12 +13,39 @@ def create_doc(doc_id: str, page_content: str,
     )
 
 
-def make_chain_with_mocked_llm():
-    retriever = MagicMock()
-    llm = MagicMock()
-    chain = CitationRetrievalChain(retriever, llm)
+def make_chain_with_mocked_llm(content: str) -> CitationRetrievalChain:
+    chain = CitationRetrievalChain(MagicMock(), MagicMock())
+    class Response:
+        def __init__(self, content):
+            self.content = content
+            self.usage_metadata = "usage_metadata mock"
     chain._chain = MagicMock()
+    chain._chain.invoke.return_value = Response(content)
     return chain
+
+
+def test_invoke_calls_chain_and_formats_answer():
+    # given
+    docs = [
+        create_doc("doc_5", "content 1", 10),
+        create_doc("doc_7", "content 2", 20),
+        create_doc("doc_12", "content 2", 34),
+    ]
+    chain = make_chain_with_mocked_llm("The answer is here. [TXT1][TXT2]  ")
+
+    # when
+    result = chain.invoke("What is the answer?", documents=docs)
+
+    # then
+    assert result['answer'] == "The answer is here. <<doc_5>><<doc_7>>"
+    assert result['source_documents'] == docs
+    assert result['referenced_documents'] == ["doc_5", "doc_7"]
+
+    chain._chain.invoke.assert_called_once()
+    args = chain._chain.invoke.call_args[0][0]
+    assert "context" in args
+    assert "question" in args
+    assert args["question"] == "What is the answer?"
 
 
 def test_create_context():
@@ -90,27 +117,3 @@ def test_replace_txt_with_page_numbers_exclude_references():
     assert replaced_answer == "Some answer."
     assert referenced_docs == ["doc_2", "doc_3"]
 
-
-def test_invoke_calls_chain_and_formats_answer():
-    # given
-    docs = [
-        create_doc("doc_5", "content 1", 10),
-        create_doc("doc_7", "content 2", 20),
-        create_doc("doc_12", "content 2", 34),
-    ]
-    chain = make_chain_with_mocked_llm()
-    chain._chain.invoke.return_value = "The answer is here. [TXT1][TXT2]  "
-
-    # when
-    result = chain.invoke("What is the answer?", documents=docs)
-
-    # then
-    assert result['answer'] == "The answer is here. <<doc_5>><<doc_7>>"
-    assert result['source_documents'] == docs
-    assert result['referenced_documents'] == ["doc_5", "doc_7"]
-
-    chain._chain.invoke.assert_called_once()
-    args = chain._chain.invoke.call_args[0][0]
-    assert "context" in args
-    assert "question" in args
-    assert args["question"] == "What is the answer?"

@@ -1,10 +1,10 @@
-from langchain_openai import OpenAI
-from langchain_core.language_models import BaseLLM
+from langchain_openai import ChatOpenAI
+from langchain_core.language_models import BaseChatModel
 
-def create_llm() -> BaseLLM:
-    return OpenAI(
-        # model='gpt-3.5-turbo-instruct',
-        model='gpt-4o-mini',
-        temperature=0,
-        max_retries=2,
+def create_llm() -> BaseChatModel:
+    return ChatOpenAI(
+        model="gpt-4o-mini-2024-07-18'",
+        temperature=0.0,
+        top_p=1.0,
+        max_tokens=2048
     )
