@@ -2,34 +2,29 @@
 
 # Doc Chat
 
-Doc Chat lets you talk to your PDF documents. It uses retrieval-augmented
-generation (RAG) to find relevant pages and answer your questions about the
-files you uploaded.
+<!-- TOC -->
+* [Doc Chat](#doc-chat)
+  * [Description](#description)
+  * [How to run the project locally](#how-to-run-the-project-locally)
+    * [API backend](#api-backend)
+    * [Frontend](#frontend)
+<!-- TOC -->
+
+## Description
+
+Doc Chat is an AI-powered application that lets users interact with their PDF documents through a conversational interface.
+
+- Ask questions about the content of your uploaded PDFs and receive accurate, context-aware answers.
+- Each answer includes clickable references to the specific pages in the document where the information was found.
+- Upload and store multiple PDF documents — files are saved securely in the backend for later use.
+- Sessions are currently tied to your browser using a cookie — no login is required.
+- Please note: switching browsers or clearing cookies will result in loss of access to your uploaded documents.
+- A full user account system with persistent access across devices is planned for future releases.
 
 Screenshot:
 
 <img src="doc/images/demo.png" alt="Demo screenshot" width="800"/>
 
-## Table of Contents
-- [Description](#description)
-- [How to run the project locally](#how-to-run-the-project-locally)
-  - [API backend](#api-backend)
-  - [Frontend](#frontend)
-
-## Description
-* Doc Chat is a RAG (Retrieval-Augmented Generation) application that allows
-  users to chat with PDF documents.
-* It uses ChromaDB to store the documents in the backend and perform vector
-  search.
-* For the frontend a React client is used.
-* For answer generation, GPT-4o-mini is used.
-* The answer includes references to the specific PDF pages used. Users can
-  click the references to jump directly to those pages.
-* Users can upload and store multiple documents.
-* Currently, only guest mode using a browser cookie is supported.
-* This means that if a user switches browsers, their data will not be
-  available.
-* Signup/login functionality will be added later.
 
 ## How to run the project locally
 
