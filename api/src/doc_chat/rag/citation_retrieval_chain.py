@@ -57,7 +57,6 @@ class CitationRetrievalChain:
         result = self._chain.invoke({"context": context, "question": query})
         content = result.content
         usage_metadata = result.usage_metadata
-        print(result)
         answer, referenced_docs = self.replace_txt_with_page_numbers(content,
                                                                      documents,
                                                                      include_references_in_answer)
