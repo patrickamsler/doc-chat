@@ -51,7 +51,7 @@ The diagram below illustrates the internal workflow of:
    When the user asks a question, it is also converted into an embedding using the same model. A similarity search is performed in the vector store, and the top *k* most relevant chunks are retrieved based on the semantic similarity between the question and the stored chunks.
 
 6. **Prompt Construction and LLM Query**  
-   The retrieved chunks are bundled with the user’s question into a prompt, which is then sent to a language model (currently GPT-4o-mini). The prompt instructs the LLM to answer **only** based on the provided chunks, not from its own pre-trained knowledge.
+   The retrieved chunks are bundled with the user’s question into a prompt, which is then sent to a language model (currently GPT-4o-mini). The prompt instructs the LLM to answer only based on the provided chunks, not from its own pre-trained knowledge.
 
 7. **Answer Generation with References**  
    The LLM responds with an answer grounded in the document content and includes references to the original PDF pages. These references are clickable in the UI, allowing users to jump directly to the cited locations.
