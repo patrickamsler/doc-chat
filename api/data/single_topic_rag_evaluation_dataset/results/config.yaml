@@ -1,0 +1,10 @@
+embedding_model: text-embedding-3-small
+
+llm:
+  model: gpt-4o-mini-2024-07-18
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 2048
+
+retriever:
+  top_k: 5

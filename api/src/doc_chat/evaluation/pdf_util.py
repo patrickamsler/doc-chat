@@ -12,6 +12,10 @@ def write_pdf(
       line_height: float = 1.5,
       margin: str = "30px"
 ) -> None:
+    # Split text into paragraphs based on empty lines and preserve line breaks
+    paragraphs = text.strip().split('\n\n')
+    paragraphs_html = "\n".join(f"<p>{p.strip().replace('\n', '<br>')}</p>" for p in paragraphs)
+
     html_template = f"""
     <html>
     <head>
@@ -29,7 +33,7 @@ def write_pdf(
     </head>
     <body>
       {f"<h1>{title}</h1>" if title is not None else ""}
-      <p>{text}</p>
+      {paragraphs_html}
     </body>
     </html>
     """
