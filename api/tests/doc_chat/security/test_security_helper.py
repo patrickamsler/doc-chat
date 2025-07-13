@@ -33,8 +33,7 @@ def test_verify_guest_cookie_and_return_user_invalid_signature():
     # given
     guest_uid = "123e4567-e89b-12d3-a456-426614174000"
     cookie = create_guest_cookie(guest_uid)
-    invalid_cookie = cookie[
-                     :-1] + "x"  # change the last character to invalidate the signature
+    invalid_cookie = cookie[:-1] + "x"  # change the last character to invalidate the signature
 
     # when/then
     try:
