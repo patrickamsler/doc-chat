@@ -124,6 +124,44 @@ def test_delete_collection(store):
     assert len(collection) == 0
 
 
+def test_collection_exists_returns_true(store):
+    # given
+    user_id = "user_a"
+    splits = create_splits(["page one", "page two"])
+    collection_id = create_token()
+    store.create_document_collection(user_id, collection_id, splits, "test.pdf")
+
+    # when
+    exists = store.collection_exists(user_id, collection_id)
+
+    # then
+    assert exists
+
+
+def test_collection_exists_returns_false(store):
+    # given
+    user_id = "user_a"
+    collection_id = create_token()
+
+    # when
+    exists = store.collection_exists(user_id, collection_id)
+
+    # then
+    assert not exists
+
+
+def test_delete_collection_collection_not_exits(store):
+    # given
+    user_id = "user_a"
+
+    # when
+    store.delete_collection(user_id, "doc_123")
+
+    # then
+    collection = store.get_collections(user_id)
+    assert len(collection) == 0
+
+
 def test_create_document_collection(store):
     # given
     user_id = "user_b"

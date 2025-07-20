@@ -93,6 +93,17 @@ class MultiTenantVectorStore:
                 f"Collection {collection_id} not found for user {user_id}")
         return collection.metadata
 
+    def collection_exists(self, user_id: str, collection_id: str) -> bool:
+        """
+        Check if a collection exists for a user.
+        """
+        client = self._get_chroma_client(user_id)
+        try:
+            client.get_collection(name=collection_id)
+            return True
+        except Exception:
+            return False
+
     def delete_collection(self, user_id: str, collection_id: str) -> None:
         client = self._get_chroma_client(user_id)
         client.delete_collection(name=collection_id)
