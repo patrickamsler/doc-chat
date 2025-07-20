@@ -81,15 +81,21 @@ class MultiTenantVectorStore:
         client = self._get_chroma_client(user_id)
         return [c.__str__() for c in client.list_collections()]
 
-    def get_collection_metadata(self, user_id: str, collection_id: str) -> chromadb.Collection:
+    def get_collection_metadata(self, user_id: str,
+          collection_id: str) -> chromadb.Collection:
         """
         Get a specific collection for a user.
         """
         client = self._get_chroma_client(user_id)
         collection = client.get_collection(name=collection_id)
         if not collection:
-            raise ValueError(f"Collection {collection_id} not found for user {user_id}")
+            raise ValueError(
+                f"Collection {collection_id} not found for user {user_id}")
         return collection.metadata
+
+    def delete_collection(self, user_id: str, collection_id: str) -> None:
+        client = self._get_chroma_client(user_id)
+        client.delete_collection(name=collection_id)
 
     def create_document_collection(self, user_id: str, collection_id: str,
           document_splits: list, file_name: str):

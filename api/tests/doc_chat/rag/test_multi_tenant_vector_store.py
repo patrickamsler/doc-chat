@@ -78,8 +78,10 @@ def test_get_collections_returns_collections(store):
     user_id = "user_a"
     splits1 = create_splits(["page one", "page two"])
     splits2 = create_splits(["page three", "page four"])
-    store.create_document_collection(user_id, create_token(), splits1, "test1.pdf")
-    store.create_document_collection(user_id, create_token(), splits2, "test2.pdf")
+    store.create_document_collection(user_id, create_token(), splits1,
+                                     "test1.pdf")
+    store.create_document_collection(user_id, create_token(), splits2,
+                                     "test2.pdf")
 
     # when
     collections = store.get_collections(user_id)
@@ -104,6 +106,24 @@ def test_get_collection_metadata(store):
     assert metadata['file_name'] == "test.pdf"
 
 
+def test_delete_collection(store):
+    # given
+    user_id = "user_a"
+    splits = create_splits(["page one", "page two"])
+    collection_id = create_token()
+    store.create_document_collection(user_id, collection_id, splits, "test.pdf")
+
+    collections = store.get_collections(user_id)
+    assert len(collections) == 1
+
+    # when
+    store.delete_collection(user_id, collection_id)
+
+    # then
+    collection = store.get_collections(user_id)
+    assert len(collection) == 0
+
+
 def test_create_document_collection(store):
     # given
     user_id = "user_b"
@@ -111,14 +131,16 @@ def test_create_document_collection(store):
     collection_id1 = create_token()
 
     # when
-    store.create_document_collection(user_id, collection_id1, splits, "test.pdf")
+    store.create_document_collection(user_id, collection_id1, splits,
+                                     "test.pdf")
 
     # Try to create again with different splits, should get a new collection
     splits2 = create_splits(["page three"])
     collection_id2 = create_token()
 
     # when
-    store.create_document_collection(user_id, collection_id2, splits2, "test2.pdf")
+    store.create_document_collection(user_id, collection_id2, splits2,
+                                     "test2.pdf")
 
     # then
     assert len(store.get_collections(user_id)) == 2
