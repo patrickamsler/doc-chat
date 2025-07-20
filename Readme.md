@@ -28,7 +28,7 @@ Screenshot:
 
 ## How It Works
 
-The diagram below illustrates the internal workflow of:
+The diagram below illustrates the internal workflow
 
 <img src="doc/images/doc-chat-rag.png" alt="Demo screenshot" width="800"/>
 
