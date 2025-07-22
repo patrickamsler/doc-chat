@@ -150,7 +150,7 @@ def test_collection_exists_returns_false(store):
     assert not exists
 
 
-def test_delete_collection_collection_not_exits(store):
+def test_delete_collection_collection_that_not_exits(store):
     # given
     user_id = "user_a"
 

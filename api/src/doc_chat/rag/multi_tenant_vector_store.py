@@ -105,8 +105,12 @@ class MultiTenantVectorStore:
             return False
 
     def delete_collection(self, user_id: str, collection_id: str) -> None:
+        """
+        Delete a collection for a user.
+        """
         client = self._get_chroma_client(user_id)
-        client.delete_collection(name=collection_id)
+        if self.collection_exists(user_id, collection_id):
+            client.delete_collection(name=collection_id)
 
     def create_document_collection(self, user_id: str, collection_id: str,
           document_splits: list, file_name: str):
