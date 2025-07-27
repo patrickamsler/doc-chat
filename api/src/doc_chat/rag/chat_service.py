@@ -1,6 +1,7 @@
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .multi_tenant_vector_store import MultiTenantVectorStore
+from .reranker import Reranker
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
 
@@ -8,6 +9,7 @@ from ..llm import create_llm
 class ChatService:
     def __init__(self):
         self._vector_store = MultiTenantVectorStore()
+        self.reranker = Reranker()
         self._retrieval_chain = CitationRetrievalChain(retriever=None,
                                                        # TODO: use vector store as retriever
                                                        llm=create_llm())
@@ -23,10 +25,17 @@ class ChatService:
 
     def query(self, user_id: str, chat_id: str,
           question: str) -> QueryResponse:
-        docs = self._vector_store.retrieve_documents(user_id=user_id,
-                                                     collection_id=chat_id,
-                                                     query=question, k=5)
-        response = self._retrieval_chain.invoke(question, docs)
+        # retrieve top 20 documents from the vector store
+        retrieved_docs = self._vector_store.retrieve_documents(user_id=user_id,
+                                                               collection_id=chat_id,
+                                                               query=question,
+                                                               k=20)
+        # rank the retrieved documents
+        ranked_docs = self.reranker.rerank(query=question,
+                                           documents=retrieved_docs)
+
+        # invoke the retrieval chain with the top 5 ranked documents
+        response = self._retrieval_chain.invoke(question, ranked_docs[:5])
         response_documents = [
             DocumentsResponse(id=doc.id,
                               page=doc.metadata['page'],

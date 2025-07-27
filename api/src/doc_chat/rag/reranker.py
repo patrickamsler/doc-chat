@@ -8,7 +8,7 @@ from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
 class Reranker:
     def __init__(self,
           model_name: str = "ms-marco-MiniLM-L-12-v2",
-          max_length: int = 512
+          max_length: int = 256
     ):
         self.ranker = Ranker(max_length=max_length,
                              model_name=model_name,
