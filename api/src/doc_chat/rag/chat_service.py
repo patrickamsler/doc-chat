@@ -69,3 +69,10 @@ class ChatService:
             userId=user_id,
             chats=chats
         )
+
+
+chat_service_instance = ChatService()
+
+
+def get_chat_service() -> ChatService:
+    return chat_service_instance

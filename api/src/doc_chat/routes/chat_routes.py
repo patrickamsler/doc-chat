@@ -1,6 +1,6 @@
 import logging
-import uuid
 import os
+import uuid
 
 from dotenv import load_dotenv
 from fastapi import APIRouter
@@ -12,20 +12,20 @@ from werkzeug.utils import secure_filename
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
     ChatQueryRequest, ChatsResponse
 from doc_chat.file_util import save_file, allowed_file, build_file_path
-from doc_chat.rag.chat_service import ChatService
+from doc_chat.rag.chat_service import ChatService, get_chat_service
 from doc_chat.security.security_helper import get_current_user, User
 
 chat_router = APIRouter()
 load_dotenv()
 
 logger = logging.getLogger("chat_routes")
-chat_service = ChatService()
 
 
 @chat_router.post("", response_model=UploadFileResponse)
 async def upload_file(
       file: UploadFile = File(...),
-      user: User = Depends(get_current_user)
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
 ):
     if file.filename == '':
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -53,7 +53,8 @@ async def upload_file(
 @chat_router.get("/{chat_id}/file")
 def download_file(
       chat_id: str,
-      user: User = Depends(get_current_user)
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
 ):
     file_path = build_file_path(user_id=user.id, chat_id=chat_id)
     if not os.path.exists(file_path):
@@ -71,7 +72,8 @@ def download_file(
 @chat_router.post('/query', response_model=QueryResponse)
 def query(
       request: ChatQueryRequest,
-      user: User = Depends(get_current_user)
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
 ):
     chat_id = request.chatId
     question = request.question
@@ -85,7 +87,8 @@ def query(
 
 @chat_router.get('', response_model=ChatsResponse)
 def find_all_chats(
-      user: User = Depends(get_current_user)
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
 ):
     logger.info(f"User {user.id} requesting all chats")
     chats = chat_service.find_all_chats(user.id)

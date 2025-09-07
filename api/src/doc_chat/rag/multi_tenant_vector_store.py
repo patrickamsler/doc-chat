@@ -7,6 +7,9 @@ import chromadb
 from chromadb import DEFAULT_TENANT, DEFAULT_DATABASE
 from chromadb import Settings
 from chromadb.utils import embedding_functions
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @dataclass
