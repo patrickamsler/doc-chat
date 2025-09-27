@@ -37,42 +37,46 @@ class WeaviateVectorStore:
             enabled=True,
             auto_tenant_creation=True
         )
-        self.client.collections.create(
-            name="Document",
-            properties=[
-                Property(name="doc_id", data_type=DataType.TEXT),
-                Property(name="file_name", data_type=DataType.TEXT),
-                Property(name="created_at", data_type=DataType.DATE),
-                Property(name="num_pages", data_type=DataType.INT)
-            ],
-            multi_tenancy_config=multi_tenancy_config,
-            vectorizer_config=Configure.Vectorizer.none()
-        )
-        self.client.collections.create(
-            name="DocumentChunk",
-            properties=[
-                Property(name="doc_id", data_type=DataType.TEXT),
-                Property(name="chunk_id", data_type=DataType.TEXT),
-                Property(name="page_number", data_type=DataType.INT),
-                Property(name="page_content", data_type=DataType.TEXT),
-                Property(name="created_at", data_type=DataType.DATE)
-            ],
-            references=[
-                ReferenceProperty(name="of_document",
-                                  target_collection="Document")
-            ],
-            multi_tenancy_config=multi_tenancy_config,
-            vector_config=[
-                Configure.Vectors.text2vec_openai(
-                    name="document_chunk_vector",
-                    # Which properties of the source object to use for vectorization
-                    source_properties=["page_content"],
-                    model=self.embedding_model,
-                    # Let Weaviate infer the dimensions from the model
-                    dimensions=None
-                )
-            ]
-        )
+
+        if not self.client.collections.exists("Document"):
+            self.client.collections.create(
+                name="Document",
+                properties=[
+                    Property(name="doc_id", data_type=DataType.TEXT),
+                    Property(name="file_name", data_type=DataType.TEXT),
+                    Property(name="created_at", data_type=DataType.DATE),
+                    Property(name="num_pages", data_type=DataType.INT)
+                ],
+                multi_tenancy_config=multi_tenancy_config,
+                vectorizer_config=Configure.Vectorizer.none()
+            )
+
+        if not self.client.collections.exists("DocumentChunk"):
+            self.client.collections.create(
+                name="DocumentChunk",
+                properties=[
+                    Property(name="doc_id", data_type=DataType.TEXT),
+                    Property(name="chunk_id", data_type=DataType.TEXT),
+                    Property(name="page_number", data_type=DataType.INT),
+                    Property(name="page_content", data_type=DataType.TEXT),
+                    Property(name="created_at", data_type=DataType.DATE)
+                ],
+                references=[
+                    ReferenceProperty(name="of_document",
+                                      target_collection="Document")
+                ],
+                multi_tenancy_config=multi_tenancy_config,
+                vector_config=[
+                    Configure.Vectors.text2vec_openai(
+                        name="document_chunk_vector",
+                        # Which properties of the source object to use for vectorization
+                        source_properties=["page_content"],
+                        model=self.embedding_model,
+                        # Let Weaviate infer the dimensions from the model
+                        dimensions=None
+                    )
+                ]
+            )
 
     def create_tenant(self, user_id: str):
         """
