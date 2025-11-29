@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import weaviate
+import weaviate.classes as wvc
+from weaviate import WeaviateAsyncClient
 from weaviate.classes.config import Property, DataType, Configure, \
     ReferenceProperty
 from weaviate.classes.query import Filter
@@ -25,21 +27,64 @@ class Document:
 
 
 class WeaviateVectorStore:
-    def __init__(self, embedding_model='text-embedding-3-small'):
-        self.embedding_model = embedding_model
-        self.client = weaviate.connect_to_local(
-            host="localhost", port=8080
-        )
-        self._enforce_schema()
+    def __init__(self, client: WeaviateAsyncClient, embedding_model: str = 'text-embedding-3-small'):
+        """
+        Initialize WeaviateVectorStore with an existing async client.
 
-    def _enforce_schema(self):
+        Args:
+            client: An already connected WeaviateAsyncClient instance
+            embedding_model: The OpenAI embedding model to use
+        """
+        self.client = client
+        self.embedding_model = embedding_model
+        self._client_managed = False
+
+    @classmethod
+    async def create(cls, host: str = "localhost", port: int = 8080,
+                     embedding_model: str = 'text-embedding-3-small') -> 'WeaviateVectorStore':
+        """
+        Create and initialize a WeaviateVectorStore with a new async client.
+
+        Args:
+            host: Weaviate host address
+            port: Weaviate port number
+            embedding_model: The OpenAI embedding model to use
+
+        Returns:
+            Initialized WeaviateVectorStore instance
+        """
+        client = weaviate.use_async_with_local(host=host, port=port)
+        await client.connect()
+        instance = cls(client, embedding_model)
+        instance._client_managed = True
+        await instance._enforce_schema()
+        return instance
+
+    async def __aenter__(self) -> 'WeaviateVectorStore':
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Async context manager exit."""
+        if self._client_managed:
+            await self.client.close()
+
+    async def close(self) -> None:
+        """Close the client connection if managed by this instance."""
+        if self._client_managed:
+            await self.client.close()
+
+    async def _enforce_schema(self) -> None:
+        """
+        Create required collections in Weaviate if they don't exist.
+        """
         multi_tenancy_config = Configure.multi_tenancy(
             enabled=True,
             auto_tenant_creation=True
         )
 
-        if not self.client.collections.exists("Document"):
-            self.client.collections.create(
+        if not await self.client.collections.exists("Document"):
+            await self.client.collections.create(
                 name="Document",
                 properties=[
                     Property(name="doc_id", data_type=DataType.TEXT),
@@ -51,8 +96,8 @@ class WeaviateVectorStore:
                 vectorizer_config=Configure.Vectorizer.none()
             )
 
-        if not self.client.collections.exists("DocumentChunk"):
-            self.client.collections.create(
+        if not await self.client.collections.exists("DocumentChunk"):
+            await self.client.collections.create(
                 name="DocumentChunk",
                 properties=[
                     Property(name="doc_id", data_type=DataType.TEXT),
@@ -78,7 +123,7 @@ class WeaviateVectorStore:
                 ]
             )
 
-    def create_tenant(self, user_id: str):
+    async def create_tenant(self, user_id: str) -> None:
         """
         Create a tenant for the user in both Document and DocumentChunk collections.
 
@@ -88,11 +133,11 @@ class WeaviateVectorStore:
         documents_collection = self.client.collections.get("Document")
         chunks_collection = self.client.collections.get("DocumentChunk")
 
-        documents_collection.tenants.create(user_id)
-        chunks_collection.tenants.create(user_id)
+        await documents_collection.tenants.create(user_id)
+        await chunks_collection.tenants.create(user_id)
 
-    def index_document(self, user_id: str, document: Document,
-          chunks: list[DocumentChunk]):
+    async def index_document(self, user_id: str, document: Document,
+                             chunks: list[DocumentChunk]) -> str:
         """
         Index a document and its chunks in Weaviate.
 
@@ -100,6 +145,9 @@ class WeaviateVectorStore:
             user_id: The user ID (used as tenant)
             document: Document metadata to store
             chunks: List of document chunks to index with vectors
+
+        Returns:
+            The UUID of the inserted document
         """
         # Get collections with the user as tenant
         documents_collection = self.client.collections.get(
@@ -108,33 +156,37 @@ class WeaviateVectorStore:
             "DocumentChunk").with_tenant(user_id)
 
         # Insert the document
-        document_uuid = documents_collection.data.insert({
+        document_uuid = await documents_collection.data.insert({
             "doc_id": document.doc_id,
             "file_name": document.file_name,
             "created_at": document.created_at,
             "num_pages": document.num_pages
         })
 
-        # Use batch insert for chunks for better performance
-        with chunks_collection.batch.fixed_size(batch_size=200) as batch:
-            for chunk in chunks:
-                batch.add_object(
-                    properties={
-                        "doc_id": chunk.doc_id,
-                        "chunk_id": chunk.chunk_id,
-                        "page_number": chunk.page_number,
-                        "page_content": chunk.page_content,
-                        "created_at": chunk.created_at
-                    },
-                    references={
-                        "of_document": document_uuid
-                    }
-                )
+        # Prepare chunk data objects for bulk insert
+        chunk_data_objects = []
+        for chunk in chunks:
+            data_object = wvc.data.DataObject(
+                properties={
+                    "doc_id": chunk.doc_id,
+                    "chunk_id": chunk.chunk_id,
+                    "page_number": chunk.page_number,
+                    "page_content": chunk.page_content,
+                    "created_at": chunk.created_at
+                },
+                references={
+                    "of_document": document_uuid
+                }
+            )
+            chunk_data_objects.append(data_object)
+
+        # Use insert_many for async bulk insertion
+        await chunks_collection.data.insert_many(chunk_data_objects)
 
         return document_uuid
 
-    def retrieve_documents(self, user_id: str, doc_id: str, query: str,
-          k: int = 1) -> list[DocumentChunk]:
+    async def retrieve_documents(self, user_id: str, doc_id: str, query: str,
+                                 k: int = 1) -> list[DocumentChunk]:
         """
         Retrieve document chunks based on similarity
 
@@ -150,7 +202,7 @@ class WeaviateVectorStore:
         chunks_collection = self.client.collections.get(
             "DocumentChunk").with_tenant(user_id)
 
-        results = chunks_collection.query.near_text(
+        results = await chunks_collection.query.near_text(
             query=query,
             limit=k,
             filters=Filter.by_property("doc_id").equal(doc_id)
