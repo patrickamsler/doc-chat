@@ -27,7 +27,8 @@ class Document:
 
 
 class WeaviateVectorStore:
-    def __init__(self, client: WeaviateAsyncClient, embedding_model: str = 'text-embedding-3-small'):
+    def __init__(self, client: WeaviateAsyncClient,
+          embedding_model: str = 'text-embedding-3-small'):
         """
         Initialize WeaviateVectorStore with an existing async client.
 
@@ -41,7 +42,7 @@ class WeaviateVectorStore:
 
     @classmethod
     async def create(cls, host: str = "localhost", port: int = 8080,
-                     embedding_model: str = 'text-embedding-3-small') -> 'WeaviateVectorStore':
+          embedding_model: str = 'text-embedding-3-small') -> 'WeaviateVectorStore':
         """
         Create and initialize a WeaviateVectorStore with a new async client.
 
@@ -137,7 +138,7 @@ class WeaviateVectorStore:
         await chunks_collection.tenants.create(user_id)
 
     async def index_document(self, user_id: str, document: Document,
-                             chunks: list[DocumentChunk]) -> str:
+          chunks: list[DocumentChunk]) -> str:
         """
         Index a document and its chunks in Weaviate.
 
@@ -185,10 +186,10 @@ class WeaviateVectorStore:
 
         return document_uuid
 
-    async def retrieve_documents(self, user_id: str, doc_id: str, query: str,
-                                 k: int = 1) -> list[DocumentChunk]:
+    async def search_chunks(self, user_id: str, doc_id: str, query: str,
+          k: int = 1) -> list[DocumentChunk]:
         """
-        Retrieve document chunks based on similarity
+        Search for document chunks based on semantic similarity
 
         Args:
             user_id: The user ID (used as tenant)
@@ -219,3 +220,62 @@ class WeaviateVectorStore:
             ))
 
         return chunks
+
+    async def get_documents(self, user_id: str) -> list[Document]:
+        """
+        Get all documents for a user, ordered by creation date (newest first).
+
+        Args:
+            user_id: The user ID (used as tenant)
+
+        Returns:
+            List of documents ordered by created_at descending
+        """
+        documents_collection = self.client.collections.get(
+            "Document").with_tenant(user_id)
+
+        results = await documents_collection.query.fetch_objects(
+            limit=1000,  # Adjust as needed
+            sort=wvc.query.Sort.by_property("created_at", ascending=False)
+        )
+
+        documents = []
+        for obj in results.objects:
+            documents.append(Document(
+                doc_id=obj.properties.get('doc_id'),
+                file_name=obj.properties.get('file_name'),
+                created_at=obj.properties.get('created_at'),
+                num_pages=obj.properties.get('num_pages')
+            ))
+
+        return documents
+
+    async def get_document(self, user_id: str, doc_id: str) -> Document | None:
+        """
+        Get a specific document by its doc_id.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            doc_id: The document ID to retrieve
+
+        Returns:
+            Document if found, None otherwise
+        """
+        documents_collection = self.client.collections.get(
+            "Document").with_tenant(user_id)
+
+        results = await documents_collection.query.fetch_objects(
+            filters=Filter.by_property("doc_id").equal(doc_id),
+            limit=1
+        )
+
+        if not results.objects:
+            return None
+
+        obj = results.objects[0]
+        return Document(
+            doc_id=obj.properties.get('doc_id'),
+            file_name=obj.properties.get('file_name'),
+            created_at=obj.properties.get('created_at'),
+            num_pages=obj.properties.get('num_pages')
+        )
