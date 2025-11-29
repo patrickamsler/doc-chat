@@ -221,12 +221,14 @@ class WeaviateVectorStore:
 
         return chunks
 
-    async def get_documents(self, user_id: str) -> list[Document]:
+    async def get_documents(self, user_id: str, limit: int = 1000) -> list[
+        Document]:
         """
         Get all documents for a user, ordered by creation date (newest first).
 
         Args:
             user_id: The user ID (used as tenant)
+            limit: Maximum number of documents to return
 
         Returns:
             List of documents ordered by created_at descending
@@ -235,7 +237,7 @@ class WeaviateVectorStore:
             "Document").with_tenant(user_id)
 
         results = await documents_collection.query.fetch_objects(
-            limit=1000,  # Adjust as needed
+            limit=limit,
             sort=wvc.query.Sort.by_property("created_at", ascending=False)
         )
 
