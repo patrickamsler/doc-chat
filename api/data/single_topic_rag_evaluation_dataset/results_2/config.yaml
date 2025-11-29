@@ -1,3 +1,5 @@
+database: CHROMA_DB
+
 embedding_model: text-embedding-3-small
 
 llm:

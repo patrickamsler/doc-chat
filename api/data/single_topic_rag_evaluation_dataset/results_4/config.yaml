@@ -1,4 +1,4 @@
-database: CHROMA_DB
+database: WEAVIATE_DB
 
 embedding_model: text-embedding-3-small
 
