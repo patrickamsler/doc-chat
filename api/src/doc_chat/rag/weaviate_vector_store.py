@@ -124,6 +124,21 @@ class WeaviateVectorStore:
                 ]
             )
 
+    async def tenant_exists(self, user_id: str) -> bool:
+        """
+        Check if a tenant exists for the user.
+
+        Args:
+            user_id: The user ID to check
+
+        Returns:
+            True if tenant exists, False otherwise
+        """
+        documents_collection = self.client.collections.get("Document")
+        existing_tenants = await documents_collection.tenants.get()
+        # tenants.get() returns a list/set of tenant names (strings)
+        return user_id in existing_tenants
+
     async def create_tenant(self, user_id: str) -> None:
         """
         Create a tenant for the user in both Document and DocumentChunk collections.

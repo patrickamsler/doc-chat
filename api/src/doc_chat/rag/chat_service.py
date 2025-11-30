@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -7,6 +8,8 @@ from .reranker import Reranker
 from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
+
+logger = logging.getLogger(__name__)
 
 
 class ChatService:
@@ -27,12 +30,10 @@ class ChatService:
         doc_loader = DocumentLoader(file_path)
         documents, splits = doc_loader.load_and_split()
 
-        # Create tenant if it doesn't exist
-        try:
+        # Ensure tenant exists for user
+        if not await self._vector_store.tenant_exists(user_id):
+            logger.info(f"Creating new tenant for user: {user_id}")
             await self._vector_store.create_tenant(user_id)
-        except Exception:
-            # Tenant might already exist, continue
-            pass
 
         # Create Document object (represents the PDF)
         document = Document(
