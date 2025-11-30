@@ -5,7 +5,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
 
-from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
+from doc_chat.rag.weaviate_vector_store import DocumentChunk
 
 logger = logging.getLogger("citation_retrieval_chain")
 
@@ -45,7 +45,7 @@ class CitationRetrievalChain:
 
     def invoke(
           self, query,
-          documents: list[VectorStoreDocument],
+          documents: list[DocumentChunk],
           include_references_in_answer: bool = True
     ):
         context = self.create_context(documents)
@@ -74,18 +74,18 @@ class CitationRetrievalChain:
 
     @staticmethod
     def replace_txt_with_page_numbers(answer, documents, include_references):
-        page_ids = []
+        chunk_ids = []
         referenced_docs = []
 
         for doc in documents:
-            page_ids.append(doc.id)
+            chunk_ids.append(doc.chunk_id)
 
-        for i in range(len(page_ids)):
+        for i in range(len(chunk_ids)):
             text_ref = f"[TXT{i + 1}]"
             if text_ref in answer:
-                referenced_docs.append(page_ids[i])
+                referenced_docs.append(chunk_ids[i])
                 if include_references:
-                    answer = answer.replace(text_ref, f"<<{str(page_ids[i])}>>")
+                    answer = answer.replace(text_ref, f"<<{str(chunk_ids[i])}>>")
                 else:
                     answer = answer.replace(text_ref, "")
 

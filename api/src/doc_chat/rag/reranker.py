@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 from flashrank import Ranker, RerankRequest
 
-from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
+from doc_chat.rag.weaviate_vector_store import DocumentChunk
 
 # Disable tokenizer parallelism to avoid warnings when forking processes
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -18,8 +18,8 @@ class Reranker:
                              model_name=model_name,
                              cache_dir="/tmp")
 
-    def rerank(self, query: str, documents: list[VectorStoreDocument]) \
-          -> list[VectorStoreDocument]:
+    def rerank(self, query: str, documents: list[DocumentChunk]) \
+          -> list[DocumentChunk]:
         """
         Rerank the given documents based on the query using the FlashRank model.
         """
@@ -35,15 +35,15 @@ class Reranker:
         results = self.ranker.rerank(rerank_request)
 
         # sort the documents based on the rerank results
-        id_to_doc = {doc.id: doc for doc in documents}
+        id_to_doc = {doc.chunk_id: doc for doc in documents}
         sorted_docs = [id_to_doc[r['id']] for r in results]
 
         return sorted_docs
 
     @staticmethod
-    def _to_passage(doc: VectorStoreDocument) -> Dict[str, Any]:
+    def _to_passage(doc: DocumentChunk) -> Dict[str, Any]:
         return {
-            "id": doc.id,
+            "id": doc.chunk_id,
             "text": doc.page_content,
-            "meta": doc.metadata
+            "meta": {"page": doc.page_number}
         }

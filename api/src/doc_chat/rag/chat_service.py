@@ -3,7 +3,6 @@ from typing import Optional
 
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
-from .multi_tenant_vector_store import VectorStoreDocument
 from .reranker import Reranker
 from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
@@ -75,27 +74,17 @@ class ChatService:
             k=20
         )
 
-        # Convert DocumentChunks to VectorStoreDocuments for reranking
-        retrieved_docs = [
-            VectorStoreDocument(
-                id=chunk.chunk_id,
-                page_content=chunk.page_content,
-                metadata={'page': chunk.page_number}
-            )
-            for chunk in retrieved_chunks
-        ]
+        # Rerank the retrieved chunks
+        ranked_chunks = self.reranker.rerank(query=question,
+                                             documents=retrieved_chunks)
 
-        # Rank the retrieved documents
-        ranked_docs = self.reranker.rerank(query=question,
-                                           documents=retrieved_docs)
-
-        # Invoke the retrieval chain with the top 5 ranked documents
-        response = self._retrieval_chain.invoke(question, ranked_docs[:5])
+        # Invoke the retrieval chain with the top 5 ranked chunks
+        response = self._retrieval_chain.invoke(question, ranked_chunks[:5])
         response_documents = [
-            DocumentsResponse(id=doc.id,
-                              page=doc.metadata['page'],
-                              content=doc.page_content)
-            for doc in response['source_documents']
+            DocumentsResponse(id=chunk.chunk_id,
+                              page=chunk.page_number,
+                              content=chunk.page_content)
+            for chunk in response['source_documents']
         ]
         answer = response['answer']
         return QueryResponse(

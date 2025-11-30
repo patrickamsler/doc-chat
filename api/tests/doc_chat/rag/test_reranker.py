@@ -1,7 +1,9 @@
+from datetime import datetime, timezone
+
 import pytest
 
-from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
 from doc_chat.rag.reranker import Reranker
+from doc_chat.rag.weaviate_vector_store import DocumentChunk
 
 
 @pytest.fixture
@@ -16,12 +18,16 @@ def test_rerank(reranker):
     # given
     query = "Which animal can fly?"
     docs = [
-        VectorStoreDocument(id="doc_1",
-                            page_content="Cats cannot fly, but they are great climbers.",
-                            metadata={}),
-        VectorStoreDocument(id="doc_2",
-                            page_content="Birds can fly, such as eagles and sparrows.",
-                            metadata={}),
+        DocumentChunk(chunk_id="chunk_1",
+                      doc_id="doc_1",
+                      page_content="Cats cannot fly, but they are great climbers.",
+                      page_number=1,
+                      created_at=datetime.now(timezone.utc)),
+        DocumentChunk(chunk_id="chunk_2",
+                      doc_id="doc_1",
+                      page_content="Birds can fly, such as eagles and sparrows.",
+                      page_number=2,
+                      created_at=datetime.now(timezone.utc)),
     ]
 
     # when
@@ -29,13 +35,13 @@ def test_rerank(reranker):
 
     # then
     assert isinstance(ranked_docs, list)
-    assert all(isinstance(doc, VectorStoreDocument) for doc in ranked_docs)
+    assert all(isinstance(doc, DocumentChunk) for doc in ranked_docs)
 
     # Check that the documents are sorted by relevance#
-    assert [doc.id for doc in ranked_docs] == ["doc_2", "doc_1"]
+    assert [doc.chunk_id for doc in ranked_docs] == ["chunk_2", "chunk_1"]
 
     # Input order should not be changed
-    assert [doc.id for doc in docs] == ["doc_1", "doc_2"]
+    assert [doc.chunk_id for doc in docs] == ["chunk_1", "chunk_2"]
 
 
 def test_rerank_empty_document_list(reranker):
@@ -54,12 +60,16 @@ def test_rerank_empty_query(reranker):
     # given
     query = ""
     docs = [
-        VectorStoreDocument(id="doc_1",
-                            page_content="Cats cannot fly, but they are great climbers.",
-                            metadata={}),
-        VectorStoreDocument(id="doc_2",
-                            page_content="Birds can fly, such as eagles and sparrows.",
-                            metadata={}),
+        DocumentChunk(chunk_id="chunk_1",
+                      doc_id="doc_1",
+                      page_content="Cats cannot fly, but they are great climbers.",
+                      page_number=1,
+                      created_at=datetime.now(timezone.utc)),
+        DocumentChunk(chunk_id="chunk_2",
+                      doc_id="doc_1",
+                      page_content="Birds can fly, such as eagles and sparrows.",
+                      page_number=2,
+                      created_at=datetime.now(timezone.utc)),
     ]
 
     # when
