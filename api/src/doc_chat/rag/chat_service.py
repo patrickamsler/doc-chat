@@ -24,8 +24,8 @@ class ChatService:
         Create a document chat by loading a PDF and indexing its chunks.
 
         In Weaviate:
-        - A Document represents a single PDF file (Chroma collection)
-        - DocumentChunks represent text splits (Chroma documents)
+        - A Document represents a single PDF file
+        - DocumentChunks represent text splits
         """
         doc_loader = DocumentLoader(file_path)
         documents, splits = doc_loader.load_and_split()
