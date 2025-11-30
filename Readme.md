@@ -7,6 +7,7 @@
   * [Description](#description)
   * [How It Works](#how-it-works)
   * [How to run the project locally](#how-to-run-the-project-locally)
+    * [Start Weaviate](#start-weaviate)
     * [API backend](#api-backend)
     * [Frontend](#frontend)
 <!-- TOC -->
@@ -42,8 +43,8 @@ The diagram below illustrates the internal workflow
 3. **Embedding Generation**  
    Each chunk is converted into a vector representation (embedding) using the OpenAI Embedding API. These embeddings capture the semantic meaning of the chunk.
 
-4. **Vector Storage**  
-   The embeddings are stored in a [ChromaDB](https://www.trychroma.com/) vector store, which enables semantic similarity search.
+4. **Vector Storage**
+   The embeddings are stored in a [Weaviate](https://weaviate.io/) vector store, which enables semantic similarity search.
 
 5. **Question Embedding and Semantic Retrieval**  
    When the user asks a question, it is also converted into an embedding using the same model. A similarity search is performed in the vector store, and the top *k* most relevant chunks are retrieved based on the semantic similarity between the question and the stored chunks.
@@ -55,6 +56,26 @@ The diagram below illustrates the internal workflow
    The LLM responds with an answer grounded in the document content and includes references to the original PDF pages. These references are clickable in the UI, allowing users to jump directly to the cited locations.
 
 ## How to run the project locally
+
+### Start Weaviate
+
+The application uses Weaviate as a vector store for semantic search. Start Weaviate using docker compose:
+
+```bash
+docker compose up -d
+```
+
+This will start Weaviate on port 8080. You can verify it's running by visiting `http://localhost:8080/v1/.well-known/ready`.
+
+To stop Weaviate:
+```bash
+docker compose down
+```
+
+To stop Weaviate and remove all stored data:
+```bash
+docker compose down -v
+```
 
 ### API backend
 
