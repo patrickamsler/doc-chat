@@ -21,10 +21,10 @@ describe("parseMessageWithPageRefBadges", () => {
   });
 
   it("renders PageRefBadge for <<>> references", () => {
-    const message = "See page <<doc_10>> for details.";
+    const message = "See page <<chunk_10>> for details.";
     const documents: DocumentResponse[] = [
-        { id: "doc_10", page: 1, content: "Document 1" }, // this is the document reference
-        { id: "doc_20", page: 3, content: "Document 2" } // this is not referenced
+        { id: "chunk_10", page: 1, content: "Document 1" }, // this is the document reference
+        { id: "chunk_20", page: 3, content: "Document 2" } // this is not referenced
     ];
     const onBadgeClick = jest.fn();
 
@@ -45,11 +45,11 @@ describe("parseMessageWithPageRefBadges", () => {
   });
 
   it("renders multiple PageRefBadges", () => {
-    const message = "See page for details. <<doc_42>> <<doc_12>>";
+    const message = "See page for details. <<chunk_42>> <<chunk_12>>";
     const documents: DocumentResponse[] = [
-      { id: "doc_10", page: 1, content: "Document 1" },
-      { id: "doc_12", page: 5, content: "Document 2" },
-      { id: "doc_42", page: 17, content: "Document 3" }
+      { id: "chunk_10", page: 1, content: "Document 1" },
+      { id: "chunk_12", page: 5, content: "Document 2" },
+      { id: "chunk_42", page: 17, content: "Document 3" }
     ];
     const onBadgeClick = jest.fn();
 
@@ -67,9 +67,9 @@ describe("parseMessageWithPageRefBadges", () => {
   });
 
   it("calls onBadgeClick with the correct page number when badge is clicked", () => {
-    const message = "See page <<doc_1>> for details.";
+    const message = "See page <<chunk_1>> for details.";
     const documents: DocumentResponse[] = [
-      { id: "doc_1", page: 1, content: "Document 1" },
+      { id: "chunk_1", page: 1, content: "Document 1" },
     ];
     const onBadgeClick = jest.fn();
 
