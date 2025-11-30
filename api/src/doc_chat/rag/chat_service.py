@@ -11,9 +11,9 @@ from ..llm import create_llm
 
 
 class ChatService:
-    def __init__(self, vector_store: WeaviateVectorStore):
+    def __init__(self, vector_store: WeaviateVectorStore, reranker: Reranker):
         self._vector_store = vector_store
-        self.reranker = Reranker()
+        self.reranker = reranker
         self._retrieval_chain = CitationRetrievalChain(retriever=None,
                                                        # TODO: use vector store as retriever
                                                        llm=create_llm())
@@ -148,27 +148,32 @@ class ChatService:
         )
 
 
-# Global vector store instance (will be initialized on app startup)
+# Global instances (will be initialized on app startup)
 _vector_store: Optional[WeaviateVectorStore] = None
+_reranker: Optional[Reranker] = None
 
 
 async def initialize_vector_store(host: str = "localhost",
       port: int = 8080) -> None:
     """
-    Initialize the global vector store instance.
+    Initialize the global vector store and reranker instances.
     This should be called during FastAPI app startup.
     """
-    global _vector_store
+    global _vector_store, _reranker
     if _vector_store is None:
         _vector_store = await WeaviateVectorStore.create(host=host, port=port)
+    if _reranker is None:
+        _reranker = Reranker()
 
 
 def get_chat_service() -> ChatService:
     """
     Dependency to get ChatService instance.
-    Requires the vector store to be initialized first.
     """
     if _vector_store is None:
         raise RuntimeError(
             "Vector store not initialized. Call initialize_vector_store() during app startup.")
-    return ChatService(_vector_store)
+    if _reranker is None:
+        raise RuntimeError(
+            "Reranker not initialized. Call initialize_vector_store() during app startup.")
+    return ChatService(_vector_store, _reranker)

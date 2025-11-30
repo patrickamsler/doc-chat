@@ -1,8 +1,12 @@
+import os
 from typing import Dict, Any
 
 from flashrank import Ranker, RerankRequest
 
 from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
+
+# Disable tokenizer parallelism to avoid warnings when forking processes
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 class Reranker:
