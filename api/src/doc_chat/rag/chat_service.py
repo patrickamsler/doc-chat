@@ -12,7 +12,7 @@ from ..llm import create_llm
 class ChatService:
     def __init__(self, vector_store: WeaviateVectorStore, reranker: Reranker):
         self._vector_store = vector_store
-        self.reranker = reranker
+        self._reranker = reranker
         self._retrieval_chain = CitationRetrievalChain(llm=create_llm())
 
     async def create_document_chat(self, user_id: str, chat_id: str,
@@ -75,8 +75,8 @@ class ChatService:
         )
 
         # Rerank the retrieved chunks
-        ranked_chunks = self.reranker.rerank(query=question,
-                                             documents=retrieved_chunks)
+        ranked_chunks = self._reranker.rerank(query=question,
+                                              documents=retrieved_chunks)
 
         # Invoke the retrieval chain with the top 5 ranked chunks
         response = self._retrieval_chain.invoke(question, ranked_chunks[:5])
