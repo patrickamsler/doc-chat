@@ -153,7 +153,7 @@ _vector_store: Optional[WeaviateVectorStore] = None
 _reranker: Optional[Reranker] = None
 
 
-async def initialize_vector_store(host: str = "localhost",
+async def initialize_services(host: str = "localhost",
       port: int = 8080) -> None:
     """
     Initialize the global vector store and reranker instances.
@@ -172,8 +172,8 @@ def get_chat_service() -> ChatService:
     """
     if _vector_store is None:
         raise RuntimeError(
-            "Vector store not initialized. Call initialize_vector_store() during app startup.")
+            "Vector store not initialized. Call initialize_services() during app startup.")
     if _reranker is None:
         raise RuntimeError(
-            "Reranker not initialized. Call initialize_vector_store() during app startup.")
+            "Reranker not initialized. Call initialize_services() during app startup.")
     return ChatService(_vector_store, _reranker)

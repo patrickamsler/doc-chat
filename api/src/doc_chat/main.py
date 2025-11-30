@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from doc_chat.routes.auth_routes import auth_router
 from doc_chat.routes.chat_routes import chat_router
-from doc_chat.rag.chat_service import initialize_vector_store
+from doc_chat.rag.chat_service import initialize_services
 
 load_dotenv()
 
@@ -24,11 +24,11 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event() -> None:
     """Initialize services on application startup."""
-    logger.info("Initializing Weaviate vector store...")
+    logger.info("Initializing services (vector store and reranker)...")
     weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
     weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
-    await initialize_vector_store(host=weaviate_host, port=weaviate_port)
-    logger.info("Weaviate vector store initialized successfully")
+    await initialize_services(host=weaviate_host, port=weaviate_port)
+    logger.info("Services initialized successfully")
 
 
 # very permissive CORS, adjust origins/methods for production
