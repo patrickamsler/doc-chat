@@ -4,7 +4,6 @@ from langchain.chains import StuffDocumentsChain, LLMChain
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
-from langchain_core.vectorstores.base import BaseRetriever
 
 from doc_chat.rag.multi_tenant_vector_store import VectorStoreDocument
 
@@ -36,8 +35,7 @@ user_prompt_template = """
 
 
 class CitationRetrievalChain:
-    def __init__(self, retriever: BaseRetriever, llm: BaseChatModel):
-        self._retriever = retriever
+    def __init__(self, llm: BaseChatModel):
         self._llm = llm
         prompt = ChatPromptTemplate.from_messages([
             SystemMessagePromptTemplate.from_template(system_prompt_template),
@@ -47,12 +45,9 @@ class CitationRetrievalChain:
 
     def invoke(
           self, query,
-          documents: list[VectorStoreDocument] = None,
+          documents: list[VectorStoreDocument],
           include_references_in_answer: bool = True
     ):
-        if documents is None:
-            # TODO remove this line and dependency on retriever
-            documents = self._retriever.get_relevant_documents(query)
         context = self.create_context(documents)
         result = self._chain.invoke({"context": context, "question": query})
         content = result.content
@@ -60,8 +55,9 @@ class CitationRetrievalChain:
         answer, referenced_docs = self.replace_txt_with_page_numbers(content,
                                                                      documents,
                                                                      include_references_in_answer)
-        logger.debug("query=%s, answer=%s, referenced_docs=%s usage_metadata=%s",
-                    query, answer, referenced_docs, usage_metadata)
+        logger.debug(
+            "query=%s, answer=%s, referenced_docs=%s usage_metadata=%s",
+            query, answer, referenced_docs, usage_metadata)
         return {
             'answer': answer,
             'referenced_documents': referenced_docs,

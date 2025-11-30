@@ -14,7 +14,7 @@ def create_doc(doc_id: str, page_content: str,
 
 
 def make_chain_with_mocked_llm(content: str) -> CitationRetrievalChain:
-    chain = CitationRetrievalChain(MagicMock(), MagicMock())
+    chain = CitationRetrievalChain(MagicMock())
     class Response:
         def __init__(self, content):
             self.content = content

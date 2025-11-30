@@ -14,9 +14,7 @@ class ChatService:
     def __init__(self, vector_store: WeaviateVectorStore, reranker: Reranker):
         self._vector_store = vector_store
         self.reranker = reranker
-        self._retrieval_chain = CitationRetrievalChain(retriever=None,
-                                                       # TODO: use vector store as retriever
-                                                       llm=create_llm())
+        self._retrieval_chain = CitationRetrievalChain(llm=create_llm())
 
     async def create_document_chat(self, user_id: str, chat_id: str,
           file_path: str, file_name: Optional[str] = None) -> None:
