@@ -1,40 +1,97 @@
+from datetime import datetime, timezone
+from typing import Optional
+
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
-from .multi_tenant_vector_store import MultiTenantVectorStore
+from .multi_tenant_vector_store import VectorStoreDocument
 from .reranker import Reranker
+from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
 
 
 class ChatService:
-    def __init__(self):
-        self._vector_store = MultiTenantVectorStore()
+    def __init__(self, vector_store: WeaviateVectorStore):
+        self._vector_store = vector_store
         self.reranker = Reranker()
         self._retrieval_chain = CitationRetrievalChain(retriever=None,
                                                        # TODO: use vector store as retriever
                                                        llm=create_llm())
 
-    def create_document_chat(self, user_id: str, chat_id: str,
-          file_path: str, file_name: str = None):
-        doc_loader = DocumentLoader(file_path)
-        _, splits = doc_loader.load_and_split()
-        self._vector_store.create_document_collection(user_id=user_id,
-                                                      collection_id=chat_id,
-                                                      document_splits=splits,
-                                                      file_name=file_name)
+    async def create_document_chat(self, user_id: str, chat_id: str,
+          file_path: str, file_name: Optional[str] = None) -> None:
+        """
+        Create a document chat by loading a PDF and indexing its chunks.
 
-    def query(self, user_id: str, chat_id: str,
+        In Weaviate:
+        - A Document represents a single PDF file (Chroma collection)
+        - DocumentChunks represent text splits (Chroma documents)
+        """
+        doc_loader = DocumentLoader(file_path)
+        documents, splits = doc_loader.load_and_split()
+
+        # Create tenant if it doesn't exist
+        try:
+            await self._vector_store.create_tenant(user_id)
+        except Exception:
+            # Tenant might already exist, continue
+            pass
+
+        # Create Document object (represents the PDF)
+        document = Document(
+            doc_id=chat_id,
+            file_name=file_name or "Unknown",
+            created_at=datetime.now(timezone.utc),
+            num_pages=len(documents)  # Number of pages in the PDF
+        )
+
+        # Create DocumentChunk objects from splits
+        chunks = []
+        for i, split in enumerate(splits):
+            chunk = DocumentChunk(
+                chunk_id=f"chunk_{i}",
+                doc_id=chat_id,
+                page_number=split.metadata.get('page', 0),
+                page_content=split.page_content,
+                created_at=datetime.now(timezone.utc)
+            )
+            chunks.append(chunk)
+
+        # Index the document and its chunks
+        await self._vector_store.index_document(user_id, document, chunks)
+
+    async def query(self, user_id: str, chat_id: str,
           question: str) -> QueryResponse:
-        # retrieve top 20 documents from the vector store
-        retrieved_docs = self._vector_store.retrieve_documents(user_id=user_id,
-                                                               collection_id=chat_id,
-                                                               query=question,
-                                                               k=20)
-        # rank the retrieved documents
+        """
+        Query the document using semantic search.
+
+        In Weaviate:
+        - We search chunks (text splits) within a specific document (PDF)
+        """
+
+        # Retrieve top 20 chunks from the vector store
+        retrieved_chunks = await self._vector_store.search_chunks(
+            user_id=user_id,
+            doc_id=chat_id,
+            query=question,
+            k=20
+        )
+
+        # Convert DocumentChunks to VectorStoreDocuments for reranking
+        retrieved_docs = [
+            VectorStoreDocument(
+                id=chunk.chunk_id,
+                page_content=chunk.page_content,
+                metadata={'page': chunk.page_number}
+            )
+            for chunk in retrieved_chunks
+        ]
+
+        # Rank the retrieved documents
         ranked_docs = self.reranker.rerank(query=question,
                                            documents=retrieved_docs)
 
-        # invoke the retrieval chain with the top 5 ranked documents
+        # Invoke the retrieval chain with the top 5 ranked documents
         response = self._retrieval_chain.invoke(question, ranked_docs[:5])
         response_documents = [
             DocumentsResponse(id=doc.id,
@@ -49,20 +106,40 @@ class ChatService:
             documents=response_documents
         )
 
-    def find_chat(self, user_id: str, chat_id: str) -> Chat:
-        metadata = self._vector_store.get_collection_metadata(user_id, chat_id)
+    async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
+        """
+        Find a chat by retrieving the document metadata.
+
+        In Weaviate:
+        - A chat corresponds to a Document (PDF)
+        """
+        document = await self._vector_store.get_document(user_id, chat_id)
+        if not document:
+            return None
+
         return Chat(
             chatId=chat_id,
-            fileName=metadata['file_name'] if 'file_name' in metadata else None,
-            createdAt=metadata['created'] if 'created' in metadata else None
+            fileName=document.file_name,
+            createdAt=document.created_at.isoformat() if document.created_at else None
         )
 
-    def find_all_chats(self, user_id: str) -> ChatsResponse:
-        collections = self._vector_store.get_collections(user_id)
+    async def find_all_chats(self, user_id: str) -> ChatsResponse:
+        """
+        Find all chats for a user.
+
+        In Weaviate:
+        - Each chat is a Document (PDF)
+        - We retrieve all documents for the user
+        """
+        documents = await self._vector_store.get_documents(user_id)
 
         chats = []
-        for collection_id in collections:
-            chat = self.find_chat(user_id, collection_id)
+        for document in documents:
+            chat = Chat(
+                chatId=document.doc_id,
+                fileName=document.file_name,
+                createdAt=document.created_at.isoformat() if document.created_at else None
+            )
             chats.append(chat)
 
         return ChatsResponse(
@@ -71,8 +148,27 @@ class ChatService:
         )
 
 
-chat_service_instance = ChatService()
+# Global vector store instance (will be initialized on app startup)
+_vector_store: Optional[WeaviateVectorStore] = None
+
+
+async def initialize_vector_store(host: str = "localhost",
+      port: int = 8080) -> None:
+    """
+    Initialize the global vector store instance.
+    This should be called during FastAPI app startup.
+    """
+    global _vector_store
+    if _vector_store is None:
+        _vector_store = await WeaviateVectorStore.create(host=host, port=port)
 
 
 def get_chat_service() -> ChatService:
-    return chat_service_instance
+    """
+    Dependency to get ChatService instance.
+    Requires the vector store to be initialized first.
+    """
+    if _vector_store is None:
+        raise RuntimeError(
+            "Vector store not initialized. Call initialize_vector_store() during app startup.")
+    return ChatService(_vector_store)
