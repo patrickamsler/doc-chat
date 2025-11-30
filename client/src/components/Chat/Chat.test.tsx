@@ -51,8 +51,8 @@ describe('Chat component', () => {
 
   it('calls onBadgeClick when a page reference badge is clicked', async () => {
     (sendMessage as jest.Mock).mockResolvedValueOnce({
-      answer: 'See <<doc_42>>',
-      documents: [{id: 'doc_42', page: 13, content: 'test document'}],
+      answer: 'See <<chunk_42>>',
+      documents: [{id: 'chunk_42', page: 13, content: 'test document'}],
     });
     const {onBadgeClick} = setup('chat1');
 
@@ -63,7 +63,7 @@ describe('Chat component', () => {
     await waitFor(() => {
       expect(screen.getByText('14')).toBeInTheDocument();
     });
-    userEvent.click(screen.getByText('14')); // badge text is '43' because it is 1-based index
+    userEvent.click(screen.getByText('14')); // badge text is '14' because it is 1-based index
     expect(onBadgeClick).toHaveBeenCalledWith(13, 'test document'); // 0-based index in the function
   });
 });

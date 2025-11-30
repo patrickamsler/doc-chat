@@ -6,3 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "doc-chat"
 version = "0.1.0"
 description = "A cool doc chat application"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

@@ -42,7 +42,8 @@ async def upload_file(
     filename = secure_filename(file.filename)
     logger.info(f"File saved at: {file_path}")
 
-    chat_service.create_document_chat(user.id, chat_id, file_path, filename)
+    await chat_service.create_document_chat(user.id, chat_id, file_path,
+                                            filename)
 
     response_model = UploadFileResponse(chatId=chat_id,
                                         message="File uploaded successfully")
@@ -51,7 +52,7 @@ async def upload_file(
 
 
 @chat_router.get("/{chat_id}/file")
-def download_file(
+async def download_file(
       chat_id: str,
       user: User = Depends(get_current_user),
       chat_service: ChatService = Depends(get_chat_service)
@@ -60,7 +61,9 @@ def download_file(
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
 
-    chat = chat_service.find_chat(user.id, chat_id)
+    chat = await chat_service.find_chat(user.id, chat_id)
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
 
     return FileResponse(
         file_path,
@@ -70,7 +73,7 @@ def download_file(
 
 
 @chat_router.post('/query', response_model=QueryResponse)
-def query(
+async def query(
       request: ChatQueryRequest,
       user: User = Depends(get_current_user),
       chat_service: ChatService = Depends(get_chat_service)
@@ -80,18 +83,18 @@ def query(
     logger.info(
         f"User {user.id} querying with chat_id={chat_id} and question='{question}'")
 
-    response = chat_service.query(user.id, chat_id, question)
+    response = await chat_service.query(user.id, chat_id, question)
     return JSONResponse(content=response.model_dump(),
                         status_code=status.HTTP_200_OK)
 
 
 @chat_router.get('', response_model=ChatsResponse)
-def find_all_chats(
+async def find_all_chats(
       user: User = Depends(get_current_user),
       chat_service: ChatService = Depends(get_chat_service)
 ):
     logger.info(f"User {user.id} requesting all chats")
-    chats = chat_service.find_all_chats(user.id)
+    chats = await chat_service.find_all_chats(user.id)
     return JSONResponse(
         content=chats.model_dump(),
         status_code=status.HTTP_200_OK)

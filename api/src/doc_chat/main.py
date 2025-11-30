@@ -1,9 +1,13 @@
 import logging
+import os
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from doc_chat.rag.chat_service import initialize_services
 from doc_chat.routes.auth_routes import auth_router
 from doc_chat.routes.chat_routes import chat_router
 
@@ -16,7 +20,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger("main")
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Lifespan event handler for startup and shutdown."""
+    # Startup
+    logger.info("Initializing services (vector store and reranker)...")
+    weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
+    weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+    await initialize_services(host=weaviate_host, port=weaviate_port)
+    logger.info("Services initialized successfully")
+
+    yield
+
+    # Shutdown (if needed in the future)
+    logger.info("Shutting down services...")
+
+
+app = FastAPI(lifespan=lifespan)
+
 # very permissive CORS, adjust origins/methods for production
 app.add_middleware(
     CORSMiddleware,
