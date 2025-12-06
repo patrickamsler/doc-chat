@@ -1,11 +1,13 @@
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .reranker import Reranker
-from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk
+from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk, \
+    Chat as ChatEntity
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
 
@@ -24,6 +26,7 @@ class ChatService:
         Create a document chat by loading a PDF and indexing its chunks.
 
         In Weaviate:
+        - A Chat represents a conversation
         - A Document represents a single PDF file
         - DocumentChunks represent text splits
         """
@@ -35,11 +38,22 @@ class ChatService:
             logger.info(f"Creating new tenant for user: {user_id}")
             await self._vector_store.create_tenant(user_id)
 
+        # Create Chat entity
+        created_at = datetime.now(timezone.utc)
+        chat = ChatEntity(
+            chat_id=chat_id,
+            user_id=user_id,
+            created_at=created_at
+        )
+        await self._vector_store.create_chat(user_id, chat)
+
         # Create Document object (represents the PDF)
+        doc_id = str(uuid.uuid4().hex)
         document = Document(
-            doc_id=chat_id,
+            doc_id=doc_id,
+            chat_id=chat_id,
             file_name=file_name or "Unknown",
-            created_at=datetime.now(timezone.utc),
+            created_at=created_at,
             num_pages=len(documents)  # Number of pages in the PDF
         )
 
@@ -48,10 +62,10 @@ class ChatService:
         for i, split in enumerate(splits):
             chunk = DocumentChunk(
                 chunk_id=f"chunk_{i}",
-                doc_id=chat_id,
+                doc_id=doc_id,
                 page_number=split.metadata.get('page', 0),
                 page_content=split.page_content,
-                created_at=datetime.now(timezone.utc)
+                created_at=created_at
             )
             chunks.append(chunk)
 
@@ -67,10 +81,20 @@ class ChatService:
         - We search chunks (text splits) within a specific document (PDF)
         """
 
-        # Retrieve top 20 chunks from the vector store
+        # Get documents for this chat to find the doc_id
+        documents = await self._vector_store.get_documents_by_chat(user_id,
+                                                                   chat_id,
+                                                                   limit=1)
+        if not documents:
+            raise ValueError(f"No documents found for chat_id {chat_id}")
+
+        # At the moment we assume one document per chat
+        doc_id = documents[0].doc_id
+
+        # Retrieve the top 20 chunks from the vector store
         retrieved_chunks = await self._vector_store.search_chunks(
             user_id=user_id,
-            doc_id=chat_id,
+            doc_id=doc_id,
             query=question,
             k=20
         )
@@ -96,19 +120,26 @@ class ChatService:
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """
-        Find a chat by retrieving the document metadata.
+        Find a chat by retrieving the chat and its document metadata.
 
         In Weaviate:
-        - A chat corresponds to a Document (PDF)
+        - A Chat represents a conversation
+        - Documents are linked to the chat
         """
-        document = await self._vector_store.get_document(user_id, chat_id)
-        if not document:
+        chat_entity = await self._vector_store.get_chat(user_id, chat_id)
+        if not chat_entity:
             return None
+
+        # Get the first document for this chat to retrieve the file name
+        documents = await self._vector_store.get_documents_by_chat(user_id,
+                                                                   chat_id,
+                                                                   limit=1)
+        file_name = documents[0].file_name if documents else "Unknown"
 
         return Chat(
             chatId=chat_id,
-            fileName=document.file_name,
-            createdAt=document.created_at.isoformat() if document.created_at else None
+            fileName=file_name,
+            createdAt=chat_entity.created_at.isoformat() if chat_entity.created_at else None
         )
 
     async def find_all_chats(self, user_id: str) -> ChatsResponse:
@@ -116,17 +147,29 @@ class ChatService:
         Find all chats for a user.
 
         In Weaviate:
-        - Each chat is a Document (PDF)
-        - We retrieve all documents for the user
+        - Each Chat represents a conversation
+        - Documents are linked to chats
         """
-        documents = await self._vector_store.get_documents(user_id)
+        # Fetch all chats and all documents in parallel
+        chat_entities = await self._vector_store.get_chats(user_id)
+        all_documents = await self._vector_store.get_documents(user_id)
 
+        # Group documents by chat_id for efficient lookup
+        documents_by_chat = {}
+        for doc in all_documents:
+            if doc.chat_id not in documents_by_chat:
+                documents_by_chat[doc.chat_id] = doc
+
+        # Build chat responses
         chats = []
-        for document in documents:
+        for chat_entity in chat_entities:
+            doc = documents_by_chat.get(chat_entity.chat_id)
+            file_name = doc.file_name if doc else "Unknown"
+
             chat = Chat(
-                chatId=document.doc_id,
-                fileName=document.file_name,
-                createdAt=document.created_at.isoformat() if document.created_at else None
+                chatId=chat_entity.chat_id,
+                fileName=file_name,
+                createdAt=chat_entity.created_at.isoformat() if chat_entity.created_at else None
             )
             chats.append(chat)
 

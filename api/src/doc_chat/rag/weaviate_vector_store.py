@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Literal
 
 import weaviate
 import weaviate.classes as wvc
@@ -21,9 +22,32 @@ class DocumentChunk:
 @dataclass
 class Document:
     doc_id: str
+    chat_id: str
     file_name: str
     created_at: datetime
     num_pages: int
+
+
+@dataclass
+class Message:
+    role: Literal["user", "assistant"]
+    content: str
+    timestamp: datetime
+
+
+@dataclass
+class Chat:
+    chat_id: str
+    user_id: str
+    created_at: datetime
+
+
+@dataclass
+class ChatHistory:
+    chat_id: str
+    user_id: str
+    messages: list[Message]
+    created_at: datetime
 
 
 class WeaviateVectorStore:
@@ -84,14 +108,48 @@ class WeaviateVectorStore:
             auto_tenant_creation=True
         )
 
+        if not await self.client.collections.exists("Chat"):
+            await self.client.collections.create(
+                name="Chat",
+                properties=[
+                    Property(name="chat_id", data_type=DataType.TEXT),
+                    Property(name="user_id", data_type=DataType.TEXT),
+                    Property(name="created_at", data_type=DataType.DATE)
+                ],
+                multi_tenancy_config=multi_tenancy_config,
+                vectorizer_config=Configure.Vectorizer.none()
+            )
+
+        if not await self.client.collections.exists("ChatMessage"):
+            await self.client.collections.create(
+                name="ChatMessage",
+                properties=[
+                    Property(name="chat_id", data_type=DataType.TEXT),
+                    Property(name="role", data_type=DataType.TEXT),
+                    Property(name="content", data_type=DataType.TEXT),
+                    Property(name="timestamp", data_type=DataType.DATE)
+                ],
+                references=[
+                    ReferenceProperty(name="of_chat",
+                                      target_collection="Chat")
+                ],
+                multi_tenancy_config=multi_tenancy_config,
+                vectorizer_config=Configure.Vectorizer.none()
+            )
+
         if not await self.client.collections.exists("Document"):
             await self.client.collections.create(
                 name="Document",
                 properties=[
                     Property(name="doc_id", data_type=DataType.TEXT),
+                    Property(name="chat_id", data_type=DataType.TEXT),
                     Property(name="file_name", data_type=DataType.TEXT),
                     Property(name="created_at", data_type=DataType.DATE),
                     Property(name="num_pages", data_type=DataType.INT)
+                ],
+                references=[
+                    ReferenceProperty(name="of_chat",
+                                      target_collection="Chat")
                 ],
                 multi_tenancy_config=multi_tenancy_config,
                 vectorizer_config=Configure.Vectorizer.none()
@@ -141,14 +199,18 @@ class WeaviateVectorStore:
 
     async def create_tenant(self, user_id: str) -> None:
         """
-        Create a tenant for the user in both Document and DocumentChunk collections.
+        Create a tenant for the user in all collections.
 
         Args:
             user_id: The user ID to use as tenant name
         """
+        chat_collection = self.client.collections.get("Chat")
+        message_collection = self.client.collections.get("ChatMessage")
         documents_collection = self.client.collections.get("Document")
         chunks_collection = self.client.collections.get("DocumentChunk")
 
+        await chat_collection.tenants.create(user_id)
+        await message_collection.tenants.create(user_id)
         await documents_collection.tenants.create(user_id)
         await chunks_collection.tenants.create(user_id)
 
@@ -166,18 +228,32 @@ class WeaviateVectorStore:
             The UUID of the inserted document
         """
         # Get collections with the user as tenant
+        chat_collection = self.client.collections.get(
+            "Chat").with_tenant(user_id)
         documents_collection = self.client.collections.get(
             "Document").with_tenant(user_id)
         chunks_collection = self.client.collections.get(
             "DocumentChunk").with_tenant(user_id)
 
+        # Get the chat UUID for the reference
+        chat_results = await chat_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(document.chat_id),
+            limit=1
+        )
+
+        if not chat_results.objects:
+            raise ValueError(f"Chat with chat_id {document.chat_id} not found")
+
+        chat_uuid = chat_results.objects[0].uuid
+
         # Insert the document
         document_uuid = await documents_collection.data.insert({
             "doc_id": document.doc_id,
+            "chat_id": document.chat_id,
             "file_name": document.file_name,
             "created_at": document.created_at,
             "num_pages": document.num_pages
-        })
+        }, references={"of_chat": chat_uuid})
 
         # Prepare chunk data objects for bulk insert
         chunk_data_objects = []
@@ -260,6 +336,7 @@ class WeaviateVectorStore:
         for obj in results.objects:
             documents.append(Document(
                 doc_id=obj.properties.get('doc_id'),
+                chat_id=obj.properties.get('chat_id'),
                 file_name=obj.properties.get('file_name'),
                 created_at=obj.properties.get('created_at'),
                 num_pages=obj.properties.get('num_pages')
@@ -292,7 +369,211 @@ class WeaviateVectorStore:
         obj = results.objects[0]
         return Document(
             doc_id=obj.properties.get('doc_id'),
+            chat_id=obj.properties.get('chat_id'),
             file_name=obj.properties.get('file_name'),
             created_at=obj.properties.get('created_at'),
             num_pages=obj.properties.get('num_pages')
         )
+
+    async def create_chat(self, user_id: str, chat: Chat) -> str:
+        """
+        Create a new chat.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            chat: Chat metadata to store
+
+        Returns:
+            The UUID of the inserted chat
+        """
+        chat_collection = self.client.collections.get("Chat").with_tenant(
+            user_id)
+
+        chat_uuid = await chat_collection.data.insert({
+            "chat_id": chat.chat_id,
+            "user_id": chat.user_id,
+            "created_at": chat.created_at
+        })
+
+        return chat_uuid
+
+    async def get_chat(self, user_id: str, chat_id: str) -> Chat | None:
+        """
+        Get a specific chat by its chat_id.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            chat_id: The chat ID to retrieve
+
+        Returns:
+            Chat if found, None otherwise
+        """
+        chat_collection = self.client.collections.get("Chat").with_tenant(
+            user_id)
+
+        results = await chat_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(chat_id),
+            limit=1
+        )
+
+        if not results.objects:
+            return None
+
+        obj = results.objects[0]
+        return Chat(
+            chat_id=obj.properties.get('chat_id'),
+            user_id=obj.properties.get('user_id'),
+            created_at=obj.properties.get('created_at')
+        )
+
+    async def get_chats(self, user_id: str, limit: int = 1000) -> list[Chat]:
+        """
+        Get all chats for a user, ordered by creation date (newest first).
+
+        Args:
+            user_id: The user ID (used as tenant)
+            limit: Maximum number of chats to return
+
+        Returns:
+            List of chats ordered by created_at descending
+        """
+        chat_collection = self.client.collections.get("Chat").with_tenant(
+            user_id)
+
+        results = await chat_collection.query.fetch_objects(
+            limit=limit,
+            sort=wvc.query.Sort.by_property("created_at", ascending=False)
+        )
+
+        chats = []
+        for obj in results.objects:
+            chats.append(Chat(
+                chat_id=obj.properties.get('chat_id'),
+                user_id=obj.properties.get('user_id'),
+                created_at=obj.properties.get('created_at')
+            ))
+
+        return chats
+
+    async def add_message(self, user_id: str, chat_id: str,
+          message: Message) -> str:
+        """
+        Add a message to chat history.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            chat_id: The chat ID this message belongs to
+            message: Message to add
+
+        Returns:
+            The UUID of the inserted message
+        """
+        chat_collection = self.client.collections.get("Chat").with_tenant(
+            user_id)
+        message_collection = self.client.collections.get(
+            "ChatMessage").with_tenant(user_id)
+
+        # Get the chat UUID for the reference
+        chat_results = await chat_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(chat_id),
+            limit=1
+        )
+
+        if not chat_results.objects:
+            raise ValueError(f"Chat with chat_id {chat_id} not found")
+
+        chat_uuid = chat_results.objects[0].uuid
+
+        # Insert the message
+        message_uuid = await message_collection.data.insert({
+            "chat_id": chat_id,
+            "role": message.role,
+            "content": message.content,
+            "timestamp": message.timestamp
+        }, references={"of_chat": chat_uuid})
+
+        return message_uuid
+
+    async def get_chat_history(self, user_id: str,
+          chat_id: str) -> ChatHistory | None:
+        """
+        Get chat history with all messages.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            chat_id: The chat ID to retrieve history for
+
+        Returns:
+            ChatHistory if chat found, None otherwise
+        """
+        chat_collection = self.client.collections.get("Chat").with_tenant(
+            user_id)
+        message_collection = self.client.collections.get(
+            "ChatMessage").with_tenant(user_id)
+
+        # Get the chat
+        chat_results = await chat_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(chat_id),
+            limit=1
+        )
+
+        if not chat_results.objects:
+            return None
+
+        chat_obj = chat_results.objects[0]
+
+        # Get all messages for this chat, ordered by timestamp
+        message_results = await message_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(chat_id),
+            limit=10000,
+            sort=wvc.query.Sort.by_property("timestamp", ascending=True)
+        )
+
+        messages = []
+        for msg_obj in message_results.objects:
+            messages.append(Message(
+                role=msg_obj.properties.get('role'),
+                content=msg_obj.properties.get('content'),
+                timestamp=msg_obj.properties.get('timestamp')
+            ))
+
+        return ChatHistory(
+            chat_id=chat_obj.properties.get('chat_id'),
+            user_id=chat_obj.properties.get('user_id'),
+            messages=messages,
+            created_at=chat_obj.properties.get('created_at')
+        )
+
+    async def get_documents_by_chat(self, user_id: str, chat_id: str,
+          limit: int = 1) -> list[Document]:
+        """
+        Get all documents for a specific chat.
+
+        Args:
+            user_id: The user ID (used as tenant)
+            chat_id: The chat ID to filter by
+            limit: Maximum number of documents to return
+
+        Returns:
+            List of documents for the chat ordered by created_at descending
+        """
+        documents_collection = self.client.collections.get(
+            "Document").with_tenant(user_id)
+
+        results = await documents_collection.query.fetch_objects(
+            filters=Filter.by_property("chat_id").equal(chat_id),
+            limit=limit,
+            sort=wvc.query.Sort.by_property("created_at", ascending=False)
+        )
+
+        documents = []
+        for obj in results.objects:
+            documents.append(Document(
+                doc_id=obj.properties.get('doc_id'),
+                chat_id=obj.properties.get('chat_id'),
+                file_name=obj.properties.get('file_name'),
+                created_at=obj.properties.get('created_at'),
+                num_pages=obj.properties.get('num_pages')
+            ))
+
+        return documents
