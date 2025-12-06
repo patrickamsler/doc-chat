@@ -91,27 +91,10 @@ class ChatService:
         # At the moment we assume one document per chat
         doc_id = documents[0].doc_id
 
-        # Retrieve the top 20 chunks from the vector store
-        retrieved_chunks = await self._vector_store.search_chunks(
-            user_id=user_id,
-            doc_id=doc_id,
-            query=question,
-            k=20
-        )
-
-        # Rerank the retrieved chunks
-        ranked_chunks = self._reranker.rerank(query=question,
-                                              documents=retrieved_chunks)
-
-        # Store user message in history
-        await self._vector_store.add_message(user_id, chat_id, Message(
-            role="user",
-            content=question,
-            timestamp=datetime.now(timezone.utc)
-        ))
-
-        # Invoke the retrieval chain with the top 5 ranked chunks
-        response = self._retrieval_chain.invoke(question, ranked_chunks[:5])
+        await self._add_message(user_id, chat_id, question, is_user=True)
+        response = await self._retrieve_and_rerank_chunks(chat_id, doc_id,
+                                                          question,
+                                                          user_id)
         response_documents = [
             DocumentsResponse(id=chunk.chunk_id,
                               page=chunk.page_number,
@@ -119,19 +102,38 @@ class ChatService:
             for chunk in response['source_documents']
         ]
         answer = response['answer']
-
-        # Store assistant message in history after getting the response
-        await self._vector_store.add_message(user_id, chat_id, Message(
-            role="assistant",
-            content=answer,
-            timestamp=datetime.now(timezone.utc)
-        ))
+        await self._add_message(user_id, chat_id, answer, is_user=False)
 
         return QueryResponse(
             question=question,
             answer=answer,
             documents=response_documents
         )
+
+    async def _retrieve_and_rerank_chunks(self, chat_id, doc_id, question,
+          user_id):
+        # Retrieve the top 20 chunks from the vector store
+        retrieved_chunks = await self._vector_store.search_chunks(
+            user_id=user_id,
+            doc_id=doc_id,
+            query=question,
+            k=20
+        )
+        # Rerank the retrieved chunks
+        ranked_chunks = self._reranker.rerank(query=question,
+                                              documents=retrieved_chunks)
+
+        # Invoke the retrieval chain with the top 5 ranked chunks
+        return self._retrieval_chain.invoke(question, ranked_chunks[:5])
+
+    async def _add_message(self, user_id: str, chat_id: str,
+          content: str, is_user: bool) -> None:
+        message = Message(
+            role="user" if is_user else "assistant",
+            content=content,
+            timestamp=datetime.now(timezone.utc)
+        )
+        await self._vector_store.add_message(user_id, chat_id, message)
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """
