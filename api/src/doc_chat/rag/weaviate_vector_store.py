@@ -525,7 +525,7 @@ class WeaviateVectorStore:
         # Get all messages for this chat, ordered by timestamp
         message_results = await message_collection.query.fetch_objects(
             filters=Filter.by_property("chat_id").equal(chat_id),
-            limit=10000,
+            limit=500,
             sort=wvc.query.Sort.by_property("timestamp", ascending=True)
         )
 
