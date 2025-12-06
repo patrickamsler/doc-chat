@@ -3,10 +3,11 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from doc_chat.api_types import QueryResponse, ChatsResponse, Chat
+from doc_chat.api_types import QueryResponse, ChatsResponse, Chat, \
+    ChatHistoryResponse
 from doc_chat.rag.chat_service import ChatService
 from doc_chat.rag.weaviate_vector_store import DocumentChunk, Document, \
-    Chat as ChatEntity
+    Chat as ChatEntity, Message, ChatHistory
 
 
 @pytest.fixture
@@ -24,6 +25,7 @@ def mock_vector_store() -> AsyncMock:
     vector_store.get_documents = AsyncMock()
     vector_store.get_documents_by_chat = AsyncMock()
     vector_store.add_message = AsyncMock()
+    vector_store.get_chat_history = AsyncMock()
     return vector_store
 
 
@@ -574,3 +576,114 @@ async def test_create_document_chat_no_file_name(
     call_args = mock_vector_store.index_document.call_args
     document_arg = call_args[0][1]
     assert document_arg.file_name == "Unknown"
+
+
+@pytest.mark.asyncio
+async def test_get_chat_history_success(
+      chat_service: ChatService,
+      mock_vector_store: AsyncMock
+) -> None:
+    """Test successfully getting chat history."""
+    # Given
+    user_id = "user_123"
+    chat_id = "chat_123"
+
+    # Create sample messages
+    messages = [
+        Message(
+            role="user",
+            content="What is FastAPI?",
+            timestamp=datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc)
+        ),
+        Message(
+            role="assistant",
+            content="FastAPI is a modern web framework.",
+            timestamp=datetime(2024, 1, 1, 10, 0, 5, tzinfo=timezone.utc)
+        ),
+        Message(
+            role="user",
+            content="How do I install it?",
+            timestamp=datetime(2024, 1, 1, 10, 1, 0, tzinfo=timezone.utc)
+        ),
+        Message(
+            role="assistant",
+            content="You can install FastAPI using pip install fastapi.",
+            timestamp=datetime(2024, 1, 1, 10, 1, 5, tzinfo=timezone.utc)
+        ),
+    ]
+
+    chat_history = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=messages,
+        created_at=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
+    )
+
+    mock_vector_store.get_chat_history.return_value = chat_history
+
+    # When
+    result = await chat_service.get_chat_history(user_id, chat_id)
+
+    # Then
+    assert isinstance(result, ChatHistoryResponse)
+    assert result.chatId == chat_id
+    assert len(result.history) == 4
+
+    # Verify message mapping
+    for i, msg in enumerate(result.history):
+        assert msg.role == messages[i].role
+        assert msg.content == messages[i].content
+        assert msg.timestamp == messages[i].timestamp.isoformat()
+
+    # Verify vector store was called
+    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+
+
+@pytest.mark.asyncio
+async def test_get_chat_history_not_found(
+      chat_service: ChatService,
+      mock_vector_store: AsyncMock
+) -> None:
+    """Test getting chat history when chat doesn't exist."""
+    # Given
+    user_id = "user_123"
+    chat_id = "nonexistent_chat"
+    mock_vector_store.get_chat_history.return_value = None
+
+    # When/Then
+    with pytest.raises(ValueError, match="Chat with chat_id nonexistent_chat not found"):
+        await chat_service.get_chat_history(user_id, chat_id)
+
+    # Verify vector store was called
+    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+
+
+@pytest.mark.asyncio
+async def test_get_chat_history_empty(
+      chat_service: ChatService,
+      mock_vector_store: AsyncMock
+) -> None:
+    """Test getting chat history when chat exists but has no messages."""
+    # Given
+    user_id = "user_123"
+    chat_id = "chat_123"
+
+    chat_history = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=[],  # Empty message list
+        created_at=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
+    )
+
+    mock_vector_store.get_chat_history.return_value = chat_history
+
+    # When
+    result = await chat_service.get_chat_history(user_id, chat_id)
+
+    # Then
+    assert isinstance(result, ChatHistoryResponse)
+    assert result.chatId == chat_id
+    assert result.history == []
+
+    # Verify vector store was called
+    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)

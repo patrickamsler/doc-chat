@@ -8,7 +8,8 @@ from .document_loader import DocumentLoader
 from .reranker import Reranker
 from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk, \
     Chat as ChatEntity, Message
-from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
+from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse, \
+    ChatHistoryResponse, Message as MessageResponse
 from ..llm import create_llm
 
 logger = logging.getLogger(__name__)
@@ -193,6 +194,41 @@ class ChatService:
         return ChatsResponse(
             userId=user_id,
             chats=chats
+        )
+
+    async def get_chat_history(self, user_id: str,
+          chat_id: str) -> ChatHistoryResponse:
+        """
+        Get chat history for a specific chat.
+
+        Args:
+            user_id: The user ID
+            chat_id: The chat ID to retrieve history for
+
+        Returns:
+            ChatHistoryResponse with all messages in the chat
+
+        Raises:
+            ValueError: If chat not found
+        """
+        chat_history = await self._vector_store.get_chat_history(user_id,
+                                                                 chat_id)
+        if not chat_history:
+            raise ValueError(f"Chat with chat_id {chat_id} not found")
+
+        # Convert Message entities to MessageResponse (API types)
+        messages = [
+            MessageResponse(
+                role=msg.role,
+                content=msg.content,
+                timestamp=msg.timestamp.isoformat() if msg.timestamp else ""
+            )
+            for msg in chat_history.messages
+        ]
+
+        return ChatHistoryResponse(
+            chatId=chat_id,
+            history=messages
         )
 
 
