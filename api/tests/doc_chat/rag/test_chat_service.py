@@ -687,3 +687,87 @@ async def test_get_chat_history_empty(
 
     # Verify vector store was called
     mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+
+
+@pytest.mark.asyncio
+async def test_get_chat_history_with_document_references(
+      chat_service: ChatService,
+      mock_vector_store: AsyncMock
+) -> None:
+    """Test getting chat history with messages that have document chunk references."""
+    # Given
+    user_id = "user_123"
+    chat_id = "chat_123"
+
+    # Create sample document chunks
+    chunks = [
+        DocumentChunk(
+            chunk_id="chunk_1",
+            doc_id="doc_123",
+            page_number=1,
+            page_content="FastAPI is a modern, fast web framework for building APIs.",
+            created_at=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
+        ),
+        DocumentChunk(
+            chunk_id="chunk_2",
+            doc_id="doc_123",
+            page_number=2,
+            page_content="It is based on standard Python type hints.",
+            created_at=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
+        ),
+    ]
+
+    # Create messages with chunk references
+    messages = [
+        Message(
+            role="user",
+            content="What is FastAPI?",
+            timestamp=datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),
+            chunks=None  # User messages don't have chunks
+        ),
+        Message(
+            role="assistant",
+            content="FastAPI is a modern web framework. [1] It uses type hints. [2]",
+            timestamp=datetime(2024, 1, 1, 10, 0, 5, tzinfo=timezone.utc),
+            chunks=chunks  # Assistant message has chunk references
+        ),
+    ]
+
+    chat_history = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=messages,
+        created_at=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
+    )
+
+    mock_vector_store.get_chat_history.return_value = chat_history
+
+    # When
+    result = await chat_service.get_chat_history(user_id, chat_id)
+
+    # Then
+    assert isinstance(result, ChatHistoryResponse)
+    assert result.chatId == chat_id
+    assert len(result.history) == 2
+
+    # Verify first message (user) has no documents
+    assert result.history[0].role == "user"
+    assert result.history[0].content == "What is FastAPI?"
+    assert result.history[0].documents == []
+
+    # Verify second message (assistant) has documents from chunks
+    assert result.history[1].role == "assistant"
+    assert result.history[1].content == "FastAPI is a modern web framework. [1] It uses type hints. [2]"
+    assert len(result.history[1].documents) == 2
+
+    # Verify document mapping from chunks
+    assert result.history[1].documents[0].id == "chunk_1"
+    assert result.history[1].documents[0].page == 1
+    assert result.history[1].documents[0].content == "FastAPI is a modern, fast web framework for building APIs."
+
+    assert result.history[1].documents[1].id == "chunk_2"
+    assert result.history[1].documents[1].page == 2
+    assert result.history[1].documents[1].content == "It is based on standard Python type hints."
+
+    # Verify vector store was called
+    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
