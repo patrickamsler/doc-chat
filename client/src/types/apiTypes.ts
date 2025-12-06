@@ -25,3 +25,15 @@ export interface ChatsResponse {
   userId: string;
   chats: ChatInfo[];
 }
+
+export interface Message {
+  role: string;
+  content: string;
+  timestamp: string;
+  documents: DocumentResponse[];
+}
+
+export interface ChatHistoryResponse {
+  chatId: string;
+  history: Message[];
+}

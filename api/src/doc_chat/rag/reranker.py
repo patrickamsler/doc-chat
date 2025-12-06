@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Dict, Any
 
 from flashrank import Ranker, RerankRequest
@@ -12,11 +13,15 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 class Reranker:
     def __init__(self,
           model_name: str = "ms-marco-MiniLM-L-12-v2",
-          max_length: int = 256
+          max_length: int = 256,
+          cache_dir: str = "/tmp/doc-chat/models"
     ):
+        # Ensure cache directory exists
+        Path(cache_dir).mkdir(parents=True, exist_ok=True)
+
         self.ranker = Ranker(max_length=max_length,
                              model_name=model_name,
-                             cache_dir="/tmp")
+                             cache_dir=cache_dir)
 
     def rerank(self, query: str, documents: list[DocumentChunk]) \
           -> list[DocumentChunk]:

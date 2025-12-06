@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { QueryResponse, UploadFileResponse, ChatsResponse } from '../types/apiTypes';
+import { QueryResponse, UploadFileResponse, ChatsResponse, ChatHistoryResponse } from '../types/apiTypes';
 
 const API_URL = process.env.REACT_APP_API_URL || (() => {
   throw new Error('REACT_APP_API_URL environment variable is not set');
@@ -51,5 +51,12 @@ export const downloadFile = async (chatId: string): Promise<{ url: string; fileN
 
 export const getChats = async (): Promise<ChatsResponse> => {
   const response = await axios.get(`${API_URL}/chats`, { withCredentials: true });
+  return response.data;
+};
+
+export const getChatHistory = async (chatId: string): Promise<ChatHistoryResponse> => {
+  const response = await axios.get(`${API_URL}/chats/${chatId}/history`, {
+    withCredentials: true,
+  });
   return response.data;
 };

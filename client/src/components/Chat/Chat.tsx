@@ -1,14 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { sendMessage } from '../../services/api';
+import React, { useEffect, useRef, useState } from 'react';
+import { getChatHistory, sendMessage } from '../../services/api';
 import { parseMessageWithPageRefBadges } from './ChatMessageParser'
 import ChatInput from './ChatInput/ChatInput';
 import {
   ChatContainer,
+  ChatNavigationBar,
+  ChatNavigationTitle,
   Message,
   MessagesContainer,
-  MessagesList,
-  ChatNavigationBar,
-  ChatNavigationTitle
+  MessagesList
 } from './Chat.styles';
 import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,6 +40,25 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const historyResponse = await getChatHistory(chatId);
+        const historicalMessages: MessageType[] = historyResponse.history.map((msg, index) => ({
+          id: new Date(msg.timestamp).getTime() + index,
+          text: msg.content,
+          documents: msg.documents,
+          isUser: msg.role === 'user',
+        }));
+        setMessages(historicalMessages);
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+      }
+    };
+
+    loadChatHistory();
+  }, [chatId]);
 
   const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;

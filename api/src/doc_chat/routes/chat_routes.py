@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse, FileResponse
 from werkzeug.utils import secure_filename
 
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
-    ChatQueryRequest, ChatsResponse
+    ChatQueryRequest, ChatsResponse, ChatHistoryResponse
 from doc_chat.file_util import save_file, allowed_file, build_file_path
 from doc_chat.rag.chat_service import ChatService, get_chat_service
 from doc_chat.security.security_helper import get_current_user, User
@@ -98,3 +98,19 @@ async def find_all_chats(
     return JSONResponse(
         content=chats.model_dump(),
         status_code=status.HTTP_200_OK)
+
+
+@chat_router.get('/{chat_id}/history', response_model=ChatHistoryResponse)
+async def get_chat_history(
+      chat_id: str,
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
+):
+    logger.info(f"User {user.id} requesting chat history for chat_id={chat_id}")
+    try:
+        history = await chat_service.get_chat_history(user.id, chat_id)
+        return JSONResponse(
+            content=history.model_dump(),
+            status_code=status.HTTP_200_OK)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
