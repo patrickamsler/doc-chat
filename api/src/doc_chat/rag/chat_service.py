@@ -103,7 +103,10 @@ class ChatService:
             for chunk in response['source_documents']
         ]
         answer = response['answer']
-        await self._add_message(user_id, chat_id, answer, is_user=False)
+        # Extract chunk IDs for referencing
+        chunk_ids = [chunk.chunk_id for chunk in response['source_documents']]
+        await self._add_message(user_id, chat_id, answer, is_user=False,
+                                chunk_ids=chunk_ids)
 
         return QueryResponse(
             question=question,
@@ -128,13 +131,14 @@ class ChatService:
         return self._retrieval_chain.invoke(question, ranked_chunks[:5])
 
     async def _add_message(self, user_id: str, chat_id: str,
-          content: str, is_user: bool) -> None:
+          content: str, is_user: bool, chunk_ids: list[str] = None) -> None:
         message = Message(
             role="user" if is_user else "assistant",
             content=content,
             timestamp=datetime.now(timezone.utc)
         )
-        await self._vector_store.add_message(user_id, chat_id, message)
+        await self._vector_store.add_message(user_id, chat_id, message,
+                                             chunk_ids=chunk_ids)
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """
@@ -221,7 +225,15 @@ class ChatService:
             MessageResponse(
                 role=msg.role,
                 content=msg.content,
-                timestamp=msg.timestamp.isoformat() if msg.timestamp else ""
+                timestamp=msg.timestamp.isoformat() if msg.timestamp else "",
+                documents=[
+                    DocumentsResponse(
+                        id=chunk.chunk_id,
+                        page=chunk.page_number,
+                        content=chunk.page_content
+                    )
+                    for chunk in msg.chunks
+                ] if msg.chunks else []
             )
             for msg in chat_history.messages
         ]

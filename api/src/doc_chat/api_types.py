@@ -11,10 +11,17 @@ class UploadFileResponse(BaseModel):
     message: str
 
 
+class DocumentsResponse(BaseModel):
+    id: str
+    page: int
+    content: str
+
+
 class Message(BaseModel):
     role: str
     content: str
     timestamp: str
+    documents: list[DocumentsResponse] = []
 
 
 class ChatHistoryResponse(BaseModel):
@@ -31,12 +38,6 @@ class Chat(BaseModel):
 class ChatsResponse(BaseModel):
     userId: str
     chats: list[Chat]
-
-
-class DocumentsResponse(BaseModel):
-    id: str
-    page: int
-    content: str
 
 
 class QueryResponse(BaseModel):

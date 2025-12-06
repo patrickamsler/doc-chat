@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Optional
 
 import weaviate
 import weaviate.classes as wvc
 from weaviate import WeaviateAsyncClient
 from weaviate.classes.config import Property, DataType, Configure, \
     ReferenceProperty
-from weaviate.classes.query import Filter
+from weaviate.classes.query import Filter, QueryReference
 
 
 @dataclass
@@ -33,6 +33,7 @@ class Message:
     role: Literal["user", "assistant"]
     content: str
     timestamp: datetime
+    chunks: Optional[list[DocumentChunk]] = None
 
 
 @dataclass
@@ -120,23 +121,6 @@ class WeaviateVectorStore:
                 vectorizer_config=Configure.Vectorizer.none()
             )
 
-        if not await self.client.collections.exists("ChatMessage"):
-            await self.client.collections.create(
-                name="ChatMessage",
-                properties=[
-                    Property(name="chat_id", data_type=DataType.TEXT),
-                    Property(name="role", data_type=DataType.TEXT),
-                    Property(name="content", data_type=DataType.TEXT),
-                    Property(name="timestamp", data_type=DataType.DATE)
-                ],
-                references=[
-                    ReferenceProperty(name="of_chat",
-                                      target_collection="Chat")
-                ],
-                multi_tenancy_config=multi_tenancy_config,
-                vectorizer_config=Configure.Vectorizer.none()
-            )
-
         if not await self.client.collections.exists("Document"):
             await self.client.collections.create(
                 name="Document",
@@ -182,6 +166,25 @@ class WeaviateVectorStore:
                 ]
             )
 
+        if not await self.client.collections.exists("ChatMessage"):
+            await self.client.collections.create(
+                name="ChatMessage",
+                properties=[
+                    Property(name="chat_id", data_type=DataType.TEXT),
+                    Property(name="role", data_type=DataType.TEXT),
+                    Property(name="content", data_type=DataType.TEXT),
+                    Property(name="timestamp", data_type=DataType.DATE)
+                ],
+                references=[
+                    ReferenceProperty(name="of_chat",
+                                      target_collection="Chat"),
+                    ReferenceProperty(name="cited_chunks",
+                                      target_collection="DocumentChunk")
+                ],
+                multi_tenancy_config=multi_tenancy_config,
+                vectorizer_config=Configure.Vectorizer.none()
+            )
+
     async def tenant_exists(self, user_id: str) -> bool:
         """
         Check if a tenant exists for the user.
@@ -205,14 +208,14 @@ class WeaviateVectorStore:
             user_id: The user ID to use as tenant name
         """
         chat_collection = self.client.collections.get("Chat")
-        message_collection = self.client.collections.get("ChatMessage")
         documents_collection = self.client.collections.get("Document")
         chunks_collection = self.client.collections.get("DocumentChunk")
+        message_collection = self.client.collections.get("ChatMessage")
 
         await chat_collection.tenants.create(user_id)
-        await message_collection.tenants.create(user_id)
         await documents_collection.tenants.create(user_id)
         await chunks_collection.tenants.create(user_id)
+        await message_collection.tenants.create(user_id)
 
     async def index_document(self, user_id: str, document: Document,
           chunks: list[DocumentChunk]) -> str:
@@ -456,7 +459,7 @@ class WeaviateVectorStore:
         return chats
 
     async def add_message(self, user_id: str, chat_id: str,
-          message: Message) -> str:
+          message: Message, chunk_ids: list[str] = None) -> str:
         """
         Add a message to chat history.
 
@@ -464,6 +467,7 @@ class WeaviateVectorStore:
             user_id: The user ID (used as tenant)
             chat_id: The chat ID this message belongs to
             message: Message to add
+            chunk_ids: Optional list of chunk IDs to reference
 
         Returns:
             The UUID of the inserted message
@@ -472,6 +476,8 @@ class WeaviateVectorStore:
             user_id)
         message_collection = self.client.collections.get(
             "ChatMessage").with_tenant(user_id)
+        chunk_collection = self.client.collections.get(
+            "DocumentChunk").with_tenant(user_id)
 
         # Get the chat UUID for the reference
         chat_results = await chat_collection.query.fetch_objects(
@@ -484,13 +490,29 @@ class WeaviateVectorStore:
 
         chat_uuid = chat_results.objects[0].uuid
 
+        # Build references dict
+        references = {"of_chat": chat_uuid}
+
+        # If chunk_ids provided, fetch their UUIDs and add to references
+        if chunk_ids:
+            # Fetch all chunks by their chunk_ids
+            chunk_filter = Filter.by_property("chunk_id").contains_any(
+                chunk_ids)
+            chunk_results = await chunk_collection.query.fetch_objects(
+                filters=chunk_filter,
+                limit=len(chunk_ids)
+            )
+            chunk_uuids = [obj.uuid for obj in chunk_results.objects]
+            if chunk_uuids:
+                references["cited_chunks"] = chunk_uuids
+
         # Insert the message
         message_uuid = await message_collection.data.insert({
             "chat_id": chat_id,
             "role": message.role,
             "content": message.content,
             "timestamp": message.timestamp
-        }, references={"of_chat": chat_uuid})
+        }, references=references)
 
         return message_uuid
 
@@ -522,19 +544,39 @@ class WeaviateVectorStore:
 
         chat_obj = chat_results.objects[0]
 
-        # Get all messages for this chat, ordered by timestamp
+        # Get all messages for this chat with their referenced chunks
         message_results = await message_collection.query.fetch_objects(
             filters=Filter.by_property("chat_id").equal(chat_id),
             limit=500,
-            sort=wvc.query.Sort.by_property("timestamp", ascending=True)
+            sort=wvc.query.Sort.by_property("timestamp", ascending=True),
+            return_references=QueryReference(
+                link_on="cited_chunks",
+                return_properties=["chunk_id", "page_number", "page_content",
+                                   "created_at"]
+            )
         )
 
         messages = []
         for msg_obj in message_results.objects:
+            # Extract referenced chunks if they exist
+            chunks = None
+            if msg_obj.references and "cited_chunks" in msg_obj.references:
+                chunks = [
+                    DocumentChunk(
+                        chunk_id=ref.properties.get('chunk_id'),
+                        doc_id="",  # Not needed for response
+                        page_number=ref.properties.get('page_number'),
+                        page_content=ref.properties.get('page_content'),
+                        created_at=ref.properties.get('created_at')
+                    )
+                    for ref in msg_obj.references["cited_chunks"].objects
+                ]
+
             messages.append(Message(
                 role=msg_obj.properties.get('role'),
                 content=msg_obj.properties.get('content'),
-                timestamp=msg_obj.properties.get('timestamp')
+                timestamp=msg_obj.properties.get('timestamp'),
+                chunks=chunks
             ))
 
         return ChatHistory(

@@ -48,7 +48,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
         const historicalMessages: MessageType[] = historyResponse.history.map((msg, index) => ({
           id: new Date(msg.timestamp).getTime() + index,
           text: msg.content,
-          documents: [],
+          documents: msg.documents,
           isUser: msg.role === 'user',
         }));
         setMessages(historicalMessages);
