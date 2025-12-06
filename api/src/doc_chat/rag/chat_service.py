@@ -7,7 +7,7 @@ from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .reranker import Reranker
 from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk, \
-    Chat as ChatEntity
+    Chat as ChatEntity, Message
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse
 from ..llm import create_llm
 
@@ -103,6 +103,13 @@ class ChatService:
         ranked_chunks = self._reranker.rerank(query=question,
                                               documents=retrieved_chunks)
 
+        # Store user message in history
+        await self._vector_store.add_message(user_id, chat_id, Message(
+            role="user",
+            content=question,
+            timestamp=datetime.now(timezone.utc)
+        ))
+
         # Invoke the retrieval chain with the top 5 ranked chunks
         response = self._retrieval_chain.invoke(question, ranked_chunks[:5])
         response_documents = [
@@ -112,6 +119,14 @@ class ChatService:
             for chunk in response['source_documents']
         ]
         answer = response['answer']
+
+        # Store assistant message in history after getting the response
+        await self._vector_store.add_message(user_id, chat_id, Message(
+            role="assistant",
+            content=answer,
+            timestamp=datetime.now(timezone.utc)
+        ))
+
         return QueryResponse(
             question=question,
             answer=answer,

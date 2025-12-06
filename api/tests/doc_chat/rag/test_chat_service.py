@@ -23,6 +23,7 @@ def mock_vector_store() -> AsyncMock:
     vector_store.get_document = AsyncMock()
     vector_store.get_documents = AsyncMock()
     vector_store.get_documents_by_chat = AsyncMock()
+    vector_store.add_message = AsyncMock()
     return vector_store
 
 
@@ -157,6 +158,25 @@ async def test_query_success(
         reranked_chunks[:5]
     )
 
+    # Verify add_message was called twice (user message, then assistant message)
+    assert mock_vector_store.add_message.call_count == 2
+
+    # Verify user message was stored before LLM invocation
+    user_message_call = mock_vector_store.add_message.call_args_list[0]
+    assert user_message_call[0][0] == user_id
+    assert user_message_call[0][1] == chat_id
+    user_message = user_message_call[0][2]
+    assert user_message.role == "user"
+    assert user_message.content == question
+
+    # Verify assistant message was stored after LLM invocation
+    assistant_message_call = mock_vector_store.add_message.call_args_list[1]
+    assert assistant_message_call[0][0] == user_id
+    assert assistant_message_call[0][1] == chat_id
+    assistant_message = assistant_message_call[0][2]
+    assert assistant_message.role == "assistant"
+    assert assistant_message.content == 'FastAPI is a modern web framework. [TXT1][TXT2]'
+
 
 @pytest.mark.asyncio
 async def test_query_response_documents_mapping(
@@ -198,6 +218,9 @@ async def test_query_response_documents_mapping(
     assert result.documents[1].page == source_docs[1].page_number
     assert result.documents[1].content == source_docs[1].page_content
 
+    # Verify messages were stored
+    assert mock_vector_store.add_message.call_count == 2
+
 
 @pytest.mark.asyncio
 async def test_query_empty_results(
@@ -234,6 +257,9 @@ async def test_query_empty_results(
 
     # Verify retrieval chain was called with empty list
     chat_service._retrieval_chain.invoke.assert_called_once_with(question, [])
+
+    # Verify messages were stored even with empty results
+    assert mock_vector_store.add_message.call_count == 2
 
 
 @pytest.mark.asyncio
