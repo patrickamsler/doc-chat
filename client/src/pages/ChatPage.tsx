@@ -26,23 +26,25 @@ const ChatPage: React.FC<ChatPageProps> = ({files}) => {
 
   useEffect(() => {
     if (!chatId) return;
-    if (downloadCalled.current[chatId]) return; // Prevent multiple downloads for the same chatId
 
     const info = files[chatId]; // file already downloaded and cached (e.g. from UploadPage)
     if (info) {
       console.log('Using cached file info for chatId:', chatId);
       setFileUrl(info.url);
       setFileName(info.name);
-    } else {
-      console.log('Downloading file for chatId:', chatId);
-      downloadCalled.current[chatId] = true;
-      downloadFile(chatId)
-      .then(({url, fileName}) => {
-        setFileUrl(url);
-        setFileName(fileName);
-      })
-      .catch(err => console.error('Error downloading file:', err));
+      return;
     }
+
+    if (downloadCalled.current[chatId]) return; // Prevent multiple downloads for the same chatId
+
+    console.log('Downloading file for chatId:', chatId);
+    downloadCalled.current[chatId] = true;
+    downloadFile(chatId)
+    .then(({url, fileName}) => {
+      setFileUrl(url);
+      setFileName(fileName);
+    })
+    .catch(err => console.error('Error downloading file:', err));
   }, [chatId, files]);
 
   const handleBadgeClick = (pageRef: number, content: string) => {
