@@ -33,7 +33,7 @@ class Message:
 class Chat:
     chat_id: str
     user_id: str
-    name: Optional[str]
+    name: str
     created_at: datetime
 
 
