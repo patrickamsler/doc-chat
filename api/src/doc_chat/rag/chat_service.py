@@ -6,8 +6,8 @@ from typing import Optional
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .reranker import Reranker
-from .weaviate_vector_store import WeaviateVectorStore, Document, DocumentChunk, \
-    Chat as ChatEntity, Message
+from .weaviate_vector_store import WeaviateVectorStore
+from ..models import Document, DocumentChunk, Chat as ChatEntity, Message
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse, \
     ChatHistoryResponse, Message as MessageResponse
 from ..llm import create_llm

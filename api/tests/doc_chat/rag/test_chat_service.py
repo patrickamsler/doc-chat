@@ -6,7 +6,7 @@ import pytest
 from doc_chat.api_types import QueryResponse, ChatsResponse, Chat, \
     ChatHistoryResponse
 from doc_chat.rag.chat_service import ChatService
-from doc_chat.rag.weaviate_vector_store import DocumentChunk, Document, \
+from doc_chat.models import DocumentChunk, Document, \
     Chat as ChatEntity, Message, ChatHistory
 
 

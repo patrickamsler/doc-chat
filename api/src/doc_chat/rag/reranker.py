@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 from flashrank import Ranker, RerankRequest
 
-from doc_chat.rag.weaviate_vector_store import DocumentChunk
+from doc_chat.models import DocumentChunk
 
 # Disable tokenizer parallelism to avoid warnings when forking processes
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
