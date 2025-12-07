@@ -175,7 +175,7 @@ class ChatService:
         for chat_entity in chat_entities:
             chat = Chat(
                 chatId=chat_entity.chat_id,
-                fileName=chat_entity.name,
+                fileName=chat_entity.name or "Untitled",
                 createdAt=chat_entity.created_at.isoformat() if chat_entity.created_at else None
             )
             chats.append(chat)
