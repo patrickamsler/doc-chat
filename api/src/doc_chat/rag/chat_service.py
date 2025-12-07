@@ -44,6 +44,7 @@ class ChatService:
         chat = ChatEntity(
             chat_id=chat_id,
             user_id=user_id,
+            name=file_name or "Unknown",
             created_at=created_at
         )
         await self._vector_store.create_chat(user_id, chat)
@@ -142,25 +143,19 @@ class ChatService:
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """
-        Find a chat by retrieving the chat and its document metadata.
+        Find a chat by its chat_id.
 
         In Weaviate:
         - A Chat represents a conversation
-        - Documents are linked to the chat
+        - The file name is stored in the Chat.name field
         """
         chat_entity = await self._vector_store.get_chat(user_id, chat_id)
         if not chat_entity:
             return None
 
-        # Get the first document for this chat to retrieve the file name
-        documents = await self._vector_store.get_documents_by_chat(user_id,
-                                                                   chat_id,
-                                                                   limit=1)
-        file_name = documents[0].file_name if documents else "Unknown"
-
         return Chat(
             chatId=chat_id,
-            fileName=file_name,
+            fileName=chat_entity.name,
             createdAt=chat_entity.created_at.isoformat() if chat_entity.created_at else None
         )
 
@@ -170,27 +165,17 @@ class ChatService:
 
         In Weaviate:
         - Each Chat represents a conversation
-        - Documents are linked to chats
+        - The file name is stored in the Chat.name field
         """
-        # Fetch all chats and all documents in parallel
+        # Fetch all chats
         chat_entities = await self._vector_store.get_chats(user_id)
-        all_documents = await self._vector_store.get_documents(user_id)
-
-        # Group documents by chat_id for efficient lookup
-        documents_by_chat = {}
-        for doc in all_documents:
-            if doc.chat_id not in documents_by_chat:
-                documents_by_chat[doc.chat_id] = doc
 
         # Build chat responses
         chats = []
         for chat_entity in chat_entities:
-            doc = documents_by_chat.get(chat_entity.chat_id)
-            file_name = doc.file_name if doc else "Unknown"
-
             chat = Chat(
                 chatId=chat_entity.chat_id,
-                fileName=file_name,
+                fileName=chat_entity.name,
                 createdAt=chat_entity.created_at.isoformat() if chat_entity.created_at else None
             )
             chats.append(chat)

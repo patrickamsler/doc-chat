@@ -297,11 +297,11 @@ async def test_find_chat_success(
     chat_entity = ChatEntity(
         chat_id=chat_id,
         user_id=user_id,
+        name=sample_document.file_name,
         created_at=datetime.now(timezone.utc)
     )
 
     mock_vector_store.get_chat.return_value = chat_entity
-    mock_vector_store.get_documents_by_chat.return_value = [sample_document]
 
     # When
     result = await chat_service.find_chat(user_id, chat_id)
@@ -314,9 +314,6 @@ async def test_find_chat_success(
 
     # Verify vector store was called
     mock_vector_store.get_chat.assert_called_once_with(user_id, chat_id)
-    mock_vector_store.get_documents_by_chat.assert_called_once_with(
-        user_id, chat_id, limit=1
-    )
 
 
 @pytest.mark.asyncio
@@ -347,52 +344,29 @@ async def test_find_all_chats_success(
     # Given
     user_id = "user_123"
 
-    # Create chat entities
+    # Create chat entities with file names
     chat_entities = [
         ChatEntity(
             chat_id="chat_1",
             user_id=user_id,
+            name="document1.pdf",
             created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
         ),
         ChatEntity(
             chat_id="chat_2",
             user_id=user_id,
+            name="document2.pdf",
             created_at=datetime(2024, 1, 2, 12, 0, 0, tzinfo=timezone.utc)
         ),
         ChatEntity(
             chat_id="chat_3",
             user_id=user_id,
+            name="document3.pdf",
             created_at=datetime(2024, 1, 3, 12, 0, 0, tzinfo=timezone.utc)
         ),
     ]
 
-    # Create documents
-    documents = [
-        Document(
-            doc_id="doc_1",
-            chat_id="chat_1",
-            file_name="document1.pdf",
-            created_at=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
-            num_pages=5
-        ),
-        Document(
-            doc_id="doc_2",
-            chat_id="chat_2",
-            file_name="document2.pdf",
-            created_at=datetime(2024, 1, 2, 12, 0, 0, tzinfo=timezone.utc),
-            num_pages=10
-        ),
-        Document(
-            doc_id="doc_3",
-            chat_id="chat_3",
-            file_name="document3.pdf",
-            created_at=datetime(2024, 1, 3, 12, 0, 0, tzinfo=timezone.utc),
-            num_pages=15
-        ),
-    ]
-
     mock_vector_store.get_chats.return_value = chat_entities
-    mock_vector_store.get_documents.return_value = documents
 
     # When
     result = await chat_service.find_all_chats(user_id)
@@ -405,12 +379,11 @@ async def test_find_all_chats_success(
     # Verify each chat is properly mapped
     for i, chat in enumerate(result.chats):
         assert chat.chatId == chat_entities[i].chat_id
-        assert chat.fileName == documents[i].file_name
+        assert chat.fileName == chat_entities[i].name
         assert chat.createdAt == chat_entities[i].created_at.isoformat()
 
     # Verify vector store was called
     mock_vector_store.get_chats.assert_called_once_with(user_id)
-    mock_vector_store.get_documents.assert_called_once_with(user_id)
 
 
 @pytest.mark.asyncio
@@ -422,7 +395,6 @@ async def test_find_all_chats_empty(
     # Given
     user_id = "user_123"
     mock_vector_store.get_chats.return_value = []
-    mock_vector_store.get_documents.return_value = []
 
     # When
     result = await chat_service.find_all_chats(user_id)
@@ -432,7 +404,6 @@ async def test_find_all_chats_empty(
     assert result.userId == user_id
     assert result.chats == []
     mock_vector_store.get_chats.assert_called_once_with(user_id)
-    mock_vector_store.get_documents.assert_called_once_with(user_id)
 
 
 @pytest.mark.asyncio
@@ -478,6 +449,7 @@ async def test_create_document_chat_new_tenant(
     chat_arg = mock_vector_store.create_chat.call_args[0][1]
     assert chat_arg.chat_id == chat_id
     assert chat_arg.user_id == user_id
+    assert chat_arg.name == file_name
 
     # Verify document was indexed
     mock_vector_store.index_document.assert_called_once()
@@ -569,8 +541,10 @@ async def test_create_document_chat_no_file_name(
         await chat_service.create_document_chat(user_id, chat_id, file_path)
 
     # Then
-    # Verify chat was created
+    # Verify chat was created with "Unknown" as name
     mock_vector_store.create_chat.assert_called_once()
+    chat_arg = mock_vector_store.create_chat.call_args[0][1]
+    assert chat_arg.name == "Unknown"
 
     # Verify document was indexed with "Unknown" as file_name
     call_args = mock_vector_store.index_document.call_args

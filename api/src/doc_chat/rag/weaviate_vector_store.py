@@ -40,6 +40,7 @@ class Message:
 class Chat:
     chat_id: str
     user_id: str
+    name: str
     created_at: datetime
 
 
@@ -115,6 +116,7 @@ class WeaviateVectorStore:
                 properties=[
                     Property(name="chat_id", data_type=DataType.TEXT),
                     Property(name="user_id", data_type=DataType.TEXT),
+                    Property(name="name", data_type=DataType.TEXT),
                     Property(name="created_at", data_type=DataType.DATE)
                 ],
                 multi_tenancy_config=multi_tenancy_config,
@@ -395,6 +397,7 @@ class WeaviateVectorStore:
         chat_uuid = await chat_collection.data.insert({
             "chat_id": chat.chat_id,
             "user_id": chat.user_id,
+            "name": chat.name,
             "created_at": chat.created_at
         })
 
@@ -426,6 +429,7 @@ class WeaviateVectorStore:
         return Chat(
             chat_id=obj.properties.get('chat_id'),
             user_id=obj.properties.get('user_id'),
+            name=obj.properties.get('name'),
             created_at=obj.properties.get('created_at')
         )
 
@@ -453,6 +457,7 @@ class WeaviateVectorStore:
             chats.append(Chat(
                 chat_id=obj.properties.get('chat_id'),
                 user_id=obj.properties.get('user_id'),
+                name=obj.properties.get('name'),
                 created_at=obj.properties.get('created_at')
             ))
 
