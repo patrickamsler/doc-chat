@@ -52,8 +52,11 @@ def chat_service(mock_vector_store: AsyncMock,
     with patch(
           'doc_chat.rag.chat_service.CitationRetrievalChain') as mock_chain_class:
         with patch('doc_chat.rag.chat_service.create_llm'):
-            service = ChatService(mock_vector_store, mock_reranker)
-            return service
+            with patch('doc_chat.rag.chat_service.QueryRewriter') as mock_query_rewriter_class:
+                service = ChatService(mock_vector_store, mock_reranker)
+                # Mock the query rewriter to return the query unchanged by default
+                service._query_rewriter.rewrite = Mock(side_effect=lambda q, h: q)
+                return service
 
 
 @pytest.fixture
@@ -111,6 +114,14 @@ async def test_query_success(
 
     # Mock get_documents_by_chat to return the document
     mock_vector_store.get_documents_by_chat.return_value = [sample_document]
+
+    # Mock get_chat_history for query rewriting (returns empty history)
+    mock_vector_store.get_chat_history.return_value = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=[],
+        created_at=datetime.now(timezone.utc)
+    )
 
     # Mock vector store search returning 20 chunks (we'll use 3 for simplicity)
     retrieved_chunks = sample_chunks * 7  # Simulate 21 chunks
@@ -195,6 +206,13 @@ async def test_query_response_documents_mapping(
     question = "Test question"
 
     mock_vector_store.get_documents_by_chat.return_value = [sample_document]
+    # Mock get_chat_history for query rewriting (returns empty history)
+    mock_vector_store.get_chat_history.return_value = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=[],
+        created_at=datetime.now(timezone.utc)
+    )
     mock_vector_store.search_chunks.return_value = sample_chunks
     mock_reranker.rerank.return_value = sample_chunks
 
@@ -238,6 +256,13 @@ async def test_query_empty_results(
     question = "Non-existent topic"
 
     mock_vector_store.get_documents_by_chat.return_value = [sample_document]
+    # Mock get_chat_history for query rewriting (returns empty history)
+    mock_vector_store.get_chat_history.return_value = ChatHistory(
+        chat_id=chat_id,
+        user_id=user_id,
+        messages=[],
+        created_at=datetime.now(timezone.utc)
+    )
     mock_vector_store.search_chunks.return_value = []
     mock_reranker.rerank.return_value = []
 
@@ -610,7 +635,7 @@ async def test_get_chat_history_success(
         assert msg.timestamp == messages[i].timestamp.isoformat()
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -629,7 +654,7 @@ async def test_get_chat_history_not_found(
         await chat_service.get_chat_history(user_id, chat_id)
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -660,7 +685,7 @@ async def test_get_chat_history_empty(
     assert result.history == []
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -744,4 +769,4 @@ async def test_get_chat_history_with_document_references(
     assert result.history[1].documents[1].content == "It is based on standard Python type hints."
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_once_with(user_id, chat_id)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
