@@ -5,12 +5,14 @@ from typing import Optional
 
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
+from .query_rewriter import QueryRewriter
 from .reranker import Reranker
 from .weaviate_vector_store import WeaviateVectorStore
-from ..models import Document, DocumentChunk, Chat as ChatEntity, Message
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse, \
     ChatHistoryResponse, Message as MessageResponse
 from ..llm import create_llm
+from ..models import Document, DocumentChunk, Chat as ChatEntity, Message, \
+    ChatHistory
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +21,9 @@ class ChatService:
     def __init__(self, vector_store: WeaviateVectorStore, reranker: Reranker):
         self._vector_store = vector_store
         self._reranker = reranker
-        self._retrieval_chain = CitationRetrievalChain(llm=create_llm())
+        llm = create_llm()
+        self._retrieval_chain = CitationRetrievalChain(llm=llm)
+        self._query_rewriter = QueryRewriter(llm=llm)
 
     async def create_document_chat(self, user_id: str, chat_id: str,
           file_path: str, file_name: Optional[str] = None) -> None:
@@ -75,7 +79,7 @@ class ChatService:
         await self._vector_store.index_document(user_id, document, chunks)
 
     async def query(self, user_id: str, chat_id: str,
-          question: str) -> QueryResponse:
+          query: str) -> QueryResponse:
         """
         Query the document using semantic search.
 
@@ -93,9 +97,22 @@ class ChatService:
         # At the moment we assume one document per chat
         doc_id = documents[0].doc_id
 
-        await self._add_message(user_id, chat_id, question, is_user=True)
+        # Load chat history for query rewriting (last N turns)
+        chat_history = await self._load_history_for_rewriting(user_id, chat_id)
+
+        # Rewrite query using conversation history
+        rewritten_query = self._query_rewriter.rewrite(query, chat_history)
+        logger.info(
+            "original_query=%s, rewritten_query=%s",
+            query, rewritten_query
+        )
+
+        # Store the original query in history
+        await self._add_message(user_id, chat_id, query, is_user=True)
+
+        # Use rewritten query for retrieval
         response = await self._retrieve_and_rerank_chunks(chat_id, doc_id,
-                                                          question,
+                                                          rewritten_query,
                                                           user_id)
         response_documents = [
             DocumentsResponse(id=chunk.chunk_id,
@@ -110,7 +127,7 @@ class ChatService:
                                 chunk_ids=chunk_ids)
 
         return QueryResponse(
-            question=question,
+            question=query,
             answer=answer,
             documents=response_documents
         )
@@ -140,6 +157,34 @@ class ChatService:
         )
         await self._vector_store.add_message(user_id, chat_id, message,
                                              chunk_ids=chunk_ids)
+
+    async def _load_history_for_rewriting(self, user_id: str,
+          chat_id: str, history_turns: int = 4) -> ChatHistory:
+        """
+        Load chat history for query rewriting.
+        Returns only the last N turns (configurable via history_turns parameter).
+        A turn consists of a user message and an assistant response.
+        """
+        # Calculate how many messages to retrieve (N turns = N*2 messages)
+        max_messages = history_turns * 2
+
+        # Get recent chat history with limit applied at database level
+        history = await self._vector_store.get_chat_history(
+            user_id,
+            chat_id,
+            limit=max_messages
+        )
+
+        # If no history exists, return empty history
+        if not history or not history.messages:
+            return ChatHistory(
+                chat_id=chat_id,
+                user_id=user_id,
+                messages=[],
+                created_at=datetime.now(timezone.utc)
+            )
+
+        return history
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """
@@ -200,8 +245,11 @@ class ChatService:
         Raises:
             ValueError: If chat not found
         """
-        chat_history = await self._vector_store.get_chat_history(user_id,
-                                                                 chat_id)
+        chat_history = await self._vector_store.get_chat_history(
+            user_id,
+            chat_id,
+            include_chunks=True
+        )
         if not chat_history:
             raise ValueError(f"Chat with chat_id {chat_id} not found")
 

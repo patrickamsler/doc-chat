@@ -477,22 +477,68 @@ class WeaviateVectorStore:
 
         return message_uuid
 
+    async def _fetch_chat_messages(self, user_id: str, chat_id: str,
+          limit: int, include_chunks: bool):
+        message_collection = self.client.collections.get(
+            "ChatMessage").with_tenant(user_id)
+
+        if include_chunks:
+            return await message_collection.query.fetch_objects(
+                filters=Filter.by_property("chat_id").equal(chat_id),
+                limit=limit,
+                sort=wvc.query.Sort.by_property("timestamp", ascending=False),
+                return_references=QueryReference(
+                    link_on="cited_chunks",
+                    return_properties=["chunk_id", "page_number",
+                                       "page_content", "created_at"]
+                )
+            )
+        else:
+            return await message_collection.query.fetch_objects(
+                filters=Filter.by_property("chat_id").equal(chat_id),
+                limit=limit,
+                sort=wvc.query.Sort.by_property("timestamp", ascending=False)
+            )
+
+    @staticmethod
+    def _parse_message_object(msg_obj, include_chunks: bool) -> Message:
+        chunks = None
+        if include_chunks and msg_obj.references and "cited_chunks" in msg_obj.references:
+            chunks = [
+                DocumentChunk(
+                    chunk_id=ref.properties.get('chunk_id'),
+                    doc_id="",  # Not needed for response
+                    page_number=ref.properties.get('page_number'),
+                    page_content=ref.properties.get('page_content'),
+                    created_at=ref.properties.get('created_at')
+                )
+                for ref in msg_obj.references["cited_chunks"].objects
+            ]
+
+        return Message(
+            role=msg_obj.properties.get('role'),
+            content=msg_obj.properties.get('content'),
+            timestamp=msg_obj.properties.get('timestamp'),
+            chunks=chunks
+        )
+
     async def get_chat_history(self, user_id: str,
-          chat_id: str) -> ChatHistory | None:
+          chat_id: str, limit: int = 200,
+          include_chunks: bool = False) -> ChatHistory | None:
         """
-        Get chat history with all messages.
+        Get chat history with most recent messages.
 
         Args:
             user_id: The user ID (used as tenant)
             chat_id: The chat ID to retrieve history for
+            limit: Maximum number of most recent messages to retrieve (default: 200)
+            include_chunks: Whether to include referenced chunks (default: False)
 
         Returns:
             ChatHistory if chat found, None otherwise
         """
         chat_collection = self.client.collections.get("Chat").with_tenant(
             user_id)
-        message_collection = self.client.collections.get(
-            "ChatMessage").with_tenant(user_id)
 
         # Get the chat
         chat_results = await chat_collection.query.fetch_objects(
@@ -502,43 +548,19 @@ class WeaviateVectorStore:
 
         if not chat_results.objects:
             return None
-
         chat_obj = chat_results.objects[0]
 
-        # Get all messages for this chat with their referenced chunks
-        message_results = await message_collection.query.fetch_objects(
-            filters=Filter.by_property("chat_id").equal(chat_id),
-            limit=500,
-            sort=wvc.query.Sort.by_property("timestamp", ascending=True),
-            return_references=QueryReference(
-                link_on="cited_chunks",
-                return_properties=["chunk_id", "page_number", "page_content",
-                                   "created_at"]
-            )
+        message_results = await self._fetch_chat_messages(
+            user_id, chat_id, limit, include_chunks
         )
 
-        messages = []
-        for msg_obj in message_results.objects:
-            # Extract referenced chunks if they exist
-            chunks = None
-            if msg_obj.references and "cited_chunks" in msg_obj.references:
-                chunks = [
-                    DocumentChunk(
-                        chunk_id=ref.properties.get('chunk_id'),
-                        doc_id="",  # Not needed for response
-                        page_number=ref.properties.get('page_number'),
-                        page_content=ref.properties.get('page_content'),
-                        created_at=ref.properties.get('created_at')
-                    )
-                    for ref in msg_obj.references["cited_chunks"].objects
-                ]
+        messages = [
+            self._parse_message_object(msg_obj, include_chunks)
+            for msg_obj in message_results.objects
+        ]
 
-            messages.append(Message(
-                role=msg_obj.properties.get('role'),
-                content=msg_obj.properties.get('content'),
-                timestamp=msg_obj.properties.get('timestamp'),
-                chunks=chunks
-            ))
+        # Reverse to get chronological order (oldest first)
+        messages.reverse()
 
         return ChatHistory(
             chat_id=chat_obj.properties.get('chat_id'),

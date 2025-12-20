@@ -1,11 +1,8 @@
-import logging
-
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
+    HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
 
 from doc_chat.models import ChatHistory
-
-logger = logging.getLogger("query_rewriter")
 
 system_prompt_template = """
 You are a query rewriting assistant. Your task is to transform user queries into clear, standalone questions optimized for semantic document retrieval.
@@ -49,10 +46,6 @@ class QueryRewriter:
         history_text = self._format_history(chat_history)
         result = self._chain.invoke({"history": history_text, "query": query})
         rewritten_query = result.content.strip()
-        logger.debug(
-            "original_query=%s, rewritten_query=%s",
-            query, rewritten_query
-        )
         return rewritten_query
 
     @staticmethod
