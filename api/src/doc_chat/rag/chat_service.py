@@ -11,8 +11,7 @@ from .weaviate_vector_store import WeaviateVectorStore
 from ..api_types import QueryResponse, ChatsResponse, Chat, DocumentsResponse, \
     ChatHistoryResponse, Message as MessageResponse
 from ..llm import create_llm
-from ..models import Document, DocumentChunk, Chat as ChatEntity, Message, \
-    ChatHistory
+from ..models import Document, DocumentChunk, Chat as ChatEntity, Message
 
 logger = logging.getLogger(__name__)
 
@@ -97,11 +96,7 @@ class ChatService:
         # At the moment we assume one document per chat
         doc_id = documents[0].doc_id
 
-        # Load chat history for query rewriting (last N turns)
-        chat_history = await self._load_history_for_rewriting(user_id, chat_id)
-
-        # Rewrite query using conversation history
-        rewritten_query = self._query_rewriter.rewrite(query, chat_history)
+        rewritten_query = await self._rewrite_query(chat_id, query, user_id)
         logger.info(
             "original_query=%s, rewritten_query=%s",
             query, rewritten_query
@@ -132,6 +127,22 @@ class ChatService:
             documents=response_documents
         )
 
+    async def _rewrite_query(self, chat_id: str, query: str, user_id: str,
+          history_turns=4) -> str:
+        max_messages = history_turns * 2
+        history = await self._vector_store.get_chat_history(
+            user_id,
+            chat_id,
+            limit=max_messages
+        )
+
+        messages = []
+        if history and history.messages:
+            messages = history.messages
+
+        # Rewrite query using conversation history
+        return self._query_rewriter.rewrite(query, messages)
+
     async def _retrieve_and_rerank_chunks(self, chat_id, doc_id, question,
           user_id):
         # Retrieve the top 20 chunks from the vector store
@@ -157,34 +168,6 @@ class ChatService:
         )
         await self._vector_store.add_message(user_id, chat_id, message,
                                              chunk_ids=chunk_ids)
-
-    async def _load_history_for_rewriting(self, user_id: str,
-          chat_id: str, history_turns: int = 4) -> ChatHistory:
-        """
-        Load chat history for query rewriting.
-        Returns only the last N turns (configurable via history_turns parameter).
-        A turn consists of a user message and an assistant response.
-        """
-        # Calculate how many messages to retrieve (N turns = N*2 messages)
-        max_messages = history_turns * 2
-
-        # Get recent chat history with limit applied at database level
-        history = await self._vector_store.get_chat_history(
-            user_id,
-            chat_id,
-            limit=max_messages
-        )
-
-        # If no history exists, return empty history
-        if not history or not history.messages:
-            return ChatHistory(
-                chat_id=chat_id,
-                user_id=user_id,
-                messages=[],
-                created_at=datetime.now(timezone.utc)
-            )
-
-        return history
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:
         """

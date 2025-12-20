@@ -2,7 +2,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
 
-from doc_chat.models import ChatHistory
+from doc_chat.models import Message
 
 system_prompt_template = """
 You are a query rewriting assistant. Your task is to transform user queries into clear, standalone questions optimized for semantic document retrieval.
@@ -42,19 +42,19 @@ class QueryRewriter:
         ])
         self._chain = prompt | llm
 
-    def rewrite(self, query: str, chat_history: ChatHistory) -> str:
-        history_text = self._format_history(chat_history)
+    def rewrite(self, query: str, messages: list[Message]) -> str:
+        history_text = self._format_history(messages)
         result = self._chain.invoke({"history": history_text, "query": query})
         rewritten_query = result.content.strip()
         return rewritten_query
 
     @staticmethod
-    def _format_history(chat_history: ChatHistory) -> str:
-        if not chat_history.messages:
+    def _format_history(messages: list[Message]) -> str:
+        if not messages:
             return "No previous conversation."
 
         history_parts = []
-        for msg in chat_history.messages:
+        for msg in messages:
             role = msg.role.upper()
             history_parts.append(f"{role}: {msg.content}")
 

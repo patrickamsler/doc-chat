@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
-from doc_chat.models import ChatHistory, Message
+from doc_chat.models import Message
 from doc_chat.rag.query_rewriter import QueryRewriter
 
 
@@ -10,15 +10,6 @@ def create_message(role: str, content: str) -> Message:
         role=role,
         content=content,
         timestamp=datetime.now(timezone.utc)
-    )
-
-
-def create_chat_history(messages: list[Message]) -> ChatHistory:
-    return ChatHistory(
-        chat_id="test_chat",
-        user_id="test_user",
-        messages=messages,
-        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -36,12 +27,12 @@ def make_rewriter_with_mocked_llm(rewritten_content: str) -> QueryRewriter:
 
 def test_rewrite_with_empty_history():
     # given
-    chat_history = create_chat_history([])
+    messages = []
     rewriter = make_rewriter_with_mocked_llm(
         "What is the main topic of the document?")
 
     # when
-    result = rewriter.rewrite("What is the main topic?", chat_history)
+    result = rewriter.rewrite("What is the main topic?", messages)
 
     # then
     assert result == "What is the main topic of the document?"
@@ -52,11 +43,11 @@ def test_rewrite_with_empty_history():
 
 def test_rewrite_strips_whitespace():
     # given
-    chat_history = create_chat_history([])
+    messages = []
     rewriter = make_rewriter_with_mocked_llm("  What is quantum computing?  \n")
 
     # when
-    result = rewriter.rewrite("What is QC?", chat_history)
+    result = rewriter.rewrite("What is QC?", messages)
 
     # then
     assert result == "What is quantum computing?"
@@ -70,11 +61,10 @@ def test_rewrite_with_multiple_messages():
         create_message("user", "How does it work?"),
         create_message("assistant", "It uses algorithms to learn from data."),
     ]
-    chat_history = create_chat_history(messages)
     rewriter = make_rewriter_with_mocked_llm("How does machine learning work?")
 
     # when
-    result = rewriter.rewrite("How does it work?", chat_history)
+    result = rewriter.rewrite("How does it work?", messages)
 
     # then
     assert result == "How does machine learning work?"
@@ -85,10 +75,10 @@ def test_rewrite_with_multiple_messages():
 
 def test_format_history_empty():
     # given
-    chat_history = create_chat_history([])
+    messages = []
 
     # when
-    history_text = QueryRewriter._format_history(chat_history)
+    history_text = QueryRewriter._format_history(messages)
 
     # then
     assert history_text == "No previous conversation."
@@ -97,10 +87,9 @@ def test_format_history_empty():
 def test_format_history_single_message():
     # given
     messages = [create_message("user", "What is Python?")]
-    chat_history = create_chat_history(messages)
 
     # when
-    history_text = QueryRewriter._format_history(chat_history)
+    history_text = QueryRewriter._format_history(messages)
 
     # then
     assert history_text == "USER: What is Python?"
@@ -113,10 +102,9 @@ def test_format_history_multiple_messages():
         create_message("assistant", "Python is a programming language."),
         create_message("user", "Who created it?"),
     ]
-    chat_history = create_chat_history(messages)
 
     # when
-    history_text = QueryRewriter._format_history(chat_history)
+    history_text = QueryRewriter._format_history(messages)
 
     # then
     expected = (
