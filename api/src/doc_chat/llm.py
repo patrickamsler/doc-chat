@@ -2,7 +2,8 @@ import tiktoken
 from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 
-chat_model = "gpt-4o-mini-2024-07-18"
+# chat_model = "gpt-4o-mini-2024-07-18"
+chat_model = "gpt-5.2-2025-12-11"
 
 
 def create_llm() -> BaseChatModel:

@@ -7,7 +7,7 @@ export const parseMessageWithPageRefBadges = (
     documents: DocumentResponse[],
     onBadgeClick: (pageRef: number, content: string) => void
 ): React.ReactNode => {
-  const parts = message.split(/(<<\s*chunk_\d+\s*>>)/g).map(part => part.trim()); // Split and trim parts
+  const parts = message.split(/(<<\s*chunk_\d+\s*>>)/g);
 
   return parts
   .filter(part => part !== "") // Remove empty strings or whitespaces
@@ -25,6 +25,7 @@ export const parseMessageWithPageRefBadges = (
           </PageRefBadge>
       );
     }
-    return <span key={index}>{part}</span>; // Return plain text for non-<<>> parts
+    return <span key={index} style={{whiteSpace: 'pre-wrap'}}>{part}</span>;
+
   });
 };

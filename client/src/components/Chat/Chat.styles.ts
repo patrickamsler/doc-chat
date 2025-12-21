@@ -35,14 +35,14 @@ export const MessagesContainer = styled.div`
 `;
 
 export const PageRefBadge = styled.span`
-  display: inline-block;
-  margin-left: 5px;
-  padding: 2px 6px;
-  background-color: ${props => props.theme.colors.accent};
-  color: ${props => props.theme.colors.textDark};
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
+    display: inline-block;
+    margin-right: 3px;
+    padding: 2px 6px;
+    background-color: ${props => props.theme.colors.accent};
+    color: ${props => props.theme.colors.textDark};
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
 `;
 
 export const Message = styled.div<{ $isUser: boolean }>`
