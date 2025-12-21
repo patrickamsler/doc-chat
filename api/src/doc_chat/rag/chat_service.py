@@ -103,7 +103,7 @@ class ChatService:
         )
 
         # Store the original query in history
-        await self._add_message(user_id, chat_id, query, is_user=True)
+        await self._add_message(user_id, chat_id, doc_id, query, is_user=True)
 
         # Use rewritten query for retrieval
         response = await self._retrieve_and_rerank_chunks(chat_id, doc_id,
@@ -118,7 +118,7 @@ class ChatService:
         answer = response['answer']
         # Extract chunk IDs for referencing
         chunk_ids = [chunk.chunk_id for chunk in response['source_documents']]
-        await self._add_message(user_id, chat_id, answer, is_user=False,
+        await self._add_message(user_id, chat_id, doc_id, answer, is_user=False,
                                 chunk_ids=chunk_ids)
 
         return QueryResponse(
@@ -159,14 +159,14 @@ class ChatService:
         # Invoke the retrieval chain with the top 5 ranked chunks
         return self._retrieval_chain.invoke(question, ranked_chunks[:5])
 
-    async def _add_message(self, user_id: str, chat_id: str,
+    async def _add_message(self, user_id: str, chat_id: str, doc_id: str,
           content: str, is_user: bool, chunk_ids: list[str] = None) -> None:
         message = Message(
             role="user" if is_user else "assistant",
             content=content,
             timestamp=datetime.now(timezone.utc)
         )
-        await self._vector_store.add_message(user_id, chat_id, message,
+        await self._vector_store.add_message(user_id, chat_id, doc_id, message,
                                              chunk_ids=chunk_ids)
 
     async def find_chat(self, user_id: str, chat_id: str) -> Optional[Chat]:

@@ -178,7 +178,8 @@ async def test_query_success(
     user_message_call = mock_vector_store.add_message.call_args_list[0]
     assert user_message_call[0][0] == user_id
     assert user_message_call[0][1] == chat_id
-    user_message = user_message_call[0][2]
+    assert user_message_call[0][2] == sample_document.doc_id
+    user_message = user_message_call[0][3]
     assert user_message.role == "user"
     assert user_message.content == question
 
@@ -186,7 +187,8 @@ async def test_query_success(
     assistant_message_call = mock_vector_store.add_message.call_args_list[1]
     assert assistant_message_call[0][0] == user_id
     assert assistant_message_call[0][1] == chat_id
-    assistant_message = assistant_message_call[0][2]
+    assert assistant_message_call[0][2] == sample_document.doc_id
+    assistant_message = assistant_message_call[0][3]
     assert assistant_message.role == "assistant"
     assert assistant_message.content == 'FastAPI is a modern web framework. [TXT1][TXT2]'
 

@@ -419,7 +419,7 @@ class WeaviateVectorStore:
 
         return chats
 
-    async def add_message(self, user_id: str, chat_id: str,
+    async def add_message(self, user_id: str, chat_id: str, doc_id: str,
           message: Message, chunk_ids: list[str] = None) -> str:
         """
         Add a message to chat history.
@@ -427,6 +427,7 @@ class WeaviateVectorStore:
         Args:
             user_id: The user ID (used as tenant)
             chat_id: The chat ID this message belongs to
+            doc_id: The document ID for referenced chunks
             message: Message to add
             chunk_ids: Optional list of chunk IDs to reference
 
@@ -456,9 +457,11 @@ class WeaviateVectorStore:
 
         # If chunk_ids provided, fetch their UUIDs and add to references
         if chunk_ids:
-            # Fetch all chunks by their chunk_ids
-            chunk_filter = Filter.by_property("chunk_id").contains_any(
-                chunk_ids)
+            # Fetch chunks by their chunk_ids AND doc_id to ensure correct document
+            chunk_filter = (
+                  Filter.by_property("chunk_id").contains_any(chunk_ids) &
+                  Filter.by_property("doc_id").equal(doc_id)
+            )
             chunk_results = await chunk_collection.query.fetch_objects(
                 filters=chunk_filter,
                 limit=len(chunk_ids)
