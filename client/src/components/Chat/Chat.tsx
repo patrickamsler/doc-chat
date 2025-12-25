@@ -107,7 +107,7 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
                 <Message key={message.id} $isUser={message.isUser}>
                   {!message.isUser && (
                       <FontAwesomeIcon icon={faRobot}
-                                       style={{marginRight: 8, color: theme.colors.primary[600]}}
+                                       style={{marginRight: 8, color: theme.colors.primary[500]}}
                       />
                   )}
                   {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
