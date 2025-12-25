@@ -18,18 +18,18 @@ export const FileUploadContainer = styled.div`
 
 export const Title = styled.h1`
     text-align: center;
-    color: ${props => props.theme.colors.textDark};
+    color: ${props => props.theme.colors.text.primary};
     margin-bottom: 5px;
     margin-top: 30px;
-    font-family: ${props => props.theme.fonts.mono};
+    font-family: ${props => props.theme.typography.fontFamily.mono};
 `;
 
 export const Subtitle = styled.p`
     text-align: center;
-    color: ${props => props.theme.colors.textDark};
+    color: ${props => props.theme.colors.text.primary};
     margin-top: 0;
     margin-bottom: 20px;
-    font-family: ${props => props.theme.fonts.mono};
+    font-family: ${props => props.theme.typography.fontFamily.mono};
 `;
 
 export const ContentContainer = styled.div`

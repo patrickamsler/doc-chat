@@ -6,7 +6,7 @@ export const SidebarContainer = styled.div<{ $open: boolean }>`
     bottom: 0;
     left: 0;
     width: 400px;
-    background-color: ${props => props.theme.colors.grey50};
+    background-color: ${props => props.theme.colors.gray[50]};
     transform: translateX(${props => (props.$open ? '0' : '-100%')});
     transition: ${props => (props.$open ? 'transform 0.2s ease-in-out' : 'none')};
     z-index: 999;
@@ -28,8 +28,8 @@ export const ToggleButton = styled.button<{ $open: boolean }>`
     top: 6px;
     left: 10px;
     z-index: 1000;
-    background: ${props => props.theme.colors.primaryA0};
-    color: ${props => props.theme.colors.white};
+    background: ${props => props.theme.colors.primary[600]};
+    color: ${props => props.theme.colors.background.paper};
     border: none;
     border-radius: 4px;
     width: 25px;
@@ -48,11 +48,11 @@ export const DocumentList = styled.ul`
 export const DocumentItem = styled.li`
     padding: 8px 4px;
     cursor: pointer;
-    border-bottom: 1px solid ${props => props.theme.colors.grey300};
+    border-bottom: 1px solid ${props => props.theme.colors.gray[300]};
     text-align: left;
 
     &:hover {
-        background-color: ${props => props.theme.colors.grey200};
+        background-color: ${props => props.theme.colors.gray[200]};
     }
 `;
 
@@ -66,7 +66,7 @@ export const SidebarHeader = styled.div`
 export const CloseButton = styled.button`
     background: none;
     border: none;
-    color: ${props => props.theme.colors.primaryA0};
+    color: ${props => props.theme.colors.primary[600]};
     font-size: 20px;
     cursor: pointer;
 `;
@@ -76,12 +76,12 @@ export const DocumentTitle = styled.span`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: ${props => props.theme.colors.textDark};
+    color: ${props => props.theme.colors.text.primary};
 `;
 
 export const Timestamp = styled.span`
     margin-top: 3px;
     display: block;
     font-size: 12px;
-    color: ${props => props.theme.colors.grey800};
+    color: ${props => props.theme.colors.gray[800]};
 `;

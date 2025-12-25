@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Chat from './Chat';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../../theme';
-import { sendMessage, getChatHistory } from '../../services/api';
+import { theme } from '../../theme/index';
+import { getChatHistory, sendMessage } from '../../services/api';
 
 jest.mock('../../services/api', () => ({
   sendMessage: jest.fn(),

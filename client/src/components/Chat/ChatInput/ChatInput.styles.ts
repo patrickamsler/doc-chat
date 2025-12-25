@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const InputContainer = styled.div`
     display: flex;
     padding: 15px;
-    background-color: ${props => props.theme.colors.white};
+    background-color: ${props => props.theme.colors.background.paper};
 `;
 
 export const MessageInput = styled.textarea`
@@ -11,18 +11,18 @@ export const MessageInput = styled.textarea`
     min-height: 22px;
     max-height: 150px;
     padding: 10px 10px 0 10px;
-    border: 1px solid ${props => props.theme.colors.grey300};
+    border: 1px solid ${props => props.theme.colors.gray[300]};
     border-radius: 4px;
     font-size: 16px;
-    color: ${props => props.theme.colors.textDark};
-    font-family: ${props => props.theme.fonts.body};
+    color: ${props => props.theme.colors.text.primary};
+    font-family: ${props => props.theme.typography.fontFamily.sans};
     resize: none; /* Prevent manual resizing */
     overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
     line-height: 1.5;
-    
+
     &:focus {
         outline: none;
-        border-color: ${props => props.theme.colors.primaryA0};
+        border-color: ${props => props.theme.colors.primary[600]};
     }
 `;
 
@@ -35,20 +35,20 @@ export const SendButton = styled.button<{ $height?: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${props => props.theme.colors.primaryA0};
-  color: ${props => props.theme.colors.white};
+  background-color: ${props => props.theme.colors.primary[600]};
+  color: ${props => props.theme.colors.background.paper};
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 20px;
-  font-family: ${props => props.theme.fonts.body};
+  font-family: ${props => props.theme.typography.fontFamily.sans};
 
   &:hover {
-    background-color: ${props => props.theme.colors.primaryA2};
+    background-color: ${props => props.theme.colors.primary[800]};
   }
 
   &:disabled {
-    background-color: ${props => props.theme.colors.grey400};
+    background-color: ${props => props.theme.colors.gray[400]};
     cursor: not-allowed;
   }
 

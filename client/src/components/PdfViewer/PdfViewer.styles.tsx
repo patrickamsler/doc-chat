@@ -14,7 +14,7 @@ export const NavigationBar = styled.div`
 `;
 
 export const FileNameContainer = styled.div`
-    font-family: ${props => props.theme.fonts.body}
+    font-family: ${props => props.theme.typography.fontFamily.sans};
     font-size: 16px;
     font-weight: 700;
     margin-left: 35px;
