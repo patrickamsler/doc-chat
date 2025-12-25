@@ -1,5 +1,3 @@
-// Theme configuration for RAG Chat Application
-
 export const lightTheme = {
   colors: {
     // Primary brand colors

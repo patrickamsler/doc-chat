@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ThemeProvider } from 'styled-components';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { theme } from './theme/index';
+import { ThemeProvider } from './theme';
 import GlobalStyle from './GlobalStyle';
 import { AppContainer } from './App.styles';
 import UploadPage from './pages/UploadPage';
@@ -32,7 +31,7 @@ const App: React.FC = () => {
   };
 
   return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider>
         <GlobalStyle/>
         <Sidebar onFileReady={handleFileUploaded}/>
         <AppContainer>
