@@ -57,7 +57,7 @@ export const Message = styled.div<{ $isUser: boolean }>`
     margin-left: ${props => props.$isUser ? 'auto' : '0'};
     margin-right: ${props => !props.$isUser ? 'auto' : '0'};
     font-family: ${props => props.theme.typography.fontFamily.sans};
-    font-size: ${props => props.theme.typography.fontSize.base};;
+    font-size: ${props => props.theme.typography.fontSize.base};
     position: relative;
     text-align: left;
     word-wrap: break-word;
