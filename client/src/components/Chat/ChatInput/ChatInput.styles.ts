@@ -2,8 +2,9 @@ import styled from "styled-components";
 
 export const InputContainer = styled.div`
     display: flex;
-    padding: 15px;
+    padding: ${props => props.theme.spacing.lg}px;
     background-color: ${props => props.theme.colors.background.paper};
+    gap: ${props => props.theme.spacing.sm}px;
 `;
 
 export const MessageInput = styled.textarea`
@@ -11,8 +12,9 @@ export const MessageInput = styled.textarea`
     min-height: 22px;
     max-height: 150px;
     padding: 10px 10px 0 10px;
-    border: 1px solid ${props => props.theme.colors.gray[300]};
-    border-radius: 4px;
+    background-color: ${props => props.theme.colors.background.paper};
+    border: 1px solid ${props => props.theme.colors.border.dark};
+    border-radius: ${props => props.theme.borderRadius.lg};
     font-size: 16px;
     color: ${props => props.theme.colors.text.primary};
     font-family: ${props => props.theme.typography.fontFamily.sans};
@@ -22,40 +24,44 @@ export const MessageInput = styled.textarea`
 
     &:focus {
         outline: none;
-        border-color: ${props => props.theme.colors.primary[600]};
+        border-color: ${props => props.theme.colors.primary[300]};
+    }
+
+    &:disabled {
+        background-color: ${props => props.theme.colors.gray[50]};
+        cursor: not-allowed;
     }
 `;
 
 export const SendButton = styled.button<{ $height?: number }>`
-  margin-left: 5px;
-  width: 60px;
-  min-height: 22px;
-  height: ${({ $height }) => ($height ? `${$height}px` : '40px')};
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${props => props.theme.colors.primary[600]};
-  color: ${props => props.theme.colors.background.paper};
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 20px;
-  font-family: ${props => props.theme.typography.fontFamily.sans};
+    // margin-left: 5px;
+    width: 60px;
+    min-height: 22px;
+    height: ${({$height}) => ($height ? `${$height}px` : '40px')};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: ${props => props.theme.colors.primary[600]};
+    color: ${props => props.theme.colors.text.inverse};
+    border: none;
+    border-radius: ${props => props.theme.borderRadius.lg};
+    font-size: 20px;
+    font-family: ${props => props.theme.typography.fontFamily.sans};
+    transition: background-color ${props => props.theme.transitions.duration.base};
 
-  &:hover {
-    background-color: ${props => props.theme.colors.primary[800]};
-  }
+    &:hover:not(:disabled) {
+        background-color: ${props => props.theme.colors.primary[700]};
+    }
 
-  &:disabled {
-    background-color: ${props => props.theme.colors.gray[400]};
-    cursor: not-allowed;
-  }
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 
-  svg {
-    /* Make sure the icon is centered and sized appropriately */
-    width: 20px;
-    height: 20px;
-  }
+    svg {
+        /* Make sure the icon is centered and sized appropriately */
+        width: 20px;
+        height: 20px;
+    }
 `;
 
