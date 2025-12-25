@@ -35,14 +35,15 @@ export const MessagesContainer = styled.div`
 `;
 
 export const PageRefBadge = styled.span`
-    display: inline-block;
-    margin-right: 3px;
-    padding: 2px 6px;
-    background-color: ${props => props.theme.colors.secondary[200]};
-    color: ${props => props.theme.colors.text.primary};
-    border-radius: 4px;
-    font-size: 12px;
+    display: inline;
+    margin: 0 1px;
+    color: ${props => props.theme.colors.primary[600]};
     cursor: pointer;
+    font-size: ${props => props.theme.typography.fontSize.sm};
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 
 export const Message = styled.div<{ $isUser: boolean }>`
@@ -56,6 +57,7 @@ export const Message = styled.div<{ $isUser: boolean }>`
     margin-left: ${props => props.$isUser ? 'auto' : '0'};
     margin-right: ${props => !props.$isUser ? 'auto' : '0'};
     font-family: ${props => props.theme.typography.fontFamily.sans};
+    font-size: ${props => props.theme.typography.fontSize.base};;
     position: relative;
     text-align: left;
     word-wrap: break-word;

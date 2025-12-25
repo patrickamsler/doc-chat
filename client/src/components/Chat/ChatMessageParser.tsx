@@ -21,7 +21,7 @@ export const parseMessageWithPageRefBadges = (
       }
       return (
           <PageRefBadge key={index} onClick={() => onBadgeClick(document.page, document.content)}>
-            {document.page + 1}{/* Display page number (1-based index) */}
+            [{document.page + 1}]
           </PageRefBadge>
       );
     }
