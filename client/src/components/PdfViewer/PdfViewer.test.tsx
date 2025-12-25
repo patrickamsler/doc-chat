@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from 'styled-components';
 import PdfViewer from './PdfViewer';
-import { theme } from '../../theme/index';
+import theme from "../../theme";
 import { PageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 
 const createMockPlugin = (): PageNavigationPlugin => ({

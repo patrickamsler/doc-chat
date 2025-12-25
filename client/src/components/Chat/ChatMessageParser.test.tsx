@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "styled-components"; // Import ThemeProvider
 import { parseMessageWithPageRefBadges } from "./ChatMessageParser";
-import { theme } from "../../theme/index";
+import theme from "../../theme";
 import { DocumentResponse } from "../../types/apiTypes";
 
 describe("parseMessageWithPageRefBadges", () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen, cleanup } from '@testing-library/react';
 import ChatInput from './ChatInput';
 import { ThemeProvider } from 'styled-components';
-import { theme } from "../../../theme/index";
+import theme from "../../../theme";
 
 describe('ChatInput', () => {
   const setup = (propsOverride = {}) => {
