@@ -65,9 +65,9 @@ describe('Chat component', () => {
     userEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
-      expect(screen.getByText('14')).toBeInTheDocument();
+      expect(screen.getByText('[14]')).toBeInTheDocument();
     });
-    userEvent.click(screen.getByText('14')); // badge text is '14' because it is 1-based index
+    userEvent.click(screen.getByText('[14]')); // badge text is '[14]' because it is 1-based index
     expect(onBadgeClick).toHaveBeenCalledWith(13, 'test document'); // 0-based index in the function
   });
 
@@ -106,7 +106,7 @@ describe('Chat component', () => {
 
     expect(screen.getByText('Can you tell me more?')).toBeInTheDocument();
     expect(screen.getByText(/This document is about testing\./)).toBeInTheDocument();
-    expect(screen.getByText('6')).toBeInTheDocument(); // page badge (5 + 1 for 1-based index)
+    expect(screen.getByText('[6]')).toBeInTheDocument(); // page badge (5 + 1 for 1-based index)
   });
 });
 

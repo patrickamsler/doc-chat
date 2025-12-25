@@ -40,7 +40,7 @@ describe("parseMessageWithPageRefBadges", () => {
     expect(firstChild?.childNodes.length).toBe(3);
     expect(firstChild?.childNodes[0].nodeName).toBe("SPAN");
     expect(firstChild?.childNodes[0].textContent).toBe("See page ");
-    expect(firstChild?.childNodes[1].textContent).toBe("2");
+    expect(firstChild?.childNodes[1].textContent).toBe("[2]");
     expect(firstChild?.childNodes[2].textContent).toBe(" for details.");
   });
 
@@ -62,9 +62,9 @@ describe("parseMessageWithPageRefBadges", () => {
     const spans = container.querySelectorAll("span");
     expect(spans.length).toBe(4);
     expect(spans[0].textContent).toBe("See page for details. ");
-    expect(spans[1].textContent).toBe("18");
+    expect(spans[1].textContent).toBe("[18]");
     expect(spans[2].textContent).toBe(" ");
-    expect(spans[3].textContent).toBe("6");
+    expect(spans[3].textContent).toBe("[6]");
   });
 
   it("calls onBadgeClick with the correct page number when badge is clicked", () => {
@@ -80,7 +80,7 @@ describe("parseMessageWithPageRefBadges", () => {
         </ThemeProvider>
     );
 
-    const badge = screen.getByText("2"); // page number is incremented by 1
+    const badge = screen.getByText("[2]"); // page number is incremented by 1
     fireEvent.click(badge);
 
     expect(onBadgeClick).toHaveBeenCalledWith(1, "Document 1"); // page number index
