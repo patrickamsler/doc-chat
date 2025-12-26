@@ -102,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, onFileReady}) => {
                             {doc.fileName}
                           </DocumentTitle>
                           <Timestamp>
-                            {new Date(doc.createdAt).toLocaleDateString()}
+                            {new Date(doc.createdAt).toISOString().split('T')[0]}
                           </Timestamp>
                         </DocumentInfo>
                       </DocumentItemContent>
