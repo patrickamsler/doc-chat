@@ -44,7 +44,7 @@ export const UploadBtn = styled.button`
 export const SidebarContent = styled.div`
     flex: 1;
     overflow-y: auto;
-    padding: ${props => props.theme.spacing.md}px;
+    padding: 0 12px;
 `;
 
 export const SidebarTitle = styled.h2`
@@ -52,6 +52,8 @@ export const SidebarTitle = styled.h2`
     font-weight: ${props => props.theme.typography.fontWeight.semibold};
     color: ${props => props.theme.colors.text.secondary};
     text-transform: uppercase;
+    text-align: left;
+    margin-left: 4px;
     margin-bottom: ${props => props.theme.spacing.sm}px;
 `;
 
