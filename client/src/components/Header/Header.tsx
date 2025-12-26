@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({onMenuClick}) => {
             <BrandIcon>
               <FileText style={{width: '1.25rem', height: '1.25rem', color: 'white'}}/>
             </BrandIcon>
-            <BrandTitle>RAG Chat</BrandTitle>
+            <BrandTitle>Doc Chat</BrandTitle>
           </HeaderBrand>
         </HeaderLeft>
 
