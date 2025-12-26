@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
-import { ContentContainer, ContentPanel } from '../App.styles';
+import { ContentContainer, ContentPanel } from './ChatPage.styles';
 import { downloadFile } from '../services/api';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
