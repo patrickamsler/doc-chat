@@ -10,10 +10,9 @@ import {
   MessagesContainer,
   MessagesList
 } from './Chat.styles';
-import { faRobot } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
+import { BotMessageSquare } from "lucide-react";
 
 interface ChatProps {
   chatId: string;
@@ -106,9 +105,12 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
             {messages.map(message => (
                 <Message key={message.id} $isUser={message.isUser}>
                   {!message.isUser && (
-                      <FontAwesomeIcon icon={faRobot}
-                                       style={{marginRight: 8, color: theme.colors.primary[500]}}
-                      />
+                      <BotMessageSquare
+                          strokeWidth={2.5}
+                          style={{
+                            height: 22, width: 22, marginRight: 5,
+                            color: theme.colors.primary[500]
+                          }}/>
                   )}
                   {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
                 </Message>

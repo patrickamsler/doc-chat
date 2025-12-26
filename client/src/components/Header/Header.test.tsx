@@ -30,7 +30,7 @@ describe('Header component', () => {
     setup();
 
     // Check for brand title
-    expect(screen.getByText('RAG Chat')).toBeInTheDocument();
+    expect(screen.getByText('Doc Chat')).toBeInTheDocument();
 
     // Check for user info
     expect(screen.getByText('Guest User')).toBeInTheDocument();

@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { InputContainer, MessageInput, SendButton } from './ChatInput.styles';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { InputContainer, MessageInput, SendButton, SpinningIcon } from './ChatInput.styles';
+import { Send, Loader2 } from 'lucide-react';
 
 interface ChatInputProps {
   onSendMessage: (input: string) => void;
@@ -62,9 +61,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
         $height={textareaHeight}
       >
         {isLoading ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
+          <SpinningIcon>
+            <Loader2 size={16} />
+          </SpinningIcon>
         ) : (
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <Send size={16} />
         )}
       </SendButton>
     </InputContainer>

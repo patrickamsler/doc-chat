@@ -1,4 +1,13 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 export const InputContainer = styled.div`
     display: flex;
@@ -63,5 +72,10 @@ export const SendButton = styled.button<{ $height?: number }>`
         width: 20px;
         height: 20px;
     }
+`;
+
+export const SpinningIcon = styled.span`
+    display: inline-flex;
+    animation: ${spin} 1s linear infinite;
 `;
 

@@ -1,4 +1,4 @@
-import { FileText, Menu, UserCircle } from "lucide-react";
+import { Bot, Menu, UserCircle } from "lucide-react";
 import React from "react";
 import {
   BrandIcon,
@@ -25,7 +25,10 @@ const Header: React.FC<HeaderProps> = ({onMenuClick}) => {
           </MenuBtn>
           <HeaderBrand>
             <BrandIcon>
-              <FileText style={{width: '1.25rem', height: '1.25rem', color: 'white'}}/>
+              <Bot
+                  strokeWidth={2.7}
+                  style={{width: '1.3rem', height: '1.3rem', color: 'white'}}
+              />
             </BrandIcon>
             <BrandTitle>Doc Chat</BrandTitle>
           </HeaderBrand>

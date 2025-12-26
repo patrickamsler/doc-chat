@@ -38,8 +38,8 @@ export const HeaderBrand = styled.div`
 `;
 
 export const BrandIcon = styled.div`
-    width: 2rem;
-    height: 2rem;
+    width: 2.2rem;
+    height: 2.2rem;
     background-color: ${props => props.theme.colors.primary[600]};
     border-radius: ${props => props.theme.borderRadius.lg};
     display: flex;
