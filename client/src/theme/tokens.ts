@@ -125,17 +125,6 @@ export const lightTheme = {
     },
   },
 
-  // Spacing (in pixels)
-  spacing: {
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 24,
-    xl: 32,
-    '2xl': 48,
-    '3xl': 64,
-  },
-
   // Border radius
   borderRadius: {
     none: '0',
@@ -185,60 +174,6 @@ export const lightTheme = {
       easeOut: 'ease-out',
       easeInOut: 'ease-in-out',
       linear: 'linear',
-    },
-  },
-
-  // Component-specific styles
-  components: {
-    // Buttons
-    button: {
-      padding: {
-        sm: '0.375rem 0.75rem',
-        md: '0.5rem 1rem',
-        lg: '0.75rem 1.5rem',
-      },
-      height: {
-        sm: '2rem',
-        md: '2.5rem',
-        lg: '3rem',
-      },
-    },
-
-    // Input fields
-    input: {
-      height: {
-        sm: '2rem',
-        md: '2.5rem',
-        lg: '3rem',
-      },
-      padding: {
-        sm: '0.375rem 0.75rem',
-        md: '0.5rem 1rem',
-        lg: '0.75rem 1.5rem',
-      },
-    },
-
-    // Sidebar
-    sidebar: {
-      width: '16rem', // 256px
-      collapsedWidth: '0',
-    },
-
-    // Chat panel
-    chat: {
-      minWidth: '18.75rem',  // 300px
-      maxWidth: '50rem',     // 800px
-      defaultWidth: '24rem', // 384px
-    },
-
-    // PDF Viewer
-    pdfViewer: {
-      zoom: {
-        min: 50,
-        max: 200,
-        default: 100,
-        step: 25,
-      },
     },
   },
 };
@@ -340,9 +275,6 @@ export const darkTheme = {
   // Typography (same as light)
   typography: lightTheme.typography,
 
-  // Spacing (same as light)
-  spacing: lightTheme.spacing,
-
   // Border radius (same as light)
   borderRadius: lightTheme.borderRadius,
 
@@ -362,9 +294,6 @@ export const darkTheme = {
 
   // Transitions (same as light)
   transitions: lightTheme.transitions,
-
-  // Components (same as light)
-  components: lightTheme.components,
 };
 
 // Default export is light theme
@@ -393,11 +322,6 @@ export const getColor = (colorPath: string, opacity?: number, themeArg = lightTh
   }
 
   return value;
-};
-
-// Helper function to get spacing value
-export const getSpacing = (size: keyof typeof lightTheme.spacing) => {
-  return lightTheme.spacing[size];
 };
 
 export type Theme = typeof lightTheme;

@@ -8,7 +8,7 @@ export const theme = lightTheme;
 export type Theme = typeof theme;
 
 // Re-export utilities from tokens
-export { getColor, getSpacing, lightTheme, darkTheme } from './tokens';
+export { getColor, lightTheme, darkTheme } from './tokens';
 
 // Re-export theme provider
 export { ThemeProvider } from './ThemeContext';

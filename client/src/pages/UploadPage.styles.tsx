@@ -28,12 +28,12 @@ export const UploadBtn = styled.button`
     background-color: ${props => props.theme.colors.primary[600]};
     color: ${props => props.theme.colors.text.inverse};
     font-weight: ${props => props.theme.typography.fontWeight.semibold};
-    padding: ${props => props.theme.components.button.padding.lg};
+    padding: 0.75rem 1.5rem;
     border-radius: ${props => props.theme.borderRadius.lg};
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: ${props => props.theme.spacing.sm}px;
+    gap: 8px;
     border: none;
     cursor: pointer;
     transition: background-color ${props => props.theme.transitions.duration.base};

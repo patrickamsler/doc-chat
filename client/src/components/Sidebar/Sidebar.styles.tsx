@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { FileText } from 'lucide-react';
 
 export const SidebarContainer = styled.aside<{ $isOpen: boolean }>`
-    width: ${props => props.$isOpen ? props.theme.components.sidebar.width : props.theme.components.sidebar.collapsedWidth};
+    width: ${props => props.$isOpen ? '16rem' : '0'};
     background-color: ${props => props.theme.colors.background.sidebar};
     border-right: 1px solid ${props => props.theme.colors.border.main};
     display: flex;
@@ -12,7 +12,7 @@ export const SidebarContainer = styled.aside<{ $isOpen: boolean }>`
 `;
 
 export const SidebarHeader = styled.div`
-    padding: ${props => props.theme.spacing.md}px;
+    padding: 16px;
     border-bottom: 1px solid ${props => props.theme.colors.border.main};
 `;
 
@@ -21,12 +21,12 @@ export const UploadBtn = styled.button`
     background-color: ${props => props.theme.colors.primary[600]};
     color: ${props => props.theme.colors.text.inverse};
     font-weight: ${props => props.theme.typography.fontWeight.semibold};
-    padding: ${props => props.theme.components.button.padding.md};
+    padding: 0.5rem 1rem;
     border-radius: ${props => props.theme.borderRadius.lg};
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: ${props => props.theme.spacing.sm}px;
+    gap: 8px;
     border: none;
     cursor: pointer;
     transition: background-color ${props => props.theme.transitions.duration.base};
@@ -54,13 +54,13 @@ export const SidebarTitle = styled.h2`
     text-transform: uppercase;
     text-align: left;
     margin-left: 4px;
-    margin-bottom: ${props => props.theme.spacing.sm}px;
+    margin-bottom: 8px;
 `;
 
 export const DocumentList = styled.div`
     display: flex;
     flex-direction: column;
-    gap: ${props => props.theme.spacing.sm}px;
+    gap: 8px;
 `;
 
 export const DocumentItem = styled.button<{ $isSelected: boolean }>`
@@ -71,7 +71,7 @@ export const DocumentItem = styled.button<{ $isSelected: boolean }>`
     background-color: ${props => props.$isSelected ? props.theme.colors.primary[50] : props.theme.colors.gray[50]};
     border: 2px solid ${props => props.$isSelected ? props.theme.colors.primary[600] : 'transparent'};
     cursor: pointer;
-    padding: ${props => props.theme.spacing.sm}px;
+    padding: 8px;
 
     &:hover {
         background-color: ${props => props.$isSelected ? props.theme.colors.primary[50] : props.theme.colors.gray[100]};
@@ -81,7 +81,7 @@ export const DocumentItem = styled.button<{ $isSelected: boolean }>`
 export const DocumentItemContent = styled.div`
     display: flex;
     align-items: flex-start;
-    gap: ${props => props.theme.spacing.sm}px;
+    gap: 8px;
 `;
 
 export const DocumentIcon = styled(FileText)<{ $isSelected: boolean }>`
@@ -116,7 +116,7 @@ export const Timestamp = styled.p`
 
 export const EmptyState = styled.div`
     text-align: center;
-    padding: ${props => props.theme.spacing['2xl']}px 0;
+    padding: 48px 0;
 `;
 
 export const EmptyIconWrapper = styled.div`
@@ -127,7 +127,7 @@ export const EmptyIconWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto ${props => props.theme.spacing.sm}px;
+    margin: 0 auto 8px;
 `;
 
 export const EmptyTitle = styled.p`

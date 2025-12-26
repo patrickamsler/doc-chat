@@ -11,9 +11,9 @@ const spin = keyframes`
 
 export const InputContainer = styled.div`
     display: flex;
-    padding: ${props => props.theme.spacing.lg}px;
+    padding: 24px;
     background-color: ${props => props.theme.colors.background.paper};
-    gap: ${props => props.theme.spacing.sm}px;
+    gap: 8px;
 `;
 
 export const MessageInput = styled.textarea`
