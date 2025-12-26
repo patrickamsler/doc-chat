@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
-import { Container, MainLayout, ContentPanel } from './ChatPage.styles';
+import { Container, ContentPanel, MainLayout } from './ChatPage.styles';
 import { downloadFile } from '../services/api';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -77,7 +77,11 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
             )}
           </ContentPanel>
           <ContentPanel>
-            <Chat chatId={chatId} onBadgeClick={handleBadgeClick}/>
+            <Chat
+                chatId={chatId}
+                fileName={fileName}
+                onBadgeClick={handleBadgeClick}
+            />
           </ContentPanel>
         </MainLayout>
       </Container>

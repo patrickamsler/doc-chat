@@ -4,8 +4,9 @@ import { parseMessageWithPageRefBadges } from './ChatMessageParser'
 import ChatInput from './ChatInput/ChatInput';
 import {
   ChatContainer,
-  ChatNavigationBar,
-  ChatNavigationTitle,
+  ChatHeader,
+  ChatSubtitle,
+  ChatTitle,
   Message,
   MessagesContainer,
   MessagesList
@@ -16,6 +17,7 @@ import { BotMessageSquare } from "lucide-react";
 
 interface ChatProps {
   chatId: string;
+  fileName?: string;
   onBadgeClick: (pageRef: number, content: string) => void;
 }
 
@@ -26,7 +28,7 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
+const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -97,18 +99,24 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
 
   return (
       <ChatContainer>
-        <ChatNavigationBar>
-          <ChatNavigationTitle>Chat</ChatNavigationTitle>
-        </ChatNavigationBar>
+        <ChatHeader>
+          <ChatTitle>
+            <BotMessageSquare style={{width: '1.25rem', height: '1.25rem', color: theme.colors.primary[500]}}/>
+            <span>Chat Assistant</span>
+          </ChatTitle>
+          <ChatSubtitle>
+            Chatting about: {fileName}
+          </ChatSubtitle>
+        </ChatHeader>
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} $isUser={message.isUser}>
                   {!message.isUser && (
                       <BotMessageSquare
-                          strokeWidth={2.5}
+                          strokeWidth={2.0}
                           style={{
-                            height: 22, width: 22, marginRight: 5,
+                            height: 21, width: 21, marginRight: 5,
                             color: theme.colors.primary[500]
                           }}/>
                   )}
