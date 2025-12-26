@@ -5,7 +5,6 @@ import { downloadFile, getChats } from '../../services/api';
 import { ChatInfo } from '../../types/apiTypes';
 import {
   SidebarContainer,
-  ToggleButton,
   DocumentList,
   DocumentItem,
   Timestamp,
@@ -16,11 +15,12 @@ import {
 } from './Sidebar.styles';
 
 interface SidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
   onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Sidebar: React.FC<SidebarProps> = ({isOpen, onToggle, onFileReady}) => {
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -43,19 +43,19 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
     if (!isOpen) return;
     const handleClick = (e: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) { // close sidebar if clicked outside
-        closeSidebar();
+        onToggle();
       }
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [isOpen]);
+  }, [isOpen, onToggle]);
 
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
       const {url, fileName} = await downloadFile(doc.chatId);
       onFileReady(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
-      closeSidebar();
+      onToggle();
     } catch (err) {
       console.error(err);
     }
@@ -68,18 +68,14 @@ const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
   const onFileUploaded = (id: string, url: string, name: string) => {
     onFileReady(id, url, name);
     navigate(`/chat/${id}`);
-    closeSidebar(); // close sidebar after file upload
+    onToggle(); // close sidebar after file upload
   }
-
-  const toggleSidebar = () => setIsOpen(prev => !prev);
-  const closeSidebar = () => setIsOpen(false);
 
   return (
       <>
-        <ToggleButton onClick={toggleSidebar} $open={isOpen}>☰</ToggleButton>
         <SidebarContainer ref={sidebarRef} $open={isOpen}>
           <SidebarHeader>
-            <CloseButton onClick={closeSidebar}>X</CloseButton>
+            <CloseButton onClick={onToggle}>X</CloseButton>
           </SidebarHeader>
           <SidebarContent>
             <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>

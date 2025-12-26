@@ -15,6 +15,7 @@ interface FileInfo {
 
 const App: React.FC = () => {
   const [files, setFiles] = useState<Record<string, FileInfo>>({});
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isAuthInitialized = useRef(false);
   const navigate = useNavigate();
 
@@ -30,15 +31,17 @@ const App: React.FC = () => {
     navigate(`/chat/${chatId}`);
   };
 
+  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+
   return (
       <ThemeProvider>
         <GlobalStyle/>
-        <Sidebar onFileReady={handleFileUploaded}/>
+        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} onFileReady={handleFileUploaded}/>
         <AppContainer>
           <Routes>
             <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
             <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
-            <Route path="/chat/:chatId" element={<ChatPage files={files}/>}/>
+            <Route path="/chat/:chatId" element={<ChatPage files={files} toggleSidebar={toggleSidebar}/>}/>
           </Routes>
         </AppContainer>
       </ThemeProvider>

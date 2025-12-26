@@ -5,6 +5,7 @@ import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
 import { ContentContainer, ContentPanel } from '../App.styles';
 import { downloadFile } from '../services/api';
+import Header from "../components/Header/Header";
 
 interface FileInfo {
   url: string;
@@ -13,9 +14,10 @@ interface FileInfo {
 
 interface ChatPageProps {
   files: Record<string, FileInfo>;
+  toggleSidebar: () => void;
 }
 
-const ChatPage: React.FC<ChatPageProps> = ({files}) => {
+const ChatPage: React.FC<ChatPageProps> = ({files, toggleSidebar}) => {
   const {chatId = ''} = useParams<{ chatId: string }>();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -57,20 +59,23 @@ const ChatPage: React.FC<ChatPageProps> = ({files}) => {
   if (!chatId) return null;
 
   return (
-      <ContentContainer>
-        <ContentPanel>
-          {fileUrl && (
-              <PdfViewer
-                  fileUrl={fileUrl}
-                  fileName={fileName}
-                  pageNavigationPluginInstance={pageNavigationPluginInstance}
-              />
-          )}
-        </ContentPanel>
-        <ContentPanel>
-          <Chat chatId={chatId} onBadgeClick={handleBadgeClick}/>
-        </ContentPanel>
-      </ContentContainer>
+      <>
+        <Header onMenuClick={toggleSidebar}/>
+        <ContentContainer>
+          <ContentPanel>
+            {fileUrl && (
+                <PdfViewer
+                    fileUrl={fileUrl}
+                    fileName={fileName}
+                    pageNavigationPluginInstance={pageNavigationPluginInstance}
+                />
+            )}
+          </ContentPanel>
+          <ContentPanel>
+            <Chat chatId={chatId} onBadgeClick={handleBadgeClick}/>
+          </ContentPanel>
+        </ContentContainer>
+      </>
   );
 };
 
