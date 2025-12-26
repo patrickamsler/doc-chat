@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
-import { ContentContainer, ContentPanel } from './ChatPage.styles';
+import { Container, MainLayout, ContentPanel } from './ChatPage.styles';
 import { downloadFile } from '../services/api';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -22,7 +22,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   const {chatId = ''} = useParams<{ chatId: string }>();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const downloadCalled = useRef<Record<string, boolean>>({});
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
@@ -63,10 +63,10 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   if (!chatId) return null;
 
   return (
-      <>
-        <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} onFileReady={onFileUploaded}/>
+      <Container>
         <Header onMenuClick={toggleSidebar}/>
-        <ContentContainer>
+        <MainLayout>
+          <Sidebar isOpen={isSidebarOpen} onFileReady={onFileUploaded}/>
           <ContentPanel>
             {fileUrl && (
                 <PdfViewer
@@ -79,8 +79,8 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
           <ContentPanel>
             <Chat chatId={chatId} onBadgeClick={handleBadgeClick}/>
           </ContentPanel>
-        </ContentContainer>
-      </>
+        </MainLayout>
+      </Container>
   );
 };
 

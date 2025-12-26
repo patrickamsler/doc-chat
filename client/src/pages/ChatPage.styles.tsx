@@ -1,16 +1,22 @@
 import styled from "styled-components";
 
-export const ContentContainer = styled.div`
+export const Container = styled.div`
+    height: 100vh;
+    width: 100%;
+    background-color: ${props => props.theme.colors.background.default};
     display: flex;
+    flex-direction: column;
+`;
+
+export const MainLayout = styled.div`
     flex: 1;
-    height: 100%;
+    display: flex;
     overflow: hidden;
 `;
 
 export const ContentPanel = styled.div`
-    flex: 1 1 50%;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
     overflow: hidden;
 `;
