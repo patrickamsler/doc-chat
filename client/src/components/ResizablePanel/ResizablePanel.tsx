@@ -13,6 +13,7 @@ interface ResizablePanelProps {
   maxWidth?: number;
   storageKey: string;
   resizePosition?: 'left' | 'right';
+  minRemainingSpace?: number;
 }
 
 const ResizablePanel: React.FC<ResizablePanelProps> = ({
@@ -22,6 +23,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
   maxWidth = 800,
   storageKey,
   resizePosition = 'left',
+  minRemainingSpace = 400,
 }) => {
   const [width, setWidth] = useState<number>(() => {
     const savedWidth = localStorage.getItem(storageKey);
@@ -52,11 +54,18 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
         : e.clientX - startXRef.current;
 
       const newWidth = startWidthRef.current + deltaX;
-      const clampedWidth = Math.min(Math.max(newWidth, minWidth), maxWidth);
+
+      // Calculate effective max width based on window size and minimum remaining space
+      const effectiveMaxWidth = Math.min(
+        maxWidth,
+        window.innerWidth - minRemainingSpace
+      );
+
+      const clampedWidth = Math.min(Math.max(newWidth, minWidth), effectiveMaxWidth);
 
       setWidth(clampedWidth);
     },
-    [isResizing, minWidth, maxWidth, resizePosition]
+    [isResizing, minWidth, maxWidth, minRemainingSpace, resizePosition]
   );
 
   const handleMouseUp = useCallback(() => {

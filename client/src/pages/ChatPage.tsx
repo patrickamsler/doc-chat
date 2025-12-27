@@ -82,6 +82,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
                   minWidth={200}
                   maxWidth={500}
                   resizePosition="right"
+                  minRemainingSpace={700}
               >
                 <Sidebar isOpen={isSidebarOpen} onFileReady={onFileUploaded}/>
               </ResizablePanel>
@@ -101,6 +102,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
               minWidth={300}
               maxWidth={1000}
               resizePosition="left"
+              minRemainingSpace={500}
           >
             <Chat
                 chatId={chatId}
