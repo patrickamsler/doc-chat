@@ -14,13 +14,14 @@ export const ResizeHandle = styled.div<{ $position: 'left' | 'right' }>`
     ${props => props.$position === 'left' ? 'left: 0;' : 'right: 0;'}
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 2px;
     cursor: col-resize;
     background-color: ${props => props.theme.colors.border.dark};
     transition: background-color ${props => props.theme.transitions.duration.base};
     z-index: ${props => props.theme.zIndex.sticky};
 
     &:hover {
+        width: 4px;
         background-color: ${props => props.theme.colors.primary[300]};
     }
 `;

@@ -8,6 +8,7 @@ import { downloadFile } from '../services/api';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
 import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
+import { STORAGE_KEYS } from '../constants/storageKeys';
 
 interface FileInfo {
   url: string;
@@ -23,13 +24,20 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   const {chatId = ''} = useParams<{ chatId: string }>();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
+    return saved !== null ? saved === 'true' : true;
+  });
   const downloadCalled = useRef<Record<string, boolean>>({});
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const {jumpToPage} = pageNavigationPluginInstance;
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
+  }, [isSidebarOpen]);
 
   useEffect(() => {
     if (!chatId) return;
@@ -69,7 +77,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
         <MainLayout>
           {isSidebarOpen && (
               <ResizablePanel
-                  storageKey="sidebar-width"
+                  storageKey={STORAGE_KEYS.COMPONENTS.SIDEBAR_WIDTH}
                   defaultWidth={256}
                   minWidth={200}
                   maxWidth={500}
@@ -88,7 +96,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
             )}
           </ContentPanel>
           <ResizablePanel
-              storageKey="chat-width"
+              storageKey={STORAGE_KEYS.COMPONENTS.CHAT_WIDTH}
               defaultWidth={550}
               minWidth={300}
               maxWidth={1000}
