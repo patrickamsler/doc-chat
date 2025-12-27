@@ -22,6 +22,7 @@ export const UploadBtn = styled.button`
     color: ${props => props.theme.colors.text.inverse};
     font-weight: ${props => props.theme.typography.fontWeight.semibold};
     padding: 0.5rem 1rem;
+    height: 34px;
     border-radius: ${props => props.theme.borderRadius.lg};
     display: flex;
     align-items: center;

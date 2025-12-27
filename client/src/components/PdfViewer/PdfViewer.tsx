@@ -1,15 +1,15 @@
 import React from 'react';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { PageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
 import {
-  ViewerContainer,
+  FileNameContainer,
   NavigationBar,
   NavigationButtonContainer,
-  FileNameContainer,
-  NavigationControls
+  NavigationControls,
+  ViewerContainer
 } from "./PdfViewer.styles";
 
 interface PdfViewerProps {
@@ -27,7 +27,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, fileName, pageNavigationP
   } = pageNavigationPluginInstance;
 
   const zoomPluginInstance = zoomPlugin();
-  const {ZoomInButton, ZoomOutButton} = zoomPluginInstance;
+  const {ZoomInButton, ZoomOutButton, ZoomPopover} = zoomPluginInstance;
 
   return (
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
@@ -38,6 +38,9 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, fileName, pageNavigationP
           <NavigationControls>
             <NavigationButtonContainer>
               <ZoomOutButton/>
+            </NavigationButtonContainer>
+            <NavigationButtonContainer>
+              <ZoomPopover/>
             </NavigationButtonContainer>
             <NavigationButtonContainer>
               <ZoomInButton/>
@@ -60,6 +63,10 @@ const PdfViewer: React.FC<PdfViewerProps> = ({fileUrl, fileName, pageNavigationP
           <Viewer
               fileUrl={fileUrl}
               plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
+              theme={{
+                theme: 'light', // or 'light'
+              }}
+
           />
         </ViewerContainer>
       </Worker>

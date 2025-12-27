@@ -19,7 +19,6 @@ export const ChatHeader = styled.div`
 export const ChatTitle = styled.div`
     display: flex;
     align-items: flex-start;
-    padding-bottom: 2px;
     gap: 4px;
     color: ${props => props.theme.colors.text.primary};
     font-weight: ${props => props.theme.typography.fontWeight.semibold};
@@ -28,7 +27,7 @@ export const ChatTitle = styled.div`
 export const ChatSubtitle = styled.div`
     font-size: ${props => props.theme.typography.fontSize.xs};
     color: ${props => props.theme.colors.text.secondary};
-    margin-top: 4px;
+    margin-top: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
