@@ -7,6 +7,7 @@ import { Container, ContentPanel, MainLayout } from './ChatPage.styles';
 import { downloadFile } from '../services/api';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
+import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
 
 interface FileInfo {
   url: string;
@@ -66,7 +67,17 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
       <Container>
         <Header onMenuClick={toggleSidebar}/>
         <MainLayout>
-          <Sidebar isOpen={isSidebarOpen} onFileReady={onFileUploaded}/>
+          {isSidebarOpen && (
+              <ResizablePanel
+                  storageKey="sidebar-width"
+                  defaultWidth={256}
+                  minWidth={200}
+                  maxWidth={500}
+                  resizePosition="right"
+              >
+                <Sidebar isOpen={isSidebarOpen} onFileReady={onFileUploaded}/>
+              </ResizablePanel>
+          )}
           <ContentPanel>
             {fileUrl && (
                 <PdfViewer
@@ -76,13 +87,19 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
                 />
             )}
           </ContentPanel>
-          <ContentPanel>
+          <ResizablePanel
+              storageKey="chat-width"
+              defaultWidth={550}
+              minWidth={300}
+              maxWidth={1000}
+              resizePosition="left"
+          >
             <Chat
                 chatId={chatId}
                 fileName={fileName}
                 onBadgeClick={handleBadgeClick}
             />
-          </ContentPanel>
+          </ResizablePanel>
         </MainLayout>
       </Container>
   );

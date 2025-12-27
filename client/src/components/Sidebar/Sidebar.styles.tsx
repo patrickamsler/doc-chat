@@ -2,12 +2,12 @@ import styled from 'styled-components';
 import { FileText } from 'lucide-react';
 
 export const SidebarContainer = styled.aside<{ $isOpen: boolean }>`
-    width: ${props => props.$isOpen ? '16rem' : '0'};
+    width: 100%;
+    height: 100%;
     background-color: ${props => props.theme.colors.background.sidebar};
     border-right: 1px solid ${props => props.theme.colors.border.main};
     display: flex;
     flex-direction: column;
-    transition: all ${props => props.theme.transitions.duration.slow};
     overflow: hidden;
 `;
 
