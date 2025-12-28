@@ -43,6 +43,9 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
   }, [messages]);
 
   useEffect(() => {
+    if (!chatId) {
+      return
+    }
     const loadChatHistory = async () => {
       try {
         const historyResponse = await getChatHistory(chatId);
