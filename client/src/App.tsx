@@ -3,7 +3,6 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { ThemeProvider } from './theme';
 import GlobalStyle from './GlobalStyle';
 import { AppContainer } from './App.styles';
-import UploadPage from './pages/UploadPage';
 import ChatPage from './pages/ChatPage';
 import { initAuth } from './services/api';
 
@@ -34,9 +33,14 @@ const App: React.FC = () => {
         <GlobalStyle/>
         <AppContainer>
           <Routes>
-            <Route path="*" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
-            <Route path="/" element={<UploadPage onFileUploaded={handleFileUploaded}/>}/>
-            <Route path="/chat/:chatId" element={<ChatPage files={files} onFileUploaded={handleFileUploaded}/>}/>
+            <Route
+                path="/chat/:chatId"
+                element={<ChatPage files={files} onFileUploaded={handleFileUploaded}/>}
+            />
+            <Route
+                path="*"
+                element={<ChatPage files={files} onFileUploaded={handleFileUploaded}/>}
+            />
           </Routes>
         </AppContainer>
       </ThemeProvider>

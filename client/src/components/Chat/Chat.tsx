@@ -105,7 +105,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
             <span>Chat Assistant</span>
           </ChatTitle>
           <ChatSubtitle>
-            Chatting about: {fileName}
+            {fileName && `Chatting about: ${fileName}`}
           </ChatSubtitle>
         </ChatHeader>
         <MessagesContainer>

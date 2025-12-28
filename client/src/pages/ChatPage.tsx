@@ -40,7 +40,12 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   }, [isSidebarOpen]);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId) {
+      // Clear file state when no chatId (empty state)
+      setFileUrl(null);
+      setFileName('');
+      return;
+    }
 
     const info = files[chatId]; // file already downloaded and cached (e.g. from UploadPage)
     if (info) {
@@ -68,8 +73,6 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
       jumpToPage(pageRef);
     }
   };
-
-  if (!chatId) return null;
 
   return (
       <Container>
