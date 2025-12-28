@@ -30,11 +30,6 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   });
   const downloadCalled = useRef<Record<string, boolean>>({});
 
-  const pageNavigationPluginInstance = pageNavigationPlugin();
-  const {jumpToPage} = pageNavigationPluginInstance;
-
-  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
-
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
   }, [isSidebarOpen]);
@@ -66,6 +61,11 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
     })
     .catch(err => console.error('Error downloading file:', err));
   }, [chatId, files]);
+
+  const pageNavigationPluginInstance = pageNavigationPlugin();
+  const {jumpToPage} = pageNavigationPluginInstance;
+
+  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
   const handleBadgeClick = (pageRef: number, content: string) => {
     if (jumpToPage) {
