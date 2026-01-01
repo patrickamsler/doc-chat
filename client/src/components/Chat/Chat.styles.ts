@@ -55,9 +55,7 @@ export const PageRefBadge = styled.span`
 `;
 
 const MessageBase = styled.div`
-    max-width: 70%;
-    padding: 10px 15px;
-    margin: 5px 0;
+    max-width: 80%;
     border-radius: ${props => props.theme.borderRadius.lg};
     color: ${props => props.theme.colors.text.primary};
     font-family: ${props => props.theme.typography.fontFamily.sans};
@@ -70,19 +68,25 @@ const MessageBase = styled.div`
 export const UserMessage = styled(MessageBase)`
     align-self: flex-end;
     background-color: ${props => props.theme.colors.gray[100]};
-    margin-left: auto;
-    margin-right: 0;
+    padding: 10px 15px;
+    margin: 20px 0 20px auto;
 `;
 
 export const AssistantMessage = styled(MessageBase)`
     align-self: flex-start;
     background-color: ${props => props.theme.colors.background.paper};
-    margin-left: 0;
+    margin-left: 2px;
     margin-right: auto;
+`;
+
+export const AssistantMessageContainer = styled.div`
+    display: flex;
+    align-items: flex-start;
+    margin-top: 20px;
+    margin-bottom: 20px;
 `;
 
 export const MessagesList = styled.div`
     display: flex;
     flex-direction: column;
-    font-family: ${props => props.theme.typography.fontFamily.sans};
 `;

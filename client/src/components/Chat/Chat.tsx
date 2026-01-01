@@ -3,6 +3,7 @@ import { getChatHistory, sendMessage } from '../../services/api';
 import ChatInput from './ChatInput/ChatInput';
 import {
   AssistantMessage,
+  AssistantMessageContainer,
   ChatContainer,
   ChatHeader,
   ChatSubtitle,
@@ -118,15 +119,17 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
                 message.isUser ? (
                     <UserMessage key={message.id}>{message.text}</UserMessage>
                 ) : (
-                    <AssistantMessage key={message.id}>
+                    <AssistantMessageContainer>
                       <BotMessageSquare
                           strokeWidth={2.0}
                           style={{
                             height: 21, width: 21, marginRight: 5,
                             color: theme.colors.primary[500]
                           }}/>
-                      {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
-                    </AssistantMessage>
+                      <AssistantMessage key={message.id}>
+                        {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
+                      </AssistantMessage>
+                    </AssistantMessageContainer>
                 )
             ))}
             <div ref={messagesEndRef}/>
