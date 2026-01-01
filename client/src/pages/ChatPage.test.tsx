@@ -105,6 +105,11 @@ const setup = async (params = {}) => {
     </BrowserRouter>
   );
 
+  // Wait for all async state updates to complete
+  await waitFor(() => {
+    expect(api.getChats).toHaveBeenCalled();
+  });
+
   return result;
 };
 
