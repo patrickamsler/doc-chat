@@ -17,6 +17,7 @@ import ChatPage from './ChatPage';
 import theme from '../theme';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import * as api from '../services/api';
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
@@ -39,9 +40,9 @@ jest.mock('../components/Chat/Chat', () => {
 jest.mock('../components/Header/Header', () => {
   return function MockHeader(props: any) {
     return (
-      <div data-testid="header">
-        <button onClick={props.onMenuClick}>Menu</button>
-      </div>
+        <div data-testid="header">
+          <button onClick={props.onMenuClick}>Menu</button>
+        </div>
     );
   };
 });
@@ -49,9 +50,9 @@ jest.mock('../components/Header/Header', () => {
 jest.mock('../components/Sidebar/Sidebar', () => {
   return function MockSidebar(props: any) {
     return (
-      <div data-testid="sidebar">
-        <button onClick={props.onFileUploadClick}>Upload</button>
-      </div>
+        <div data-testid="sidebar">
+          <button onClick={props.onFileUploadClick}>Upload</button>
+        </div>
     );
   };
 });
@@ -59,9 +60,9 @@ jest.mock('../components/Sidebar/Sidebar', () => {
 jest.mock('../components/NoDocumentState/NoDocumentState', () => {
   return function MockNoDocumentState(props: any) {
     return (
-      <div data-testid="no-document-state">
-        <button onClick={props.onFileUploadClick}>Upload File</button>
-      </div>
+        <div data-testid="no-document-state">
+          <button onClick={props.onFileUploadClick}>Upload File</button>
+        </div>
     );
   };
 });
@@ -71,7 +72,7 @@ jest.mock('../components/FileUpload/FileUpload', () => {
   return {
     __esModule: true,
     default: React.forwardRef(function MockFileUpload(props: any, ref: any) {
-      return <input ref={ref} data-testid="file-upload" type="file" />;
+      return <input ref={ref} data-testid="file-upload" type="file"/>;
     })
   };
 });
@@ -88,8 +89,8 @@ const useParamsMock = require('react-router-dom').useParams;
 
 const mockChats = {
   chats: [
-    { chatId: 'chat-1', fileName: 'document1.pdf', createdAt: '2024-01-15T10:30:00Z' },
-    { chatId: 'chat-2', fileName: 'document2.pdf', createdAt: '2024-01-16T14:20:00Z' }
+    {chatId: 'chat-1', fileName: 'document1.pdf', createdAt: '2024-01-15T10:30:00Z'},
+    {chatId: 'chat-2', fileName: 'document2.pdf', createdAt: '2024-01-16T14:20:00Z'}
   ]
 };
 
@@ -98,11 +99,11 @@ const setup = async (params = {}) => {
   useParamsMock.mockReturnValue(params);
 
   const result = render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <ChatPage />
-      </ThemeProvider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <ChatPage/>
+        </ThemeProvider>
+      </BrowserRouter>
   );
 
   // Wait for all async state updates to complete
@@ -156,7 +157,7 @@ describe('ChatPage', () => {
 
   describe('Chat ID Parameter Handling', () => {
     it('should download file when chatId is provided', async () => {
-      await setup({ chatId: 'chat-1' });
+      await setup({chatId: 'chat-1'});
 
       await waitFor(() => {
         expect(api.downloadFile).toHaveBeenCalledWith('chat-1');
@@ -164,7 +165,7 @@ describe('ChatPage', () => {
     });
 
     it('should display PDF viewer when file is downloaded', async () => {
-      await setup({ chatId: 'chat-1' });
+      await setup({chatId: 'chat-1'});
 
       await waitFor(() => {
         expect(screen.getByTestId('pdf-viewer')).toBeInTheDocument();
@@ -173,7 +174,7 @@ describe('ChatPage', () => {
     });
 
     it('should pass chatId to Chat component', async () => {
-      await setup({ chatId: 'chat-1' });
+      await setup({chatId: 'chat-1'});
 
       await waitFor(() => {
         expect(screen.getByText('Chat: chat-1')).toBeInTheDocument();
@@ -183,25 +184,25 @@ describe('ChatPage', () => {
 
   describe('File Caching', () => {
     it('should cache downloaded files', async () => {
-      const { rerender } = await setup({ chatId: 'chat-1' });
+      const {rerender} = await setup({chatId: 'chat-1'});
 
       await waitFor(() => {
         expect(api.downloadFile).toHaveBeenCalledTimes(1);
       });
 
       // Change to different chat
-      useParamsMock.mockReturnValue({ chatId: 'chat-2' });
+      useParamsMock.mockReturnValue({chatId: 'chat-2'});
       (api.downloadFile as jest.Mock).mockResolvedValue({
         url: 'blob:mock-url-2',
         fileName: 'test2.pdf'
       });
 
       rerender(
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <ChatPage />
-          </ThemeProvider>
-        </BrowserRouter>
+          <BrowserRouter>
+            <ThemeProvider theme={theme}>
+              <ChatPage/>
+            </ThemeProvider>
+          </BrowserRouter>
       );
 
       await waitFor(() => {
@@ -209,13 +210,13 @@ describe('ChatPage', () => {
       });
 
       // Return to first chat - should use cache
-      useParamsMock.mockReturnValue({ chatId: 'chat-1' });
+      useParamsMock.mockReturnValue({chatId: 'chat-1'});
       rerender(
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <ChatPage />
-          </ThemeProvider>
-        </BrowserRouter>
+          <BrowserRouter>
+            <ThemeProvider theme={theme}>
+              <ChatPage/>
+            </ThemeProvider>
+          </BrowserRouter>
       );
 
       // downloadFile should still only be called twice (once for chat-1, once for chat-2)
@@ -303,7 +304,7 @@ describe('ChatPage', () => {
     });
 
     it('should navigate to new chat on file upload', async () => {
-      const { container } = await setup();
+      const {container} = await setup();
 
       // Simulate the FileUpload component calling onFileUploaded
       const fileUpload = container.querySelector('[data-testid="file-upload"]') as any;
@@ -334,7 +335,7 @@ describe('ChatPage', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
       (api.downloadFile as jest.Mock).mockRejectedValue(new Error('Download failed'));
 
-      await setup({ chatId: 'chat-1' });
+      await setup({chatId: 'chat-1'});
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith('Error downloading file:', expect.any(Error));
