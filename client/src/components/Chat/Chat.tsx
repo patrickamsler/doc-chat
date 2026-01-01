@@ -4,19 +4,20 @@ import { parseMessageWithPageRefBadges } from './ChatMessageParser'
 import ChatInput from './ChatInput/ChatInput';
 import {
   ChatContainer,
-  ChatNavigationBar,
-  ChatNavigationTitle,
+  ChatHeader,
+  ChatSubtitle,
+  ChatTitle,
   Message,
   MessagesContainer,
   MessagesList
 } from './Chat.styles';
-import { faRobot } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
+import { BotMessageSquare } from "lucide-react";
 
 interface ChatProps {
   chatId: string;
+  fileName?: string;
   onBadgeClick: (pageRef: number, content: string) => void;
 }
 
@@ -27,7 +28,7 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
+const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -42,6 +43,9 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
   }, [messages]);
 
   useEffect(() => {
+    if (!chatId) {
+      return
+    }
     const loadChatHistory = async () => {
       try {
         const historyResponse = await getChatHistory(chatId);
@@ -98,17 +102,26 @@ const Chat: React.FC<ChatProps> = ({chatId, onBadgeClick}) => {
 
   return (
       <ChatContainer>
-        <ChatNavigationBar>
-          <ChatNavigationTitle>Chat</ChatNavigationTitle>
-        </ChatNavigationBar>
+        <ChatHeader>
+          <ChatTitle>
+            <BotMessageSquare style={{width: '1.25rem', height: '1.25rem', color: theme.colors.primary[500]}}/>
+            <span>Chat Assistant</span>
+          </ChatTitle>
+          <ChatSubtitle>
+            {fileName && `Chatting about: ${fileName}`}
+          </ChatSubtitle>
+        </ChatHeader>
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
                 <Message key={message.id} $isUser={message.isUser}>
                   {!message.isUser && (
-                      <FontAwesomeIcon icon={faRobot}
-                                       style={{marginRight: 8, color: theme.colors.primaryA0}}
-                      />
+                      <BotMessageSquare
+                          strokeWidth={2.0}
+                          style={{
+                            height: 21, width: 21, marginRight: 5,
+                            color: theme.colors.primary[500]
+                          }}/>
                   )}
                   {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
                 </Message>

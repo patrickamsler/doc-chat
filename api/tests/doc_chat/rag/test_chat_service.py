@@ -5,9 +5,9 @@ import pytest
 
 from doc_chat.api_types import QueryResponse, ChatsResponse, Chat, \
     ChatHistoryResponse
-from doc_chat.rag.chat_service import ChatService
 from doc_chat.models import DocumentChunk, Document, \
     Chat as ChatEntity, Message, ChatHistory
+from doc_chat.rag.chat_service import ChatService
 
 
 @pytest.fixture
@@ -52,10 +52,12 @@ def chat_service(mock_vector_store: AsyncMock,
     with patch(
           'doc_chat.rag.chat_service.CitationRetrievalChain') as mock_chain_class:
         with patch('doc_chat.rag.chat_service.create_llm'):
-            with patch('doc_chat.rag.chat_service.QueryRewriter') as mock_query_rewriter_class:
+            with patch(
+                  'doc_chat.rag.chat_service.QueryRewriter') as mock_query_rewriter_class:
                 service = ChatService(mock_vector_store, mock_reranker)
                 # Mock the query rewriter to return the query unchanged by default
-                service._query_rewriter.rewrite = Mock(side_effect=lambda q, h: q)
+                service._query_rewriter.rewrite = Mock(
+                    side_effect=lambda q, h: q)
                 return service
 
 
@@ -393,6 +395,7 @@ async def test_find_all_chats_success(
         ),
     ]
 
+    mock_vector_store.tenant_exists.return_value = True
     mock_vector_store.get_chats.return_value = chat_entities
 
     # When
@@ -421,6 +424,7 @@ async def test_find_all_chats_empty(
     """Test finding all chats when user has no chats."""
     # Given
     user_id = "user_123"
+    mock_vector_store.tenant_exists.return_value = True
     mock_vector_store.get_chats.return_value = []
 
     # When
@@ -431,6 +435,31 @@ async def test_find_all_chats_empty(
     assert result.userId == user_id
     assert result.chats == []
     mock_vector_store.get_chats.assert_called_once_with(user_id)
+
+
+@pytest.mark.asyncio
+async def test_find_all_chats_tenant_does_not_exist(
+      chat_service: ChatService,
+      mock_vector_store: AsyncMock
+) -> None:
+    """Test finding all chats when tenant does not exist."""
+    # Given
+    user_id = "nonexistent_user"
+    mock_vector_store.tenant_exists.return_value = False
+
+    # When
+    result = await chat_service.find_all_chats(user_id)
+
+    # Then
+    assert isinstance(result, ChatsResponse)
+    assert result.userId == user_id
+    assert result.chats == []
+
+    # Verify tenant_exists was called
+    mock_vector_store.tenant_exists.assert_called_once_with(user_id)
+
+    # Verify get_chats was NOT called since tenant doesn't exist
+    mock_vector_store.get_chats.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -637,7 +666,8 @@ async def test_get_chat_history_success(
         assert msg.timestamp == messages[i].timestamp.isoformat()
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id,
+                                                          include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -652,11 +682,13 @@ async def test_get_chat_history_not_found(
     mock_vector_store.get_chat_history.return_value = None
 
     # When/Then
-    with pytest.raises(ValueError, match="Chat with chat_id nonexistent_chat not found"):
+    with pytest.raises(ValueError,
+                       match="Chat with chat_id nonexistent_chat not found"):
         await chat_service.get_chat_history(user_id, chat_id)
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id,
+                                                          include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -687,7 +719,8 @@ async def test_get_chat_history_empty(
     assert result.history == []
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id,
+                                                          include_chunks=True)
 
 
 @pytest.mark.asyncio
@@ -758,17 +791,21 @@ async def test_get_chat_history_with_document_references(
 
     # Verify second message (assistant) has documents from chunks
     assert result.history[1].role == "assistant"
-    assert result.history[1].content == "FastAPI is a modern web framework. [1] It uses type hints. [2]"
+    assert result.history[
+               1].content == "FastAPI is a modern web framework. [1] It uses type hints. [2]"
     assert len(result.history[1].documents) == 2
 
     # Verify document mapping from chunks
     assert result.history[1].documents[0].id == "chunk_1"
     assert result.history[1].documents[0].page == 1
-    assert result.history[1].documents[0].content == "FastAPI is a modern, fast web framework for building APIs."
+    assert result.history[1].documents[
+               0].content == "FastAPI is a modern, fast web framework for building APIs."
 
     assert result.history[1].documents[1].id == "chunk_2"
     assert result.history[1].documents[1].page == 2
-    assert result.history[1].documents[1].content == "It is based on standard Python type hints."
+    assert result.history[1].documents[
+               1].content == "It is based on standard Python type hints."
 
     # Verify vector store was called
-    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id, include_chunks=True)
+    mock_vector_store.get_chat_history.assert_called_with(user_id, chat_id,
+                                                          include_chunks=True)

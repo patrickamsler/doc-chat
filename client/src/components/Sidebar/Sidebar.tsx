@@ -1,101 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import FileUpload from '../FileUpload/FileUpload';
-import { downloadFile, getChats } from '../../services/api';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FileText, Upload } from 'lucide-react';
 import { ChatInfo } from '../../types/apiTypes';
 import {
-  SidebarContainer,
-  ToggleButton,
-  DocumentList,
+  DocumentIcon,
+  DocumentInfo,
   DocumentItem,
-  Timestamp,
-  SidebarHeader,
-  CloseButton,
+  DocumentItemContent,
+  DocumentList,
   DocumentTitle,
+  EmptyIconWrapper,
+  EmptyState,
+  EmptySubtitle,
+  EmptyTitle,
+  SidebarContainer,
   SidebarContent,
+  SidebarHeader,
+  SidebarTitle,
+  Timestamp,
+  UploadBtn,
 } from './Sidebar.styles';
 
 interface SidebarProps {
-  onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
+  isOpen: boolean;
+  isUploading: boolean;
+  documents: ChatInfo[];
+  onFileUploadClick: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({onFileReady}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const sidebarRef = React.useRef<HTMLDivElement>(null);
-  const [documents, setDocuments] = useState<ChatInfo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFileUploadClick}) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    getChats()
-    .then(res => {
-      const sorted = [...res.chats].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-      setDocuments(sorted);
-      setError(null);
-    })
-    .catch(() => setError('Failed to load documents'));
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClick = (e: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) { // close sidebar if clicked outside
-        closeSidebar();
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [isOpen]);
+  const {chatId} = useParams<{ chatId: string }>();
 
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
-      const {url, fileName} = await downloadFile(doc.chatId);
-      onFileReady(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
-      closeSidebar();
     } catch (err) {
       console.error(err);
     }
   };
 
-  const onFileUploadStart = () => {
-    //close() TODO handle file upload start if needed
-  }
-
-  const onFileUploaded = (id: string, url: string, name: string) => {
-    onFileReady(id, url, name);
-    navigate(`/chat/${id}`);
-    closeSidebar(); // close sidebar after file upload
-  }
-
-  const toggleSidebar = () => setIsOpen(prev => !prev);
-  const closeSidebar = () => setIsOpen(false);
-
   return (
-      <>
-        <ToggleButton onClick={toggleSidebar} $open={isOpen}>☰</ToggleButton>
-        <SidebarContainer ref={sidebarRef} $open={isOpen}>
-          <SidebarHeader>
-            <CloseButton onClick={closeSidebar}>X</CloseButton>
-          </SidebarHeader>
-          <SidebarContent>
-            <FileUpload onFileUploaded={onFileUploaded} onFileUploadStart={onFileUploadStart}/>
-            {error && <div>{error}</div>}
-            {!error && documents.length === 0 && <div>No documents</div>}
-            <DocumentList>
-              {documents.map(doc => (
-                  <DocumentItem key={doc.chatId} onClick={() => handleDocumentClick(doc)}>
-                    <DocumentTitle title={doc.fileName}>{doc.fileName}</DocumentTitle>
-                    <Timestamp>{new Date(doc.createdAt).toLocaleDateString()}</Timestamp>
-                  </DocumentItem>
-              ))}
-            </DocumentList>
-          </SidebarContent>
-        </SidebarContainer>
-      </>
+      <SidebarContainer $isOpen={isOpen}>
+        <SidebarHeader>
+          <UploadBtn onClick={onFileUploadClick} disabled={isUploading}>
+            <Upload style={{width: '1rem', height: '1rem'}}/>
+            {isUploading ? 'Uploading...' : 'Upload PDF'}
+          </UploadBtn>
+        </SidebarHeader>
+
+        <SidebarContent>
+          <SidebarTitle>Your Documents</SidebarTitle>
+          {documents.length > 0 ? (
+              <DocumentList>
+                {documents.map(doc => (
+                    <DocumentItem
+                        key={doc.chatId}
+                        onClick={() => handleDocumentClick(doc)}
+                        $isSelected={chatId === doc.chatId}
+                    >
+                      <DocumentItemContent>
+                        <DocumentIcon $isSelected={chatId === doc.chatId}/>
+                        <DocumentInfo>
+                          <DocumentTitle $isSelected={chatId === doc.chatId} title={doc.fileName}>
+                            {doc.fileName}
+                          </DocumentTitle>
+                          <Timestamp>
+                            {new Date(doc.createdAt).toISOString().split('T')[0]}
+                          </Timestamp>
+                        </DocumentInfo>
+                      </DocumentItemContent>
+                    </DocumentItem>
+                ))}
+              </DocumentList>
+          ) : (
+              <EmptyState>
+                <EmptyIconWrapper>
+                  <FileText style={{width: '2rem', height: '2rem', color: '#9ca3af'}}/>
+                </EmptyIconWrapper>
+                <EmptyTitle>No documents yet</EmptyTitle>
+                <EmptySubtitle>Upload a PDF to get started</EmptySubtitle>
+              </EmptyState>
+          )}
+        </SidebarContent>
+      </SidebarContainer>
   );
 };
 

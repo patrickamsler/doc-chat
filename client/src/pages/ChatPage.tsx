@@ -1,51 +1,91 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
-import { ContentContainer, ContentPanel } from '../App.styles';
-import { downloadFile } from '../services/api';
+import { Container, ContentPanel, MainLayout } from './ChatPage.styles';
+import { downloadFile, getChats } from '../services/api';
+import { ChatInfo } from '../types/apiTypes';
+import Header from "../components/Header/Header";
+import Sidebar from '../components/Sidebar/Sidebar';
+import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
+import NoDocumentState from '../components/NoDocumentState/NoDocumentState';
+import { STORAGE_KEYS } from '../constants/storageKeys';
+import FileUpload from "../components/FileUpload/FileUpload";
 
 interface FileInfo {
   url: string;
   name: string;
 }
 
-interface ChatPageProps {
-  files: Record<string, FileInfo>;
-}
-
-const ChatPage: React.FC<ChatPageProps> = ({files}) => {
+const ChatPage: React.FC = () => {
   const {chatId = ''} = useParams<{ chatId: string }>();
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>('');
-  const downloadCalled = useRef<Record<string, boolean>>({});
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null); // currently viewed file
+  const [files, setFiles] = useState<Record<string, FileInfo>>({}); // buffer for downloaded files
+  const [documents, setDocuments] = useState<ChatInfo[]>([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    const promises: Promise<any>[] = [
+      getChats()
+      .then(res => setDocuments(res.chats))
+      .catch(err => console.error('Failed to load documents:', err))
+    ];
+
+    if (chatId) {
+      if (files[chatId]) {
+        console.log('Using cached file for chatId:', chatId);
+        setSelectedFile(files[chatId]);
+        setIsLoading(false);
+      } else {
+        console.log('Downloading file for chatId:', chatId);
+        promises.push(
+            downloadFile(chatId)
+            .then(({url, fileName}) => {
+              setSelectedFile({url, name: fileName});
+              setFiles(prev => ({...prev, [chatId]: {url: url, name: fileName}}));
+            })
+            .catch(err => console.error('Error downloading file:', err))
+        );
+      }
+    } else {
+      setSelectedFile(null);
+    }
+
+    // downloading both documents list and selected file (if any)
+    Promise.all(promises).finally(() => setIsLoading(false));
+  }, [chatId]);
+
+  const onFileUploadClick = () => {
+    fileInputRef.current?.click();
+  }
+
+  const onFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
+    setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
+    navigate(`/chat/${chatId}`);
+  };
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const {jumpToPage} = pageNavigationPluginInstance;
 
-  useEffect(() => {
-    if (!chatId) return;
-
-    const info = files[chatId]; // file already downloaded and cached (e.g. from UploadPage)
-    if (info) {
-      console.log('Using cached file info for chatId:', chatId);
-      setFileUrl(info.url);
-      setFileName(info.name);
-      return;
-    }
-
-    if (downloadCalled.current[chatId]) return; // Prevent multiple downloads for the same chatId
-
-    console.log('Downloading file for chatId:', chatId);
-    downloadCalled.current[chatId] = true;
-    downloadFile(chatId)
-    .then(({url, fileName}) => {
-      setFileUrl(url);
-      setFileName(fileName);
-    })
-    .catch(err => console.error('Error downloading file:', err));
-  }, [chatId, files]);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prev => !prev);
+  }
 
   const handleBadgeClick = (pageRef: number, content: string) => {
     if (jumpToPage) {
@@ -54,23 +94,64 @@ const ChatPage: React.FC<ChatPageProps> = ({files}) => {
     }
   };
 
-  if (!chatId) return null;
-
   return (
-      <ContentContainer>
-        <ContentPanel>
-          {fileUrl && (
-              <PdfViewer
-                  fileUrl={fileUrl}
-                  fileName={fileName}
-                  pageNavigationPluginInstance={pageNavigationPluginInstance}
-              />
+      <Container>
+        <FileUpload
+            ref={fileInputRef}
+            onFileUploaded={onFileUploaded}
+            onFileUploadStart={() => setIsFileUploading(true)}
+            onUploadComplete={() => setIsFileUploading(false)}
+        />
+        <Header onMenuClick={toggleSidebar}/>
+        <MainLayout>
+          {isSidebarOpen && (
+              <ResizablePanel
+                  storageKey={STORAGE_KEYS.COMPONENTS.SIDEBAR_WIDTH}
+                  defaultWidth={256}
+                  minWidth={200}
+                  maxWidth={500}
+                  resizePosition="right"
+                  minRemainingSpace={700}
+              >
+                <Sidebar isOpen={isSidebarOpen}
+                         isUploading={isFileUploading}
+                         documents={documents}
+                         onFileUploadClick={onFileUploadClick}
+                />
+              </ResizablePanel>
           )}
-        </ContentPanel>
-        <ContentPanel>
-          <Chat chatId={chatId} onBadgeClick={handleBadgeClick}/>
-        </ContentPanel>
-      </ContentContainer>
+          <ContentPanel>
+            {selectedFile ? (
+                <PdfViewer
+                    fileUrl={selectedFile.url}
+                    fileName={selectedFile.name}
+                    pageNavigationPluginInstance={pageNavigationPluginInstance}
+                />
+            ) : (
+                <NoDocumentState
+                    hasDocuments={documents.length > 0}
+                    isUploading={isFileUploading}
+                    isLoadingDocuments={isLoading}
+                    onFileUploadClick={onFileUploadClick}
+                />
+            )}
+          </ContentPanel>
+          <ResizablePanel
+              storageKey={STORAGE_KEYS.COMPONENTS.CHAT_WIDTH}
+              defaultWidth={550}
+              minWidth={300}
+              maxWidth={1000}
+              resizePosition="left"
+              minRemainingSpace={500}
+          >
+            <Chat
+                chatId={chatId}
+                fileName={selectedFile?.name}
+                onBadgeClick={handleBadgeClick}
+            />
+          </ResizablePanel>
+        </MainLayout>
+      </Container>
   );
 };
 

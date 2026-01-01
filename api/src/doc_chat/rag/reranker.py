@@ -14,8 +14,12 @@ class Reranker:
     def __init__(self,
           model_name: str = "ms-marco-MiniLM-L-12-v2",
           max_length: int = 256,
-          cache_dir: str = "/tmp/doc-chat/models"
+          cache_dir: str | None = None
     ):
+        # Use environment variable or default to app_data/models
+        if cache_dir is None:
+            cache_dir = os.getenv("MODEL_CACHE_DIR", "app_data/models")
+
         # Ensure cache directory exists
         Path(cache_dir).mkdir(parents=True, exist_ok=True)
 

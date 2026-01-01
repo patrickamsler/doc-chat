@@ -195,6 +195,9 @@ class ChatService:
         - Each Chat represents a conversation
         - The file name is stored in the Chat.name field
         """
+        if not await self._vector_store.tenant_exists(user_id):
+            return ChatsResponse(userId=user_id, chats=[])
+
         # Fetch all chats
         chat_entities = await self._vector_store.get_chats(user_id)
 

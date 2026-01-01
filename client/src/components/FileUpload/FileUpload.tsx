@@ -1,52 +1,44 @@
-import React, { useState } from 'react';
+import React, { forwardRef } from 'react';
 import { uploadFile } from '../../services/api';
-import { FileInput, UploadButton, UploadContainer, } from './FileUpload.styles'
+import { FileInput } from './FileUpload.styles'
 
 
 interface FileUploadProps {
   onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
   onFileUploadStart?: () => void;
+  onUploadComplete?: () => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded, onFileUploadStart }) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
+    ({onFileUploaded, onFileUploadStart, onUploadComplete}, ref) => {
+      const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+        try {
+          onFileUploadStart?.();
+          const response = await uploadFile(file);
+          const fileUrl = URL.createObjectURL(file);
+          onFileUploaded(response.chatId, fileUrl, file.name);
+        } catch (error) {
+          console.error('Error uploading file:', error);
+        } finally {
+          onUploadComplete?.();
+        }
+      };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIsUploading(true);
-      onFileUploadStart?.();
-      const response = await uploadFile(file);
-      const fileUrl = URL.createObjectURL(file);
-      onFileUploaded(response.chatId, fileUrl, file.name);
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    } finally {
-      setIsUploading(false);
+      return (
+          <FileInput
+              type="file"
+              ref={ref}
+              accept=".pdf"
+              data-testid="file-input"
+              onChange={handleFileChange}
+          />
+      );
     }
-  };
+);
 
-  return (
-      <UploadContainer>
-        <UploadButton onClick={handleButtonClick} disabled={isUploading}>
-          {isUploading ? 'Uploading...' : 'Upload PDF'}
-        </UploadButton>
-        <FileInput
-            type="file"
-            ref={fileInputRef}
-            accept=".pdf"
-            data-testid="file-input"
-            onChange={handleFileChange}
-        />
-      </UploadContainer>
-  );
-};
+FileUpload.displayName = 'FileUpload';
 
 export default FileUpload;

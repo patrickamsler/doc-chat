@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import FileUpload from './FileUpload';
 import { uploadFile } from '../../services/api';
-import { theme } from "../../theme";
+import theme from "../../theme";
 import { ThemeProvider } from "styled-components";
 
 jest.mock('../../services/api', () => ({
