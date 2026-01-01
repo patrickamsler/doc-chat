@@ -1,6 +1,6 @@
 import React from "react";
-import { PageRefBadge } from "./Chat.styles";
-import { DocumentResponse } from "../../types/apiTypes";
+import { PageRefBadge } from "../Chat.styles";
+import { DocumentResponse } from "../../../types/apiTypes";
 
 export const parseMessageWithPageRefBadges = (
     message: string,

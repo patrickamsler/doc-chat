@@ -15,7 +15,7 @@ import {
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
 import { BotMessageSquare } from "lucide-react";
-import { parseMessageWithPageRefBadges } from "./ChatMessageParser";
+import { parseMessageWithPageRefBadges } from "./parser/ChatMessageParser";
 
 interface ChatProps {
   chatId: string;
@@ -119,14 +119,14 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
                 message.isUser ? (
                     <UserMessage key={message.id}>{message.text}</UserMessage>
                 ) : (
-                    <AssistantMessageContainer>
+                    <AssistantMessageContainer key={message.id}>
                       <BotMessageSquare
                           strokeWidth={2.0}
                           style={{
                             height: 21, width: 21, marginRight: 5,
                             color: theme.colors.primary[500]
                           }}/>
-                      <AssistantMessage key={message.id}>
+                      <AssistantMessage>
                         {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
                       </AssistantMessage>
                     </AssistantMessageContainer>
