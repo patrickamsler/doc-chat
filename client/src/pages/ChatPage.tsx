@@ -24,7 +24,7 @@ const ChatPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null); // currently viewed file
-  const [files, setFiles] = useState<Record<string, FileInfo>>({}); // buffer for downloaded files
+  const filesRef = useRef<Record<string, FileInfo>>({}); // buffer for downloaded files
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -48,9 +48,9 @@ const ChatPage: React.FC = () => {
     ];
 
     if (chatId) {
-      if (files[chatId]) {
+      if (filesRef.current[chatId]) {
         console.log('Using cached file for chatId:', chatId);
-        setSelectedFile(files[chatId]);
+        setSelectedFile(filesRef.current[chatId]);
         setIsLoading(false);
       } else {
         console.log('Downloading file for chatId:', chatId);
@@ -58,7 +58,7 @@ const ChatPage: React.FC = () => {
             downloadFile(chatId)
             .then(({url, fileName}) => {
               setSelectedFile({url, name: fileName});
-              setFiles(prev => ({...prev, [chatId]: {url: url, name: fileName}}));
+              filesRef.current = {...filesRef.current, [chatId]: {url: url, name: fileName}};
             })
             .catch(err => console.error('Error downloading file:', err))
         );
@@ -76,7 +76,7 @@ const ChatPage: React.FC = () => {
   }
 
   const onFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
-    setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
+    filesRef.current = {...filesRef.current, [chatId]: {url: fileUrl, name: fileName}};
     navigate(`/chat/${chatId}`);
   };
 
