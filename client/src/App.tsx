@@ -6,11 +6,6 @@ import { AppContainer } from './App.styles';
 import ChatPage from './pages/ChatPage';
 import { initAuth } from './services/api';
 
-interface FileInfo {
-  url: string;
-  name: string;
-}
-
 const App: React.FC = () => {
   const isAuthInitialized = useRef(false);
 
