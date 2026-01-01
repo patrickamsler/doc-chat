@@ -52,18 +52,17 @@ const ChatPage: React.FC = () => {
         console.log('Using cached file for chatId:', chatId);
         setSelectedFile(files[chatId]);
         setIsLoading(false);
-        return;
+      } else {
+        console.log('Downloading file for chatId:', chatId);
+        promises.push(
+            downloadFile(chatId)
+            .then(({url, fileName}) => {
+              setSelectedFile({url, name: fileName});
+              setFiles(prev => ({...prev, [chatId]: {url: url, name: fileName}}));
+            })
+            .catch(err => console.error('Error downloading file:', err))
+        );
       }
-
-      console.log('Downloading file for chatId:', chatId);
-      promises.push(
-          downloadFile(chatId)
-          .then(({url, fileName}) => {
-            setSelectedFile({url, name: fileName});
-            setFiles(prev => ({...prev, [chatId]: {url: url, name: fileName}}));
-          })
-          .catch(err => console.error('Error downloading file:', err))
-      );
     } else {
       setSelectedFile(null);
     }

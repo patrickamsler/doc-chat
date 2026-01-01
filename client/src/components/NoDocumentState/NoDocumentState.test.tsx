@@ -75,45 +75,32 @@ describe('NoDocumentState', () => {
       expect(screen.getByText(/Select a document from the sidebar/i)).toBeInTheDocument();
     });
 
-    it('should NOT show upload button', () => {
+    it('should show upload button', () => {
       setup({hasDocuments: true});
-      expect(screen.queryByRole('button', {name: /Upload PDF/i})).not.toBeInTheDocument();
+      expect(screen.getByRole('button', {name: /Upload PDF/i})).toBeInTheDocument();
     });
   });
 
   describe('Upload functionality', () => {
-    it('should trigger file input when upload button is clicked', async () => {
-      setup({hasDocuments: false});
-
+    it('should show enabled upload button when not uploading', () => {
+      setup({hasDocuments: false, isUploading: false});
       const uploadButton = screen.getByRole('button', {name: /Upload PDF/i});
       expect(uploadButton).not.toBeDisabled();
+      expect(uploadButton).toHaveTextContent('Upload PDF');
     });
 
     it('should disable button and show uploading state during upload', () => {
-      setup({hasDocuments: false});
-      const uploadButton = screen.getByRole('button', {name: /Upload PDF/i});
-      expect(uploadButton).toBeInTheDocument();
-    });
-  });
-
-  describe('Callbacks', () => {
-    it('should accept onFileUploaded callback', () => {
-      const onFileUploaded = jest.fn();
-      setup({hasDocuments: false, onFileUploaded});
-      expect(onFileUploaded).not.toHaveBeenCalled();
-    });
-
-    it('should accept optional onUploadComplete callback', () => {
-      const onUploadComplete = jest.fn();
-      setup({hasDocuments: false, onUploadComplete});
-      expect(onUploadComplete).not.toHaveBeenCalled();
+      setup({hasDocuments: false, isUploading: true});
+      const uploadButton = screen.getByRole('button', {name: /Uploading.../i});
+      expect(uploadButton).toBeDisabled();
+      expect(uploadButton).toHaveTextContent('Uploading...');
     });
   });
 
   describe('Loading state', () => {
     it('should show loading spinner when isLoadingDocuments is true', () => {
       setup({hasDocuments: false, isLoadingDocuments: true});
-      expect(screen.getByText('Loading documents...')).toBeInTheDocument();
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
     it('should NOT show upload button when loading', () => {
@@ -135,7 +122,7 @@ describe('NoDocumentState', () => {
 
     it('should show normal state after loading completes', () => {
       const {rerender} = setup({hasDocuments: false, isLoadingDocuments: true});
-      expect(screen.getByText('Loading documents...')).toBeInTheDocument();
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
 
       rerender(
         <ThemeProvider theme={theme}>
@@ -148,13 +135,13 @@ describe('NoDocumentState', () => {
         </ThemeProvider>
       );
 
-      expect(screen.queryByText('Loading documents...')).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       expect(screen.getByText('Upload your first document')).toBeInTheDocument();
     });
 
     it('should transition from loading to "No document selected" when documents exist', () => {
       const {rerender} = setup({hasDocuments: false, isLoadingDocuments: true});
-      expect(screen.getByText('Loading documents...')).toBeInTheDocument();
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
 
       rerender(
         <ThemeProvider theme={theme}>
@@ -167,7 +154,7 @@ describe('NoDocumentState', () => {
         </ThemeProvider>
       );
 
-      expect(screen.queryByText('Loading documents...')).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       expect(screen.getByText('No document selected')).toBeInTheDocument();
     });
   });
