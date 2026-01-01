@@ -15,7 +15,7 @@ import {
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
 import { BotMessageSquare } from "lucide-react";
-import { parseMessageWithPageRefBadges } from "./parser/ChatMessageParser";
+import { parseMessageWithPageRefBadges } from "./Parser/ChatMessageParser";
 
 interface ChatProps {
   chatId: string;
