@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from './theme';
 import GlobalStyle from './GlobalStyle';
 import { AppContainer } from './App.styles';
@@ -12,9 +12,7 @@ interface FileInfo {
 }
 
 const App: React.FC = () => {
-  const [files, setFiles] = useState<Record<string, FileInfo>>({});
   const isAuthInitialized = useRef(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthInitialized.current) {
@@ -23,11 +21,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
-    setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
-    navigate(`/chat/${chatId}`);
-  };
-
   return (
       <ThemeProvider>
         <GlobalStyle/>
@@ -35,11 +28,11 @@ const App: React.FC = () => {
           <Routes>
             <Route
                 path="/chat/:chatId"
-                element={<ChatPage files={files} onFileUploaded={handleFileUploaded}/>}
+                element={<ChatPage/>}
             />
             <Route
                 path="*"
-                element={<ChatPage files={files} onFileUploaded={handleFileUploaded}/>}
+                element={<ChatPage/>}
             />
           </Routes>
         </AppContainer>

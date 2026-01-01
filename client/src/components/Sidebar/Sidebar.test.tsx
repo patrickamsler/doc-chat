@@ -41,11 +41,11 @@ const mockDocuments: ChatInfo[] = [
 ];
 
 const setup = async (propsOverride = {}, params = {}) => {
-  const onFileReady = jest.fn();
+  const onFileUploaded = jest.fn();
   const props = {
     isOpen: true,
     documents: mockDocuments,
-    onFileReady,
+    onFileUploaded,
     ...propsOverride
   };
 
@@ -65,7 +65,7 @@ const setup = async (propsOverride = {}, params = {}) => {
     expect(screen.queryByText('Your Documents')).toBeInTheDocument();
   });
 
-  return {onFileReady, ...result};
+  return {onFileUploaded, ...result};
 };
 
 describe('Sidebar Component', () => {
@@ -131,7 +131,7 @@ describe('Sidebar Component', () => {
         fileName: 'document1.pdf'
       });
 
-      const {onFileReady} = await setup({documents: mockDocuments});
+      const {onFileUploaded} = await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('document1.pdf')).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe('Sidebar Component', () => {
 
       await waitFor(() => {
         expect(downloadFile).toHaveBeenCalledWith('chat-1');
-        expect(onFileReady).toHaveBeenCalledWith('chat-1', 'http://example.com/file.pdf', 'document1.pdf');
+        expect(onFileUploaded).toHaveBeenCalledWith('chat-1', 'http://example.com/file.pdf', 'document1.pdf');
         expect(mockNavigate).toHaveBeenCalledWith('/chat/chat-1');
       });
     });
@@ -203,7 +203,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should handle file upload completion', async () => {
-      const {onFileReady} = await setup({documents: []});
+      const {onFileUploaded} = await setup({documents: []});
 
       // Simulate the FileUpload component calling onFileUploaded
       // This would normally be triggered by the FileUpload component
@@ -212,7 +212,7 @@ describe('Sidebar Component', () => {
       });
 
       // We can verify the prop was passed correctly
-      expect(onFileReady).toBeDefined();
+      expect(onFileUploaded).toBeDefined();
     });
   });
 

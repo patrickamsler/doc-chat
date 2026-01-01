@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
@@ -17,21 +17,20 @@ interface FileInfo {
   name: string;
 }
 
-interface ChatPageProps {
-  files: Record<string, FileInfo>;
-  onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
-}
-
-const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
+const ChatPage: React.FC = () => {
   const {chatId = ''} = useParams<{ chatId: string }>();
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>('');
+  const navigate = useNavigate();
+  const downloadCalled = useRef<Record<string, boolean>>({});
+
+  const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null); // currently viewed file
+  const [files, setFiles] = useState<Record<string, FileInfo>>({}); // buffer for downloaded files
+
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
     return saved !== null ? saved === 'true' : true;
   });
-  const downloadCalled = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
@@ -43,6 +42,11 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
     .catch(err => console.error('Failed to load documents:', err));
   }, []);
 
+  const onFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
+    setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
+    navigate(`/chat/${chatId}`);
+  };
+
   const handleFileUploadComplete = () => {
     getChats()
     .then(res => setDocuments(res.chats))
@@ -51,17 +55,14 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
 
   useEffect(() => {
     if (!chatId) {
-      // Clear file state when no chatId (empty state)
-      setFileUrl(null);
-      setFileName('');
+      setSelectedFile(null)
       return;
     }
 
     const info = files[chatId]; // file already downloaded and cached (e.g. from UploadPage)
     if (info) {
       console.log('Using cached file info for chatId:', chatId);
-      setFileUrl(info.url);
-      setFileName(info.name);
+      setSelectedFile(info);
       return;
     }
 
@@ -71,8 +72,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
     downloadCalled.current[chatId] = true;
     downloadFile(chatId)
     .then(({url, fileName}) => {
-      setFileUrl(url);
-      setFileName(fileName);
+      setSelectedFile({url, name: fileName});
     })
     .catch(err => console.error('Error downloading file:', err));
   }, [chatId, files]);
@@ -102,14 +102,14 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
                   resizePosition="right"
                   minRemainingSpace={700}
               >
-                <Sidebar isOpen={isSidebarOpen} documents={documents} onFileReady={onFileUploaded}/>
+                <Sidebar isOpen={isSidebarOpen} documents={documents} onFileUploaded={onFileUploaded}/>
               </ResizablePanel>
           )}
           <ContentPanel>
-            {fileUrl ? (
+            {selectedFile ? (
                 <PdfViewer
-                    fileUrl={fileUrl}
-                    fileName={fileName}
+                    fileUrl={selectedFile.url}
+                    fileName={selectedFile.name}
                     pageNavigationPluginInstance={pageNavigationPluginInstance}
                 />
             ) : (
@@ -130,7 +130,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
           >
             <Chat
                 chatId={chatId}
-                fileName={fileName}
+                fileName={selectedFile?.name}
                 onBadgeClick={handleBadgeClick}
             />
           </ResizablePanel>

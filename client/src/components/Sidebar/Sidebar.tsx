@@ -26,10 +26,10 @@ import {
 interface SidebarProps {
   isOpen: boolean;
   documents: ChatInfo[];
-  onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
+  onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileReady}) => {
+const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileUploaded}) => {
   const navigate = useNavigate();
   const {chatId} = useParams<{ chatId: string }>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileReady}) => {
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
       const {url, fileName} = await downloadFile(doc.chatId);
-      onFileReady(doc.chatId, url, fileName);
+      onFileUploaded(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
     } catch (err) {
       console.error(err);
@@ -49,11 +49,6 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileReady}) => {
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
-
-  const onFileUploaded = (id: string, url: string, name: string) => {
-    onFileReady(id, url, name);
-    navigate(`/chat/${id}`);
-  }
 
   return (
       <SidebarContainer $isOpen={isOpen}>
