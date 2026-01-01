@@ -4,12 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from 'styled-components';
 import { BrowserRouter } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { downloadFile, getChats } from '../../services/api';
+import { downloadFile } from '../../services/api';
 import theme from '../../theme';
 import { ChatInfo } from '../../types/apiTypes';
 
 jest.mock('../../services/api', () => ({
-  getChats: jest.fn(),
   downloadFile: jest.fn()
 }));
 
@@ -45,6 +44,7 @@ const setup = async (propsOverride = {}, params = {}) => {
   const onFileReady = jest.fn();
   const props = {
     isOpen: true,
+    documents: mockDocuments,
     onFileReady,
     ...propsOverride
   };
@@ -60,7 +60,7 @@ const setup = async (propsOverride = {}, params = {}) => {
       </BrowserRouter>
   );
 
-  // Wait for the initial async getChats() call to complete
+  // Wait for the component to render
   await waitFor(() => {
     expect(screen.queryByText('Your Documents')).toBeInTheDocument();
   });
@@ -75,16 +75,14 @@ describe('Sidebar Component', () => {
 
   describe('Initial Rendering', () => {
     it('should render the sidebar with upload button', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      await setup();
+      await setup({documents: []});
 
       expect(screen.getByText('Upload PDF')).toBeInTheDocument();
       expect(screen.getByText('Your Documents')).toBeInTheDocument();
     });
 
     it('should display empty state when no documents exist', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      await setup();
+      await setup({documents: []});
 
       await waitFor(() => {
         expect(screen.getByText('No documents yet')).toBeInTheDocument();
@@ -92,33 +90,20 @@ describe('Sidebar Component', () => {
       });
     });
 
-    it('should load and display documents on mount', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: mockDocuments});
-      await setup();
+    it('should display documents when passed via props', async () => {
+      await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('document1.pdf')).toBeInTheDocument();
         expect(screen.getByText('document2.pdf')).toBeInTheDocument();
         expect(screen.getByText('very-long-document-name-that-should-be-truncated.pdf')).toBeInTheDocument();
       });
-
-      expect(getChats).toHaveBeenCalledTimes(1);
-    });
-
-    it('should display error message when loading documents fails', async () => {
-      (getChats as jest.Mock).mockRejectedValue(new Error('Network error'));
-      await setup();
-
-      await waitFor(() => {
-        expect(screen.getByText('Failed to load documents')).toBeInTheDocument();
-      });
     });
   });
 
   describe('Document Display', () => {
     it('should format timestamps correctly', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: mockDocuments});
-      await setup();
+      await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('2024-01-15')).toBeInTheDocument();
@@ -128,8 +113,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should highlight selected document', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: mockDocuments});
-      await setup({}, {chatId: 'chat-2'});
+      await setup({documents: mockDocuments}, {chatId: 'chat-2'});
 
       await waitFor(() => {
         const documentItems = screen.getAllByRole('generic').filter(
@@ -142,13 +126,12 @@ describe('Sidebar Component', () => {
 
   describe('Document Click Handler', () => {
     it('should download file and navigate when document is clicked', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: mockDocuments});
       (downloadFile as jest.Mock).mockResolvedValue({
         url: 'http://example.com/file.pdf',
         fileName: 'document1.pdf'
       });
 
-      const {onFileReady} = await setup();
+      const {onFileReady} = await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('document1.pdf')).toBeInTheDocument();
@@ -168,12 +151,11 @@ describe('Sidebar Component', () => {
     });
 
     it('should handle download errors gracefully', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: mockDocuments});
       (downloadFile as jest.Mock).mockRejectedValue(new Error('Download failed'));
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      await setup();
+      await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('document1.pdf')).toBeInTheDocument();
@@ -196,8 +178,7 @@ describe('Sidebar Component', () => {
 
   describe('Upload Functionality', () => {
     it('should trigger file input click when upload button is clicked', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      await setup();
+      await setup({documents: []});
 
       await waitFor(() => {
         expect(screen.getByText('Upload PDF')).toBeInTheDocument();
@@ -215,19 +196,14 @@ describe('Sidebar Component', () => {
     });
 
     it('should disable upload button while uploading', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      await setup();
+      await setup({documents: []});
 
       const uploadButton = screen.getByText('Upload PDF');
       expect(uploadButton).not.toBeDisabled();
     });
 
     it('should handle file upload completion', async () => {
-      (getChats as jest.Mock)
-      .mockResolvedValueOnce({chats: []})
-      .mockResolvedValueOnce({chats: mockDocuments});
-
-      const {onFileReady} = await setup();
+      const {onFileReady} = await setup({documents: []});
 
       // Simulate the FileUpload component calling onFileUploaded
       // This would normally be triggered by the FileUpload component
@@ -242,8 +218,7 @@ describe('Sidebar Component', () => {
 
   describe('Sidebar Visibility', () => {
     it('should handle isOpen prop correctly', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      const {container} = await setup({isOpen: false});
+      const {container} = await setup({isOpen: false, documents: []});
 
       // The sidebar container should still be rendered but with isOpen=false
       await waitFor(() => {
@@ -252,25 +227,11 @@ describe('Sidebar Component', () => {
     });
 
     it('should render sidebar when isOpen is true', async () => {
-      (getChats as jest.Mock).mockResolvedValue({chats: []});
-      await setup({isOpen: true});
+      await setup({isOpen: true, documents: []});
 
       await waitFor(() => {
         expect(screen.getByText('Your Documents')).toBeInTheDocument();
       });
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should not show empty state when there is an error', async () => {
-      (getChats as jest.Mock).mockRejectedValue(new Error('API Error'));
-      await setup();
-
-      await waitFor(() => {
-        expect(screen.getByText('Failed to load documents')).toBeInTheDocument();
-      });
-
-      expect(screen.queryByText('No documents yet')).not.toBeInTheDocument();
     });
   });
 });

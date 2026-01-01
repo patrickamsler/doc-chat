@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FileText, Upload } from 'lucide-react';
 import FileUpload from '../FileUpload/FileUpload';
-import { downloadFile, getChats } from '../../services/api';
+import { downloadFile } from '../../services/api';
 import { ChatInfo } from '../../types/apiTypes';
 import {
   DocumentIcon,
@@ -25,25 +25,16 @@ import {
 
 interface SidebarProps {
   isOpen: boolean;
+  documents: ChatInfo[];
   onFileReady: (chatId: string, fileUrl: string, fileName: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({isOpen, onFileReady}) => {
-  const [documents, setDocuments] = useState<ChatInfo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileReady}) => {
   const navigate = useNavigate();
   const {chatId} = useParams<{ chatId: string }>();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(() => {
-    getChats()
-    .then(res => {
-      setDocuments(res.chats);
-      setError(null);
-    })
-    .catch(() => setError('Failed to load documents'));
-  }, []);
 
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
@@ -62,11 +53,6 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, onFileReady}) => {
   const onFileUploaded = (id: string, url: string, name: string) => {
     onFileReady(id, url, name);
     navigate(`/chat/${id}`);
-    getChats()
-    .then(res => {
-      setDocuments(res.chats);
-    })
-    .catch(() => setError('Failed to load documents'));
   }
 
   return (
@@ -86,8 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, onFileReady}) => {
 
         <SidebarContent>
           <SidebarTitle>Your Documents</SidebarTitle>
-          {error && <div style={{color: 'red', fontSize: '0.875rem'}}>{error}</div>}
-          {!error && documents.length > 0 ? (
+          {documents.length > 0 ? (
               <DocumentList>
                 {documents.map(doc => (
                     <DocumentItem
@@ -109,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, onFileReady}) => {
                     </DocumentItem>
                 ))}
               </DocumentList>
-          ) : !error && (
+          ) : (
               <EmptyState>
                 <EmptyIconWrapper>
                   <FileText style={{width: '2rem', height: '2rem', color: '#9ca3af'}}/>

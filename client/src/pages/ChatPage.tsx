@@ -4,10 +4,12 @@ import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import PdfViewer from '../components/PdfViewer/PdfViewer';
 import Chat from '../components/Chat/Chat';
 import { Container, ContentPanel, MainLayout } from './ChatPage.styles';
-import { downloadFile } from '../services/api';
+import { downloadFile, getChats } from '../services/api';
+import { ChatInfo } from '../types/apiTypes';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
 import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
+import NoDocumentState from '../components/NoDocumentState/NoDocumentState';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 
 interface FileInfo {
@@ -24,6 +26,7 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   const {chatId = ''} = useParams<{ chatId: string }>();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
+  const [documents, setDocuments] = useState<ChatInfo[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
     return saved !== null ? saved === 'true' : true;
@@ -33,6 +36,18 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
   }, [isSidebarOpen]);
+
+  useEffect(() => {
+    getChats()
+    .then(res => setDocuments(res.chats))
+    .catch(err => console.error('Failed to load documents:', err));
+  }, []);
+
+  const handleFileUploadComplete = () => {
+    getChats()
+    .then(res => setDocuments(res.chats))
+    .catch(err => console.error('Failed to refresh documents:', err));
+  };
 
   useEffect(() => {
     if (!chatId) {
@@ -87,15 +102,21 @@ const ChatPage: React.FC<ChatPageProps> = ({files, onFileUploaded}) => {
                   resizePosition="right"
                   minRemainingSpace={700}
               >
-                <Sidebar isOpen={isSidebarOpen} onFileReady={onFileUploaded}/>
+                <Sidebar isOpen={isSidebarOpen} documents={documents} onFileReady={onFileUploaded}/>
               </ResizablePanel>
           )}
           <ContentPanel>
-            {fileUrl && (
+            {fileUrl ? (
                 <PdfViewer
                     fileUrl={fileUrl}
                     fileName={fileName}
                     pageNavigationPluginInstance={pageNavigationPluginInstance}
+                />
+            ) : (
+                <NoDocumentState
+                    hasDocuments={documents.length > 0}
+                    onFileUploaded={onFileUploaded}
+                    onUploadComplete={handleFileUploadComplete}
                 />
             )}
           </ContentPanel>
