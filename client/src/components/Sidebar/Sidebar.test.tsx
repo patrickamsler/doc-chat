@@ -41,11 +41,12 @@ const mockDocuments: ChatInfo[] = [
 ];
 
 const setup = async (propsOverride = {}, params = {}) => {
-  const onFileUploaded = jest.fn();
+  const onFileUploadClick = jest.fn();
   const props = {
     isOpen: true,
+    isUploading: false,
     documents: mockDocuments,
-    onFileUploaded,
+    onFileUploadClick,
     ...propsOverride
   };
 
@@ -65,7 +66,7 @@ const setup = async (propsOverride = {}, params = {}) => {
     expect(screen.queryByText('Your Documents')).toBeInTheDocument();
   });
 
-  return {onFileUploaded, ...result};
+  return {onFileUploadClick, ...result};
 };
 
 describe('Sidebar Component', () => {
@@ -131,7 +132,7 @@ describe('Sidebar Component', () => {
         fileName: 'document1.pdf'
       });
 
-      const {onFileUploaded} = await setup({documents: mockDocuments});
+      const {onFileUploadClick} = await setup({documents: mockDocuments});
 
       await waitFor(() => {
         expect(screen.getByText('document1.pdf')).toBeInTheDocument();
@@ -145,7 +146,7 @@ describe('Sidebar Component', () => {
 
       await waitFor(() => {
         expect(downloadFile).toHaveBeenCalledWith('chat-1');
-        expect(onFileUploaded).toHaveBeenCalledWith('chat-1', 'http://example.com/file.pdf', 'document1.pdf');
+        expect(onFileUploadClick).toHaveBeenCalledWith('chat-1', 'http://example.com/file.pdf', 'document1.pdf');
         expect(mockNavigate).toHaveBeenCalledWith('/chat/chat-1');
       });
     });
@@ -203,7 +204,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should handle file upload completion', async () => {
-      const {onFileUploaded} = await setup({documents: []});
+      const {onFileUploadClick} = await setup({documents: []});
 
       // Simulate the FileUpload component calling onFileUploaded
       // This would normally be triggered by the FileUpload component
@@ -212,7 +213,7 @@ describe('Sidebar Component', () => {
       });
 
       // We can verify the prop was passed correctly
-      expect(onFileUploaded).toBeDefined();
+      expect(onFileUploadClick).toBeDefined();
     });
   });
 

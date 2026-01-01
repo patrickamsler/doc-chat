@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FileText, Upload } from 'lucide-react';
-import FileUpload from '../FileUpload/FileUpload';
-import { downloadFile } from '../../services/api';
 import { ChatInfo } from '../../types/apiTypes';
 import {
   DocumentIcon,
@@ -25,44 +23,30 @@ import {
 
 interface SidebarProps {
   isOpen: boolean;
+  isUploading: boolean;
   documents: ChatInfo[];
-  onFileUploaded: (chatId: string, fileUrl: string, fileName: string) => void;
+  onFileUploadClick: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({isOpen, documents, onFileUploaded}) => {
+const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFileUploadClick}) => {
   const navigate = useNavigate();
   const {chatId} = useParams<{ chatId: string }>();
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
 
   const handleDocumentClick = async (doc: ChatInfo) => {
     try {
-      const {url, fileName} = await downloadFile(doc.chatId);
-      onFileUploaded(doc.chatId, url, fileName);
       navigate(`/chat/${doc.chatId}`);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
   return (
       <SidebarContainer $isOpen={isOpen}>
         <SidebarHeader>
-          <UploadBtn onClick={handleUploadClick} disabled={isUploading}>
+          <UploadBtn onClick={onFileUploadClick} disabled={isUploading}>
             <Upload style={{width: '1rem', height: '1rem'}}/>
             {isUploading ? 'Uploading...' : 'Upload PDF'}
           </UploadBtn>
-          <FileUpload
-              ref={fileInputRef}
-              onFileUploaded={onFileUploaded}
-              onFileUploadStart={() => setIsUploading(true)}
-              onUploadComplete={() => setIsUploading(false)}
-          />
         </SidebarHeader>
 
         <SidebarContent>

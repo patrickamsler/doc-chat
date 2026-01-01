@@ -11,6 +11,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
 import NoDocumentState from '../components/NoDocumentState/NoDocumentState';
 import { STORAGE_KEYS } from '../constants/storageKeys';
+import FileUpload from "../components/FileUpload/FileUpload";
 
 interface FileInfo {
   url: string;
@@ -20,13 +21,14 @@ interface FileInfo {
 const ChatPage: React.FC = () => {
   const {chatId = ''} = useParams<{ chatId: string }>();
   const navigate = useNavigate();
-  const downloadCalled = useRef<Record<string, boolean>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null); // currently viewed file
   const [files, setFiles] = useState<Record<string, FileInfo>>({}); // buffer for downloaded files
-
   const [documents, setDocuments] = useState<ChatInfo[]>([]);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
     return saved !== null ? saved === 'true' : true;
@@ -37,50 +39,54 @@ const ChatPage: React.FC = () => {
   }, [isSidebarOpen]);
 
   useEffect(() => {
-    getChats()
-    .then(res => setDocuments(res.chats))
-    .catch(err => console.error('Failed to load documents:', err));
-  }, []);
+    setIsLoading(true);
+
+    const promises: Promise<any>[] = [
+      getChats()
+      .then(res => setDocuments(res.chats))
+      .catch(err => console.error('Failed to load documents:', err))
+    ];
+
+    if (chatId) {
+      if (files[chatId]) {
+        console.log('Using cached file for chatId:', chatId);
+        setSelectedFile(files[chatId]);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('Downloading file for chatId:', chatId);
+      promises.push(
+          downloadFile(chatId)
+          .then(({url, fileName}) => {
+            setSelectedFile({url, name: fileName});
+            setFiles(prev => ({...prev, [chatId]: {url: url, name: fileName}}));
+          })
+          .catch(err => console.error('Error downloading file:', err))
+      );
+    } else {
+      setSelectedFile(null);
+    }
+
+    // downloading both documents list and selected file (if any)
+    Promise.all(promises).finally(() => setIsLoading(false));
+  }, [chatId]);
+
+  const onFileUploadClick = () => {
+    fileInputRef.current?.click();
+  }
 
   const onFileUploaded = (chatId: string, fileUrl: string, fileName: string) => {
     setFiles(prev => ({...prev, [chatId]: {url: fileUrl, name: fileName}}));
     navigate(`/chat/${chatId}`);
   };
 
-  const handleFileUploadComplete = () => {
-    getChats()
-    .then(res => setDocuments(res.chats))
-    .catch(err => console.error('Failed to refresh documents:', err));
-  };
-
-  useEffect(() => {
-    if (!chatId) {
-      setSelectedFile(null)
-      return;
-    }
-
-    const info = files[chatId]; // file already downloaded and cached (e.g. from UploadPage)
-    if (info) {
-      console.log('Using cached file info for chatId:', chatId);
-      setSelectedFile(info);
-      return;
-    }
-
-    if (downloadCalled.current[chatId]) return; // Prevent multiple downloads for the same chatId
-
-    console.log('Downloading file for chatId:', chatId);
-    downloadCalled.current[chatId] = true;
-    downloadFile(chatId)
-    .then(({url, fileName}) => {
-      setSelectedFile({url, name: fileName});
-    })
-    .catch(err => console.error('Error downloading file:', err));
-  }, [chatId, files]);
-
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const {jumpToPage} = pageNavigationPluginInstance;
 
-  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prev => !prev);
+  }
 
   const handleBadgeClick = (pageRef: number, content: string) => {
     if (jumpToPage) {
@@ -91,6 +97,12 @@ const ChatPage: React.FC = () => {
 
   return (
       <Container>
+        <FileUpload
+            ref={fileInputRef}
+            onFileUploaded={onFileUploaded}
+            onFileUploadStart={() => setIsFileUploading(true)}
+            onUploadComplete={() => setIsFileUploading(false)}
+        />
         <Header onMenuClick={toggleSidebar}/>
         <MainLayout>
           {isSidebarOpen && (
@@ -102,7 +114,11 @@ const ChatPage: React.FC = () => {
                   resizePosition="right"
                   minRemainingSpace={700}
               >
-                <Sidebar isOpen={isSidebarOpen} documents={documents} onFileUploaded={onFileUploaded}/>
+                <Sidebar isOpen={isSidebarOpen}
+                         isUploading={isFileUploading}
+                         documents={documents}
+                         onFileUploadClick={onFileUploadClick}
+                />
               </ResizablePanel>
           )}
           <ContentPanel>
@@ -115,8 +131,9 @@ const ChatPage: React.FC = () => {
             ) : (
                 <NoDocumentState
                     hasDocuments={documents.length > 0}
-                    onFileUploaded={onFileUploaded}
-                    onUploadComplete={handleFileUploadComplete}
+                    isUploading={isFileUploading}
+                    isLoadingDocuments={isLoading}
+                    onFileUploadClick={onFileUploadClick}
                 />
             )}
           </ContentPanel>

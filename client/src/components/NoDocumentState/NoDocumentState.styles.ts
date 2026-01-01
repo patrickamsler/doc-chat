@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
   height: 100%;
@@ -62,4 +62,18 @@ export const UploadButton = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
   }
+`;
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const SpinningIcon = styled.span`
+  display: inline-flex;
+  animation: ${spin} 1s linear infinite;
 `;
