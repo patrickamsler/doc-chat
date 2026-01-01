@@ -60,7 +60,10 @@ const ChatPage: React.FC = () => {
               setSelectedFile({url, name: fileName});
               filesRef.current = {...filesRef.current, [chatId]: {url: url, name: fileName}};
             })
-            .catch(err => console.error('Error downloading file:', err))
+            .catch(err => {
+              console.error('Error downloading file:', err)
+              navigate("/")
+            })
         );
       }
     } else {
