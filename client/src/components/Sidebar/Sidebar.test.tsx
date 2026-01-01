@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from 'styled-components';
 import { BrowserRouter } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { downloadFile } from '../../services/api';
 import theme from '../../theme';
 import { ChatInfo } from '../../types/apiTypes';
 
@@ -126,36 +125,7 @@ describe('Sidebar Component', () => {
   });
 
   describe('Document Click Handler', () => {
-    it('should download file and navigate when document is clicked', async () => {
-      (downloadFile as jest.Mock).mockResolvedValue({
-        url: 'http://example.com/file.pdf',
-        fileName: 'document1.pdf'
-      });
-
-      const {onFileUploadClick} = await setup({documents: mockDocuments});
-
-      await waitFor(() => {
-        expect(screen.getByText('document1.pdf')).toBeInTheDocument();
-      });
-
-      const documentItem = screen.getByText('document1.pdf');
-
-      await waitFor(() => {
-        userEvent.click(documentItem);
-      });
-
-      await waitFor(() => {
-        expect(downloadFile).toHaveBeenCalledWith('chat-1');
-        expect(onFileUploadClick).toHaveBeenCalledWith('chat-1', 'http://example.com/file.pdf', 'document1.pdf');
-        expect(mockNavigate).toHaveBeenCalledWith('/chat/chat-1');
-      });
-    });
-
-    it('should handle download errors gracefully', async () => {
-      (downloadFile as jest.Mock).mockRejectedValue(new Error('Download failed'));
-
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-
+    it('should navigate to url', async () => {
       await setup({documents: mockDocuments});
 
       await waitFor(() => {
@@ -169,51 +139,43 @@ describe('Sidebar Component', () => {
       });
 
       await waitFor(() => {
-        expect(downloadFile).toHaveBeenCalledWith('chat-1');
-        expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(mockNavigate).toHaveBeenCalledWith('/chat/chat-1');
       });
-
-      consoleErrorSpy.mockRestore();
     });
   });
 
   describe('Upload Functionality', () => {
-    it('should trigger file input click when upload button is clicked', async () => {
-      await setup({documents: []});
+    it('should trigger onFileUploadClick when upload button is clicked', async () => {
+      const {onFileUploadClick} = await setup({documents: []});
 
       await waitFor(() => {
         expect(screen.getByText('Upload PDF')).toBeInTheDocument();
       });
 
       const uploadButton = screen.getByText('Upload PDF');
-
-      // The actual file input is hidden, so we can't directly test the click
-      // But we can verify the button is clickable
       expect(uploadButton).not.toBeDisabled();
 
       await waitFor(() => {
         userEvent.click(uploadButton);
       });
+
+      await waitFor(() => {
+        expect(onFileUploadClick).toHaveBeenCalled();
+      });
     });
 
     it('should disable upload button while uploading', async () => {
-      await setup({documents: []});
+      await setup({isUploading: true, documents: []});
+
+      const uploadButton = screen.getByText('Uploading...');
+      expect(uploadButton).toBeDisabled();
+    });
+
+    it('should enable upload button when not uploading', async () => {
+      await setup({isUploading: false, documents: []});
 
       const uploadButton = screen.getByText('Upload PDF');
       expect(uploadButton).not.toBeDisabled();
-    });
-
-    it('should handle file upload completion', async () => {
-      const {onFileUploadClick} = await setup({documents: []});
-
-      // Simulate the FileUpload component calling onFileUploaded
-      // This would normally be triggered by the FileUpload component
-      await waitFor(() => {
-        expect(screen.getByText('Upload PDF')).toBeInTheDocument();
-      });
-
-      // We can verify the prop was passed correctly
-      expect(onFileUploadClick).toBeDefined();
     });
   });
 
