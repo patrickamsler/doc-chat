@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getChatHistory, sendMessage } from '../../services/api';
-import { parseMessageWithPageRefBadges } from './ChatMessageParser'
 import ChatInput from './ChatInput/ChatInput';
 import {
+  AssistantMessage,
   ChatContainer,
   ChatHeader,
   ChatSubtitle,
   ChatTitle,
-  Message,
   MessagesContainer,
-  MessagesList
+  MessagesList,
+  UserMessage
 } from './Chat.styles';
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
 import { BotMessageSquare } from "lucide-react";
+import { parseMessageWithPageRefBadges } from "./ChatMessageParser";
 
 interface ChatProps {
   chatId: string;
@@ -114,17 +115,19 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
         <MessagesContainer>
           <MessagesList>
             {messages.map(message => (
-                <Message key={message.id} $isUser={message.isUser}>
-                  {!message.isUser && (
+                message.isUser ? (
+                    <UserMessage key={message.id}>{message.text}</UserMessage>
+                ) : (
+                    <AssistantMessage key={message.id}>
                       <BotMessageSquare
                           strokeWidth={2.0}
                           style={{
                             height: 21, width: 21, marginRight: 5,
                             color: theme.colors.primary[500]
                           }}/>
-                  )}
-                  {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
-                </Message>
+                      {parseMessageWithPageRefBadges(message.text, message.documents, onBadgeClick)}
+                    </AssistantMessage>
+                )
             ))}
             <div ref={messagesEndRef}/>
           </MessagesList>

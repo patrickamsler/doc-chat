@@ -54,21 +54,31 @@ export const PageRefBadge = styled.span`
     }
 `;
 
-export const Message = styled.div<{ $isUser: boolean }>`
+const MessageBase = styled.div`
     max-width: 70%;
     padding: 10px 15px;
     margin: 5px 0;
     border-radius: ${props => props.theme.borderRadius.lg};
-    align-self: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
-    background-color: ${props => props.$isUser ? props.theme.colors.gray[100] : props.theme.colors.background.paper};
-    color: ${props => props.$isUser ? props.theme.colors.text.primary : props.theme.colors.text.primary};
-    margin-left: ${props => props.$isUser ? 'auto' : '0'};
-    margin-right: ${props => !props.$isUser ? 'auto' : '0'};
+    color: ${props => props.theme.colors.text.primary};
     font-family: ${props => props.theme.typography.fontFamily.sans};
     font-size: ${props => props.theme.typography.fontSize.base};
     position: relative;
     text-align: left;
     word-wrap: break-word;
+`;
+
+export const UserMessage = styled(MessageBase)`
+    align-self: flex-end;
+    background-color: ${props => props.theme.colors.gray[100]};
+    margin-left: auto;
+    margin-right: 0;
+`;
+
+export const AssistantMessage = styled(MessageBase)`
+    align-self: flex-start;
+    background-color: ${props => props.theme.colors.background.paper};
+    margin-left: 0;
+    margin-right: auto;
 `;
 
 export const MessagesList = styled.div`
