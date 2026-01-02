@@ -1,11 +1,11 @@
 import React from "react";
 import { PageRefBadge } from "../Chat.styles";
 import { DocumentResponse } from "../../../types/apiTypes";
-import { parseMarkdownWithPageRefBadges } from "./MarkdownMessageParser";
 
 /**
- * Legacy plain text parser (kept for backward compatibility)
- * Parses messages with chunk references but without markdown support
+ * Plain text parser for messages with chunk references
+ * Renders messages as plain text with clickable page reference badges
+ * No markdown formatting support
  */
 export const parsePlainTextWithPageRefBadges = (
     message: string,
@@ -35,8 +35,5 @@ export const parsePlainTextWithPageRefBadges = (
   });
 };
 
-/**
- * Default parser with markdown support
- * This is now the default export and uses the markdown parser
- */
-export const parseMessageWithPageRefBadges = parseMarkdownWithPageRefBadges;
+// Re-export the markdown parser for convenience
+export { parseMarkdownWithPageRefBadges } from "./MarkdownMessageParser";
