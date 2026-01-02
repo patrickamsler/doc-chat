@@ -15,10 +15,7 @@ import {
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
 import { BotMessageSquare } from "lucide-react";
-import {
-  parseMarkdownWithPageRefBadges,
-  parsePlainTextWithPageRefBadges
-} from "./Parser/ChatMessageParser";
+import { parseMarkdownWithPageRefBadges } from "./Parser/ChatMessageParser";
 
 // Select which parser to use for rendering assistant messages
 // - parseMarkdownWithPageRefBadges: Renders markdown with syntax highlighting (default)
@@ -131,7 +128,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
                       <BotMessageSquare
                           strokeWidth={2.0}
                           style={{
-                            height: 21, width: 21, marginRight: 5,
+                            height: 21, width: 21, marginRight: 5, paddingTop: 3,
                             color: theme.colors.primary[500]
                           }}/>
                       <AssistantMessage>
