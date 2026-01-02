@@ -62,7 +62,6 @@ const ChatPage: React.FC = () => {
             })
             .catch(err => {
               console.error('Error downloading file:', err)
-              navigate("/")
             })
         );
       }

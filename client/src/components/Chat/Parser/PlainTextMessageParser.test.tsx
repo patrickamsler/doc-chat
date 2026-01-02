@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
-import { parsePlainTextWithPageRefBadges } from "./ChatMessageParser";
+import { parsePlainTextWithPageRefBadges } from "./PlainTextMessageParser";
 import theme from "../../../theme";
 import { DocumentResponse } from "../../../types/apiTypes";
 

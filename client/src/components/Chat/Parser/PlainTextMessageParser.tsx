@@ -34,6 +34,3 @@ export const parsePlainTextWithPageRefBadges = (
 
   });
 };
-
-// Re-export the markdown parser for convenience
-export { parseMarkdownWithPageRefBadges } from "./MarkdownMessageParser";

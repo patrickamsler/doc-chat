@@ -15,7 +15,7 @@ import {
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
 import { BotMessageSquare } from "lucide-react";
-import { parseMarkdownWithPageRefBadges } from "./Parser/ChatMessageParser";
+import { parseMarkdownWithPageRefBadges } from './Parser/MarkdownMessageParser';
 
 // Select which parser to use for rendering assistant messages
 // - parseMarkdownWithPageRefBadges: Renders markdown with syntax highlighting (default)
