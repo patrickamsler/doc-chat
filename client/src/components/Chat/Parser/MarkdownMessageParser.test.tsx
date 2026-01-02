@@ -11,10 +11,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("h1")).toBeTruthy();
@@ -28,10 +28,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const listItems = container.querySelectorAll("li");
@@ -46,10 +46,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("ol")).toBeTruthy();
@@ -62,10 +62,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const codeElement = container.querySelector("code");
@@ -78,10 +78,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("pre")).toBeTruthy();
@@ -93,10 +93,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("strong")?.textContent).toBe("bold");
@@ -108,10 +108,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const link = container.querySelector("a");
@@ -123,14 +123,14 @@ describe("parseMarkdownWithPageRefBadges", () => {
   it("preserves chunk references within markdown", () => {
     const message = "**Bold text** with reference <<chunk_10>> in markdown.";
     const documents: DocumentResponse[] = [
-      { id: "chunk_10", page: 5, content: "Document content" }
+      {id: "chunk_10", page: 5, content: "Document content"}
     ];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const badge = screen.getByText("[6]");
@@ -141,15 +141,15 @@ describe("parseMarkdownWithPageRefBadges", () => {
   it("handles chunk references in lists", () => {
     const message = "- Item with <<chunk_1>>\n- Another item <<chunk_2>>";
     const documents: DocumentResponse[] = [
-      { id: "chunk_1", page: 1, content: "Doc 1" },
-      { id: "chunk_2", page: 3, content: "Doc 2" }
+      {id: "chunk_1", page: 1, content: "Doc 1"},
+      {id: "chunk_2", page: 3, content: "Doc 2"}
     ];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const badges = screen.getAllByText(/\[\d+\]/);
@@ -161,15 +161,15 @@ describe("parseMarkdownWithPageRefBadges", () => {
   it("handles multiple chunk references with markdown formatting", () => {
     const message = "See **page** <<chunk_1>> and _also_ <<chunk_2>> for details.";
     const documents: DocumentResponse[] = [
-      { id: "chunk_1", page: 1, content: "Doc 1" },
-      { id: "chunk_2", page: 3, content: "Doc 2" }
+      {id: "chunk_1", page: 1, content: "Doc 1"},
+      {id: "chunk_2", page: 3, content: "Doc 2"}
     ];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     const badges = screen.getAllByText(/\[\d+\]/);
@@ -192,10 +192,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("del")?.textContent).toBe("strikethrough");
@@ -206,10 +206,10 @@ describe("parseMarkdownWithPageRefBadges", () => {
     const documents: DocumentResponse[] = [];
     const onBadgeClick = jest.fn();
 
-    const { container } = render(
-      <ThemeProvider theme={theme}>
-        <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
     );
 
     expect(container.querySelector("table")).toBeTruthy();
@@ -253,5 +253,84 @@ describe("parseMarkdownWithPageRefBadges", () => {
 
     fireEvent.click(badge);
     expect(onBadgeClick).toHaveBeenCalledWith(1, "Document 1");
+  });
+
+  it("renders chunk references immediately after code blocks (valid markdown)", () => {
+    // Valid markdown: closing fence on its own line, references on next line
+    const message = "```csharp\npublic void Test() { }\n```\n<<chunk_44>><<chunk_50>>";
+    const documents: DocumentResponse[] = [
+      {id: "chunk_44", page: 43, content: "Doc 44"},
+      {id: "chunk_50", page: 49, content: "Doc 50"}
+    ];
+    const onBadgeClick = jest.fn();
+
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
+    );
+
+    // Should have code block
+    expect(container.querySelector("pre")).toBeTruthy();
+
+    // Should have both badges after the code block
+    const badges = screen.getAllByText(/\[\d+\]/);
+    expect(badges.length).toBe(2);
+    expect(badges[0].textContent).toBe("[44]");
+    expect(badges[1].textContent).toBe("[50]");
+
+    // Badges should be clickable
+    fireEvent.click(badges[0]);
+    expect(onBadgeClick).toHaveBeenCalledWith(43, "Doc 44");
+  });
+
+  it("handles invalid markdown with references on same line as closing fence", () => {
+    // Invalid markdown (from backend): ``` followed by space and references on same line
+    // The workaround should fix this by adding a newline
+    const message = "```csharp\npublic void Test() { }\n``` <<chunk_44>><<chunk_50>>";
+    const documents: DocumentResponse[] = [
+      {id: "chunk_44", page: 43, content: "Doc 44"},
+      {id: "chunk_50", page: 49, content: "Doc 50"}
+    ];
+    const onBadgeClick = jest.fn();
+
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
+    );
+
+    // Should have code block
+    expect(container.querySelector("pre")).toBeTruthy();
+
+    // Should have both badges (workaround fixes the invalid markdown)
+    const badges = screen.getAllByText(/\[\d+\]/);
+    expect(badges.length).toBe(2);
+    expect(badges[0].textContent).toBe("[44]");
+    expect(badges[1].textContent).toBe("[50]");
+
+    // Badges should be clickable
+    fireEvent.click(badges[0]);
+    expect(onBadgeClick).toHaveBeenCalledWith(43, "Doc 44");
+  });
+
+  it("renders chunk references after code blocks with newline", () => {
+    const message = "Here's some code:\n\n```javascript\nconst x = 1;\n```\n\nAnd references: <<chunk_1>> <<chunk_2>>";
+    const documents: DocumentResponse[] = [
+      {id: "chunk_1", page: 5, content: "Doc 1"},
+      {id: "chunk_2", page: 8, content: "Doc 2"}
+    ];
+    const onBadgeClick = jest.fn();
+
+    const {container} = render(
+        <ThemeProvider theme={theme}>
+          <div>{parseMarkdownWithPageRefBadges(message, documents, onBadgeClick)}</div>
+        </ThemeProvider>
+    );
+
+    const badges = screen.getAllByText(/\[\d+\]/);
+    expect(badges.length).toBe(2);
+    expect(badges[0].textContent).toBe("[6]");
+    expect(badges[1].textContent).toBe("[9]");
   });
 });
