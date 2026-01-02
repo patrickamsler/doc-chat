@@ -2,7 +2,12 @@ import React from "react";
 import { PageRefBadge } from "../Chat.styles";
 import { DocumentResponse } from "../../../types/apiTypes";
 
-export const parseMessageWithPageRefBadges = (
+/**
+ * Plain text parser for messages with chunk references
+ * Renders messages as plain text with clickable page reference badges
+ * No markdown formatting support
+ */
+export const parsePlainTextWithPageRefBadges = (
     message: string,
     documents: DocumentResponse[],
     onBadgeClick: (pageRef: number, content: string) => void

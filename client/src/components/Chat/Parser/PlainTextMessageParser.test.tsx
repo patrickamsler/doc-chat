@@ -1,11 +1,11 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ThemeProvider } from "styled-components"; // Import ThemeProvider
-import { parseMessageWithPageRefBadges } from "./ChatMessageParser";
+import { ThemeProvider } from "styled-components";
+import { parsePlainTextWithPageRefBadges } from "./PlainTextMessageParser";
 import theme from "../../../theme";
 import { DocumentResponse } from "../../../types/apiTypes";
 
-describe("parseMessageWithPageRefBadges", () => {
+describe("parsePlainTextWithPageRefBadges", () => {
   it("renders plain text correctly", () => {
     const message = "This is a test message.";
     const documents: DocumentResponse[] = [];
@@ -13,7 +13,7 @@ describe("parseMessageWithPageRefBadges", () => {
 
     const {container} = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
+          <div>{parsePlainTextWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
@@ -23,14 +23,14 @@ describe("parseMessageWithPageRefBadges", () => {
   it("renders PageRefBadge for <<>> references", () => {
     const message = "See page <<chunk_10>> for details.";
     const documents: DocumentResponse[] = [
-      {id: "chunk_10", page: 1, content: "Document 1"}, // this is the document reference
-      {id: "chunk_20", page: 3, content: "Document 2"} // this is not referenced
+      {id: "chunk_10", page: 1, content: "Document 1"},
+      {id: "chunk_20", page: 3, content: "Document 2"}
     ];
     const onBadgeClick = jest.fn();
 
     const {container} = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
+          <div>{parsePlainTextWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
@@ -55,7 +55,7 @@ describe("parseMessageWithPageRefBadges", () => {
 
     const {container} = render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
+          <div>{parsePlainTextWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
@@ -76,13 +76,13 @@ describe("parseMessageWithPageRefBadges", () => {
 
     render(
         <ThemeProvider theme={theme}>
-          <div>{parseMessageWithPageRefBadges(message, documents, onBadgeClick)}</div>
+          <div>{parsePlainTextWithPageRefBadges(message, documents, onBadgeClick)}</div>
         </ThemeProvider>
     );
 
-    const badge = screen.getByText("[2]"); // page number is incremented by 1
+    const badge = screen.getByText("[2]");
     fireEvent.click(badge);
 
-    expect(onBadgeClick).toHaveBeenCalledWith(1, "Document 1"); // page number index
+    expect(onBadgeClick).toHaveBeenCalledWith(1, "Document 1");
   });
 });
