@@ -63,7 +63,11 @@
       "^unist-util-remove-position/do-not-use-color$": "<rootDir>/node_modules/unist-util-remove-position/lib/color.js",
       "^#minpath$": "<rootDir>/node_modules/vfile/lib/minpath.browser.js",
       "^#minproc$": "<rootDir>/node_modules/vfile/lib/minproc.browser.js",
-      "^#minurl$": "<rootDir>/node_modules/vfile/lib/minurl.browser.js"
+      "^#minurl$": "<rootDir>/node_modules/vfile/lib/minurl.browser.js",
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
     }
+  },
+  "devDependencies": {
+    "identity-obj-proxy": "^3.0.0"
   }
 }
