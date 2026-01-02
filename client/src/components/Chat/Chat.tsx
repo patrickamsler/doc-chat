@@ -74,34 +74,42 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
   const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;
 
+    const timestamp = Date.now();
     const userMessage: MessageType = {
-      id: Date.now(),
+      id: timestamp,
       text: input,
       documents: [],
       isUser: true,
     };
+    const botMessage: MessageType = {
+      id: timestamp + 1,
+      text: "thinking...",
+      documents: [],
+      isUser: false,
+    };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage, botMessage]);
     setIsLoading(true);
 
     try {
       const response = await sendMessage(chatId, input);
-      const botMessage: MessageType = {
-        id: Date.now() + 1,
-        text: response.answer,
-        documents: response.documents || [],
-        isUser: false,
-      };
-      setMessages(prev => [...prev, botMessage]);
+
+      setMessages(prevMessages =>
+          prevMessages.map(msg =>
+              msg.id === botMessage.id
+                  ? {...msg, text: response.answer, documents: response.documents}
+                  : msg
+          )
+      );
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage: MessageType = {
-        id: Date.now() + 1,
-        text: 'Sorry, there was an error processing your request.',
-        documents: [],
-        isUser: false,
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prevMessages =>
+          prevMessages.map(msg =>
+              msg.id === botMessage.id
+                  ? {...msg, text: "Sorry, there was an error processing your request."}
+                  : msg
+          )
+      );
     } finally {
       setIsLoading(false);
     }
