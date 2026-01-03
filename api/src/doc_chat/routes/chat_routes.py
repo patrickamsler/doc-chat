@@ -128,3 +128,17 @@ async def delete_chat_history(
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@chat_router.delete('/{chat_id}')
+async def delete_chat(
+      chat_id: str,
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
+):
+    logger.info(f"User {user.id} deleting chat {chat_id}")
+    try:
+        await chat_service.delete_chat(user.id, chat_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

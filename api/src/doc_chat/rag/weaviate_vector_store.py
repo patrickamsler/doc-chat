@@ -506,6 +506,49 @@ class WeaviateVectorStore:
             where=Filter.by_property("chat_id").equal(chat_id)
         )
 
+    async def delete_chat_and_all_data(self, user_id: str,
+          chat_id: str) -> None:
+        """
+        Delete a chat and all associated data (messages, chunks, documents).
+
+        Args:
+            user_id: The user ID (tenant)
+            chat_id: The chat ID to delete completely
+
+        Raises:
+            ValueError: If chat not found
+        """
+        chat = await self.get_chat(user_id, chat_id)
+        if not chat:
+            raise ValueError(f"Chat with chat_id {chat_id} not found")
+
+        message_collection = self.client.collections.get(
+            "ChatMessage").with_tenant(user_id)
+        chunks_collection = self.client.collections.get(
+            "DocumentChunk").with_tenant(user_id)
+        documents_collection = self.client.collections.get(
+            "Document").with_tenant(user_id)
+        chat_collection = self.client.collections.get(
+            "Chat").with_tenant(user_id)
+
+        await message_collection.data.delete_many(
+            where=Filter.by_property("chat_id").equal(chat_id)
+        )
+
+        documents = await self.get_documents_by_chat(user_id, chat_id,
+                                                     limit=1000)
+        for document in documents:
+            await chunks_collection.data.delete_many(
+                where=Filter.by_property("doc_id").equal(document.doc_id)
+            )
+            await documents_collection.data.delete_many(
+                where=Filter.by_property("doc_id").equal(document.doc_id)
+            )
+
+        await chat_collection.data.delete_many(
+            where=Filter.by_property("chat_id").equal(chat_id)
+        )
+
     async def _fetch_chat_messages(self, user_id: str, chat_id: str,
           limit: int, include_chunks: bool):
         message_collection = self.client.collections.get(

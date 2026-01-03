@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+from doc_chat.file_util import delete_file
 from .citation_retrieval_chain import CitationRetrievalChain
 from .document_loader import DocumentLoader
 from .query_rewriter import QueryRewriter
@@ -272,6 +273,14 @@ class ChatService:
         await self._vector_store.delete_chat_messages(user_id, chat_id)
         logger.info(
             f"Deleted chat {chat_id} for user {user_id}")
+
+    async def delete_chat(self, user_id: str, chat_id: str) -> None:
+        """
+        Delete a chat and all associated data including the PDF file.
+        """
+        await self._vector_store.delete_chat_and_all_data(user_id, chat_id)
+        delete_file(user_id, chat_id)
+        logger.info(f"Deleted chat {chat_id} for user {user_id}")
 
 
 # Global instances (will be initialized on app startup)

@@ -24,3 +24,12 @@ def allowed_file(filename) -> bool:
     """Check if the file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[
         1].lower() in ALLOWED_EXTENSIONS
+
+
+def delete_file(user_id: str, chat_id: str) -> bool:
+    file_path = build_file_path(user_id, chat_id)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return True
+    else:
+        return False
