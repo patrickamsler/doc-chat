@@ -82,8 +82,8 @@ const TextWithBadges: React.FC<TextWithBadgesProps> = ({
       if (splitIndex > 0) {
         parts.push(
             <span key={`text-${key++}`}>
-            {remainingText.substring(0, splitIndex)}
-          </span>
+              {remainingText.substring(0, splitIndex)}
+            </span>
         );
       }
 
@@ -325,12 +325,12 @@ export const parseMarkdownWithPageRefBadges = (
     text: ({value, ...props}: any) => {
       if (typeof value === "string" && value.includes("%%CHUNK_PLACEHOLDER_")) {
         return (
-          <TextWithBadges
-            text={value}
-            chunkMetadata={chunkMetadata}
-            documents={documents}
-            onBadgeClick={onBadgeClick}
-          />
+            <TextWithBadges
+                text={value}
+                chunkMetadata={chunkMetadata}
+                documents={documents}
+                onBadgeClick={onBadgeClick}
+            />
         );
       }
       return value;
