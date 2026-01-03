@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi import File, UploadFile, HTTPException, Depends
 from fastapi import status
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, Response
 from werkzeug.utils import secure_filename
 
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
@@ -112,5 +112,19 @@ async def get_chat_history(
         return JSONResponse(
             content=history.model_dump(),
             status_code=status.HTTP_200_OK)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@chat_router.delete('/{chat_id}/history')
+async def delete_chat_history(
+      chat_id: str,
+      user: User = Depends(get_current_user),
+      chat_service: ChatService = Depends(get_chat_service)
+):
+    logger.info(f"User {user.id} deleting history for chat_id={chat_id}")
+    try:
+        await chat_service.clear_chat_history(user.id, chat_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

@@ -262,6 +262,18 @@ class ChatService:
             history=messages
         )
 
+    async def clear_chat_history(self, user_id: str, chat_id: str) -> None:
+        """
+        Clear all messages from a chat.
+
+        The chat entity and documents remain intact, allowing users
+        to start fresh with the same document.
+        """
+        deleted_count = await self._vector_store.delete_chat_messages(user_id,
+                                                                      chat_id)
+        logger.info(
+            f"Deleted {deleted_count} messages from chat {chat_id} for user {user_id}")
+
 
 # Global instances (will be initialized on app startup)
 _vector_store: Optional[WeaviateVectorStore] = None
