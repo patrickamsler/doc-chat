@@ -1,12 +1,12 @@
 import styled, { keyframes } from "styled-components";
 
 const spin = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 `;
 
 export const InputContainer = styled.div`
@@ -60,6 +60,7 @@ export const SendButton = styled.button<{ $height?: number }>`
 
     &:hover:not(:disabled) {
         background-color: ${props => props.theme.colors.primary[700]};
+        cursor: pointer;
     }
 
     &:disabled {
