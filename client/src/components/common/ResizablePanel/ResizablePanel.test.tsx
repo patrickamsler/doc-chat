@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from 'styled-components';
 import ResizablePanel from './ResizablePanel';
-import { lightTheme } from '../../theme/tokens';
+import { lightTheme } from '../../../theme/tokens';
 
 describe('ResizablePanel Component', () => {
   const mockStorageKey = 'test-panel-width';
@@ -17,23 +17,23 @@ describe('ResizablePanel Component', () => {
 
   it('should render children correctly', () => {
     render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey}>
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey}>
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
   it('should use default width when no saved width exists', () => {
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     const panel = container.firstChild as HTMLElement;
@@ -43,12 +43,12 @@ describe('ResizablePanel Component', () => {
   it('should load width from localStorage if available', () => {
     localStorage.setItem(mockStorageKey, '500');
 
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     const panel = container.firstChild as HTMLElement;
@@ -58,16 +58,16 @@ describe('ResizablePanel Component', () => {
   it('should respect min width constraint', () => {
     localStorage.setItem(mockStorageKey, '100');
 
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel
-          storageKey={mockStorageKey}
-          defaultWidth={400}
-          minWidth={200}
-        >
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel
+              storageKey={mockStorageKey}
+              defaultWidth={400}
+              minWidth={200}
+          >
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     const panel = container.firstChild as HTMLElement;
@@ -77,16 +77,16 @@ describe('ResizablePanel Component', () => {
   it('should respect max width constraint', () => {
     localStorage.setItem(mockStorageKey, '1000');
 
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel
-          storageKey={mockStorageKey}
-          defaultWidth={400}
-          maxWidth={800}
-        >
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel
+              storageKey={mockStorageKey}
+              defaultWidth={400}
+              maxWidth={800}
+          >
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     const panel = container.firstChild as HTMLElement;
@@ -94,12 +94,12 @@ describe('ResizablePanel Component', () => {
   });
 
   it('should render panel with correct default resize position (left)', () => {
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey}>
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey}>
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     // Check that the panel container exists
@@ -108,12 +108,12 @@ describe('ResizablePanel Component', () => {
   });
 
   it('should render with resize position right', () => {
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey} resizePosition="right">
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey} resizePosition="right">
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     // Check that the panel container exists
@@ -122,12 +122,12 @@ describe('ResizablePanel Component', () => {
   });
 
   it('should persist width to localStorage on resize complete', () => {
-    const { container } = render(
-      <ThemeProvider theme={lightTheme}>
-        <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
-          <div>Test Content</div>
-        </ResizablePanel>
-      </ThemeProvider>
+    const {container} = render(
+        <ThemeProvider theme={lightTheme}>
+          <ResizablePanel storageKey={mockStorageKey} defaultWidth={400}>
+            <div>Test Content</div>
+          </ResizablePanel>
+        </ThemeProvider>
     );
 
     const panel = container.firstChild as HTMLElement;

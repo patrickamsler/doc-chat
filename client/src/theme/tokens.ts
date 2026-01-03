@@ -151,8 +151,8 @@ export const lightTheme = {
   // Z-index layers
   zIndex: {
     base: 0,
-    dropdown: 1000,
-    sticky: 1020,
+    sticky: 1000,
+    dropdown: 1020,
     overlay: 1030,
     modal: 1040,
     popover: 1050,

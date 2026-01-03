@@ -64,6 +64,33 @@ export const DocumentList = styled.div`
     gap: 8px;
 `;
 
+export const MenuButton = styled.button`
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: ${props => props.theme.borderRadius.md};
+    cursor: pointer;
+    transition: all ${props => props.theme.transitions.duration.base};
+    border: 1px solid transparent;
+    background: transparent;
+
+    &:hover {
+        background-color: ${props => props.theme.colors.gray[200]};
+        border: 1px solid ${props => props.theme.colors.gray[300]};
+    }
+
+    svg {
+        width: 1rem;
+        height: 1rem;
+        color: ${props => props.theme.colors.gray[500]};
+    }
+`;
+
 export const DocumentItem = styled.button<{ $isSelected: boolean }>`
     width: 100%;
     text-align: left;
@@ -73,9 +100,14 @@ export const DocumentItem = styled.button<{ $isSelected: boolean }>`
     border: 2px solid ${props => props.$isSelected ? props.theme.colors.primary[600] : 'transparent'};
     cursor: pointer;
     padding: 8px;
+    position: relative;
 
     &:hover {
         background-color: ${props => props.$isSelected ? props.theme.colors.primary[50] : props.theme.colors.gray[100]};
+    }
+
+    &:hover ${MenuButton} {
+        display: flex;
     }
 `;
 

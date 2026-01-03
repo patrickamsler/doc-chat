@@ -66,3 +66,9 @@ export const deleteChatHistory = async (chatId: string): Promise<void> => {
     withCredentials: true,
   });
 };
+
+export const deleteChat = async (chatId: string): Promise<void> => {
+  await axios.delete(`${API_URL}/chats/${chatId}`, {
+    withCredentials: true,
+  });
+};

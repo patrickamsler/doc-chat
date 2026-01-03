@@ -8,7 +8,7 @@ import { downloadFile, getChats } from '../services/api';
 import { ChatInfo } from '../types/apiTypes';
 import Header from "../components/Header/Header";
 import Sidebar from '../components/Sidebar/Sidebar';
-import ResizablePanel from '../components/ResizablePanel/ResizablePanel';
+import ResizablePanel from '../components/common/ResizablePanel/ResizablePanel';
 import NoDocumentState from '../components/NoDocumentState/NoDocumentState';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import FileUpload from "../components/FileUpload/FileUpload";
@@ -96,6 +96,19 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  const handleChatDeleted = (deletedChatId: string) => {
+    const newFilesRef = {...filesRef.current};
+    delete newFilesRef[deletedChatId];
+    filesRef.current = newFilesRef;
+
+    if (chatId === deletedChatId) {
+      setSelectedFile(null);
+      navigate('/');
+    }
+
+    setDocuments(prev => prev.filter(doc => doc.chatId !== deletedChatId));
+  };
+
   return (
       <Container>
         <FileUpload
@@ -119,6 +132,7 @@ const ChatPage: React.FC = () => {
                          isUploading={isFileUploading}
                          documents={documents}
                          onFileUploadClick={onFileUploadClick}
+                         onChatDeleted={handleChatDeleted}
                 />
               </ResizablePanel>
           )}

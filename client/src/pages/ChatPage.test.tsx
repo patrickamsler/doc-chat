@@ -77,7 +77,7 @@ jest.mock('../components/FileUpload/FileUpload', () => {
   };
 });
 
-jest.mock('../components/ResizablePanel/ResizablePanel', () => {
+jest.mock('../components/common/ResizablePanel/ResizablePanel', () => {
   return function MockResizablePanel(props: any) {
     return <div data-testid="resizable-panel">{props.children}</div>;
   };
