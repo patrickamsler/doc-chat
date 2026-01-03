@@ -1,16 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { InputContainer, MessageInput, SendButton, SpinningIcon } from './ChatInput.styles';
-import { Send, Loader2 } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
 
 interface ChatInputProps {
   onSendMessage: (input: string) => void;
   isLoading: boolean;
+  isDisabled: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
-  onSendMessage,
-  isLoading
-}) => {
+                                               onSendMessage,
+                                               isLoading,
+                                               isDisabled
+                                             }) => {
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [textareaHeight, setTextareaHeight] = useState(22); // initial height
@@ -45,30 +47,31 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <InputContainer>
-      <MessageInput
-        id="chat-message-input"
-        ref={textareaRef}
-        value={inputValue}
-        onChange={e => setInputValue(e.target.value)}
-        onKeyDown={onKeyPress}
-        placeholder="Ask any question..."
-      />
-      <SendButton
-        onClick={handleSend}
-        disabled={isLoading || !inputValue.trim()}
-        aria-label={isLoading ? "Sending..." : "Send"}
-        $height={textareaHeight}
-      >
-        {isLoading ? (
-          <SpinningIcon>
-            <Loader2 size={16} />
-          </SpinningIcon>
-        ) : (
-          <Send size={16} />
-        )}
-      </SendButton>
-    </InputContainer>
+      <InputContainer>
+        <MessageInput
+            id="chat-message-input"
+            ref={textareaRef}
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
+            onKeyDown={onKeyPress}
+            placeholder="Ask any question..."
+            disabled={isDisabled}
+        />
+        <SendButton
+            onClick={handleSend}
+            disabled={isDisabled || isLoading || !inputValue.trim()}
+            aria-label={isLoading ? "Sending..." : "Send"}
+            $height={textareaHeight}
+        >
+          {isLoading ? (
+              <SpinningIcon>
+                <Loader2 size={16}/>
+              </SpinningIcon>
+          ) : (
+              <Send size={16}/>
+          )}
+        </SendButton>
+      </InputContainer>
   );
 };
 

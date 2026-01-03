@@ -168,6 +168,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
         <ChatInput
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
+            isDisabled={!chatId}
         />
       </ChatContainer>
   );
