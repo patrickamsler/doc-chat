@@ -17,6 +17,13 @@ export const ChatHeader = styled.div`
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid ${props => props.theme.colors.border.main};
+    gap: 12px;
+`;
+
+export const ChatHeaderContent = styled.div`
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 `;
 
 export const ChatTitle = styled.div`
@@ -46,6 +53,7 @@ export const TrashIconButton = styled.div`
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid transparent;
+    flex-shrink: 0;
 
     &:hover {
         background-color: ${props => props.theme.colors.gray[100]};
@@ -111,161 +119,191 @@ export const MessagesList = styled.div`
 `;
 
 export const MarkdownContent = styled.div`
-  font-family: ${props => props.theme.typography.fontFamily.sans};
-  color: ${props => props.theme.colors.text.primary};
-  line-height: 1.6;
-
-  /* Headings */
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    font-weight: ${props => props.theme.typography.fontWeight.semibold};
-    line-height: 1.3;
+    font-family: ${props => props.theme.typography.fontFamily.sans};
     color: ${props => props.theme.colors.text.primary};
-  }
+    line-height: 1.6;
 
-  h1:first-child,
-  h2:first-child,
-  h3:first-child,
-  h4:first-child,
-  h5:first-child,
-  h6:first-child {
-    margin-top: 0;
-  }
+    /* Headings */
 
-  h1 { font-size: 1.75em; }
-  h2 { font-size: 1.5em; }
-  h3 { font-size: 1.25em; }
-  h4 { font-size: 1.1em; }
-  h5 { font-size: 1em; }
-  h6 { font-size: 0.9em; }
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: ${props => props.theme.typography.fontWeight.semibold};
+        line-height: 1.3;
+        color: ${props => props.theme.colors.text.primary};
+    }
 
-  /* Paragraphs */
-  p {
-    margin-top: 0.75em;
-    margin-bottom: 0.75em;
-    white-space: pre-wrap;
-  }
+    h1:first-child,
+    h2:first-child,
+    h3:first-child,
+    h4:first-child,
+    h5:first-child,
+    h6:first-child {
+        margin-top: 0;
+    }
 
-  p:first-child {
-    margin-top: 0;
-  }
+    h1 {
+        font-size: 1.75em;
+    }
 
-  p:last-child {
-    margin-bottom: 0;
-  }
+    h2 {
+        font-size: 1.5em;
+    }
 
-  /* Lists */
-  ul, ol {
-    margin-top: 0.75em;
-    margin-bottom: 0.75em;
-    padding-left: 2em;
-  }
+    h3 {
+        font-size: 1.25em;
+    }
 
-  li {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-  }
+    h4 {
+        font-size: 1.1em;
+    }
 
-  /* Nested lists */
-  li > ul,
-  li > ol {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-  }
+    h5 {
+        font-size: 1em;
+    }
 
-  /* Inline code */
-  code {
-    background-color: ${props => props.theme.colors.gray[100]};
-    padding: 0.2em 0.4em;
-    border-radius: ${props => props.theme.borderRadius.sm};
-    font-family: 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    color: ${props => props.theme.colors.text.primary};
-  }
+    h6 {
+        font-size: 0.9em;
+    }
 
-  /* Code blocks */
-  pre {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding: 1em;
-    background-color: ${props => props.theme.colors.gray[50]};
-    border-radius: ${props => props.theme.borderRadius.md};
-    overflow-x: auto;
-    border: 1px solid ${props => props.theme.colors.border.main};
+    /* Paragraphs */
+
+    p {
+        margin-top: 0.75em;
+        margin-bottom: 0.75em;
+        white-space: pre-wrap;
+    }
+
+    p:first-child {
+        margin-top: 0;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Lists */
+
+    ul, ol {
+        margin-top: 0.75em;
+        margin-bottom: 0.75em;
+        padding-left: 2em;
+    }
+
+    li {
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+    }
+
+    /* Nested lists */
+
+    li > ul,
+    li > ol {
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+    }
+
+    /* Inline code */
 
     code {
-      background-color: transparent;
-      padding: 0;
-      border-radius: 0;
-      font-size: ${props => props.theme.typography.fontSize.sm};
+        background-color: ${props => props.theme.colors.gray[100]};
+        padding: 0.2em 0.4em;
+        border-radius: ${props => props.theme.borderRadius.sm};
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+        color: ${props => props.theme.colors.text.primary};
     }
-  }
 
-  /* Links */
-  a {
-    color: ${props => props.theme.colors.primary[600]};
-    text-decoration: underline;
-    cursor: pointer;
+    /* Code blocks */
 
-    &:hover {
-      color: ${props => props.theme.colors.primary[700]};
+    pre {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        padding: 1em;
+        background-color: ${props => props.theme.colors.gray[50]};
+        border-radius: ${props => props.theme.borderRadius.md};
+        overflow-x: auto;
+        border: 1px solid ${props => props.theme.colors.border.main};
+
+        code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: ${props => props.theme.typography.fontSize.sm};
+        }
     }
-  }
 
-  /* Blockquotes */
-  blockquote {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding-left: 1em;
-    border-left: 4px solid ${props => props.theme.colors.primary[300]};
-    color: ${props => props.theme.colors.text.secondary};
-    font-style: italic;
-  }
+    /* Links */
 
-  /* Tables */
-  table {
-    width: 100%;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    border-collapse: collapse;
-  }
+    a {
+        color: ${props => props.theme.colors.primary[600]};
+        text-decoration: underline;
+        cursor: pointer;
 
-  th, td {
-    padding: 0.5em;
-    border: 1px solid ${props => props.theme.colors.border.main};
-    text-align: left;
-  }
+        &:hover {
+            color: ${props => props.theme.colors.primary[700]};
+        }
+    }
 
-  th {
-    background-color: ${props => props.theme.colors.gray[50]};
-    font-weight: ${props => props.theme.typography.fontWeight.semibold};
-  }
+    /* Blockquotes */
 
-  /* Horizontal rules */
-  hr {
-    margin-top: 2em;
-    margin-bottom: 2em;
-    border: none;
-    border-top: 1px solid ${props => props.theme.colors.border.main};
-  }
+    blockquote {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        padding-left: 1em;
+        border-left: 4px solid ${props => props.theme.colors.primary[300]};
+        color: ${props => props.theme.colors.text.secondary};
+        font-style: italic;
+    }
 
-  /* Strong and emphasis */
-  strong {
-    font-weight: ${props => props.theme.typography.fontWeight.semibold};
-  }
+    /* Tables */
 
-  em {
-    font-style: italic;
-  }
+    table {
+        width: 100%;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        border-collapse: collapse;
+    }
 
-  /* Strikethrough (GFM) */
-  del {
-    text-decoration: line-through;
-  }
+    th, td {
+        padding: 0.5em;
+        border: 1px solid ${props => props.theme.colors.border.main};
+        text-align: left;
+    }
 
-  /* Task lists (GFM) */
-  input[type="checkbox"] {
-    margin-right: 0.5em;
-  }
+    th {
+        background-color: ${props => props.theme.colors.gray[50]};
+        font-weight: ${props => props.theme.typography.fontWeight.semibold};
+    }
+
+    /* Horizontal rules */
+
+    hr {
+        margin-top: 2em;
+        margin-bottom: 2em;
+        border: none;
+        border-top: 1px solid ${props => props.theme.colors.border.main};
+    }
+
+    /* Strong and emphasis */
+
+    strong {
+        font-weight: ${props => props.theme.typography.fontWeight.semibold};
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    /* Strikethrough (GFM) */
+
+    del {
+        text-decoration: line-through;
+    }
+
+    /* Task lists (GFM) */
+
+    input[type="checkbox"] {
+        margin-right: 0.5em;
+    }
 `;

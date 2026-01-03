@@ -6,6 +6,7 @@ import {
   AssistantMessageContainer,
   ChatContainer,
   ChatHeader,
+  ChatHeaderContent,
   ChatSubtitle,
   ChatTitle,
   MessagesContainer,
@@ -129,7 +130,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
   return (
       <ChatContainer>
         <ChatHeader>
-          <div>
+          <ChatHeaderContent>
             <ChatTitle>
               <BotMessageSquare style={{width: '1.25rem', height: '1.25rem', color: theme.colors.primary[500]}}/>
               <span>Chat Assistant</span>
@@ -137,7 +138,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
             <ChatSubtitle>
               {chatId && fileName ? `Chatting about: ${fileName}` : 'No document selected'}
             </ChatSubtitle>
-          </div>
+          </ChatHeaderContent>
           <TrashIconButton onClick={() => clearChatHistory()} data-testid="clear-history-button">
             <Trash2 style={{width: '1.25rem', height: '1.25rem', color: theme.colors.gray[500]}}/>
           </TrashIconButton>
