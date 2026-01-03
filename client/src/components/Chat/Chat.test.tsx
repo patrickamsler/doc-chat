@@ -41,12 +41,21 @@ describe('Chat component', () => {
 
     const textbox = screen.getByRole('textbox');
     userEvent.type(textbox, 'Hello');
+
+    await waitFor(() => {
+      expect(textbox).toHaveValue('Hello');
+    });
+
     userEvent.click(screen.getByRole('button'));
 
     expect(sendMessage).toHaveBeenCalledWith('chat1', 'Hello');
-    // user message should appear immediately
-    expect(screen.getByText('Hello')).toBeInTheDocument();
 
+    // user message should appear immediately
+    await waitFor(() => {
+      expect(screen.getByText('Hello')).toBeInTheDocument();
+    });
+
+    // response should appear after API call completes
     await waitFor(() => {
       expect(screen.getByText('Hi there')).toBeInTheDocument();
     });
@@ -62,6 +71,11 @@ describe('Chat component', () => {
 
     const textbox = screen.getByRole('textbox');
     userEvent.type(textbox, 'Hello');
+
+    await waitFor(() => {
+      expect(textbox).toHaveValue('Hello');
+    });
+
     userEvent.click(screen.getByRole('button'));
 
     await waitFor(() => {
