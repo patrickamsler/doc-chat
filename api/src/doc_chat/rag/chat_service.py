@@ -269,10 +269,9 @@ class ChatService:
         The chat entity and documents remain intact, allowing users
         to start fresh with the same document.
         """
-        deleted_count = await self._vector_store.delete_chat_messages(user_id,
-                                                                      chat_id)
+        await self._vector_store.delete_chat_messages(user_id, chat_id)
         logger.info(
-            f"Deleted {deleted_count} messages from chat {chat_id} for user {user_id}")
+            f"Deleted chat {chat_id} for user {user_id}")
 
 
 # Global instances (will be initialized on app startup)

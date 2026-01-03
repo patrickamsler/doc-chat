@@ -501,19 +501,10 @@ class WeaviateVectorStore:
         message_collection = self.client.collections.get(
             "ChatMessage").with_tenant(user_id)
 
-        # Count messages before deletion
-        results = await message_collection.query.fetch_objects(
-            filters=Filter.by_property("chat_id").equal(chat_id),
-            limit=1000
-        )
-        message_count = len(results.objects)
-
         # Delete all messages for this chat
         await message_collection.data.delete_many(
             where=Filter.by_property("chat_id").equal(chat_id)
         )
-
-        return message_count
 
     async def _fetch_chat_messages(self, user_id: str, chat_id: str,
           limit: int, include_chunks: bool):
