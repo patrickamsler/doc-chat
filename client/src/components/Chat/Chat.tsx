@@ -28,6 +28,7 @@ interface ChatProps {
   chatId: string;
   fileName?: string;
   onBadgeClick: (pageRef: number, content: string) => void;
+  clearHistoryTrigger?: number;
 }
 
 interface MessageType {
@@ -37,7 +38,7 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
+const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick, clearHistoryTrigger}) => {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -72,6 +73,12 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
 
     loadChatHistory();
   }, [chatId]);
+
+  useEffect(() => {
+    if (clearHistoryTrigger !== undefined && clearHistoryTrigger > 0) {
+      setMessages([]);
+    }
+  }, [clearHistoryTrigger]);
 
   const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;

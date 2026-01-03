@@ -31,9 +31,17 @@ interface SidebarProps {
   documents: ChatInfo[];
   onFileUploadClick: () => void;
   onChatDeleted?: (chatId: string) => void;
+  onHistoryCleared?: (chatId: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFileUploadClick, onChatDeleted}) => {
+const Sidebar: React.FC<SidebarProps> = ({
+                                           isOpen,
+                                           isUploading,
+                                           documents,
+                                           onFileUploadClick,
+                                           onChatDeleted,
+                                           onHistoryCleared
+                                         }) => {
   const navigate = useNavigate();
   const {chatId} = useParams<{ chatId: string }>();
 
@@ -68,6 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFile
     setOpenMenuId(null);
     try {
       await deleteChatHistory(chatId);
+      onHistoryCleared?.(chatId);
     } catch (error) {
       console.error('Error clearing chat history:', error);
     }

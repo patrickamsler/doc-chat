@@ -33,6 +33,7 @@ const ChatPage: React.FC = () => {
     const saved = localStorage.getItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN);
     return saved !== null ? saved === 'true' : true;
   });
+  const [clearHistoryTrigger, setClearHistoryTrigger] = useState<number>(0);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COMPONENTS.SIDEBAR_OPEN, String(isSidebarOpen));
@@ -109,6 +110,10 @@ const ChatPage: React.FC = () => {
     setDocuments(prev => prev.filter(doc => doc.chatId !== deletedChatId));
   };
 
+  const handleHistoryCleared = (clearedChatId: string) => {
+    setClearHistoryTrigger(prev => prev + 1);
+  };
+
   return (
       <Container>
         <FileUpload
@@ -133,6 +138,7 @@ const ChatPage: React.FC = () => {
                          documents={documents}
                          onFileUploadClick={onFileUploadClick}
                          onChatDeleted={handleChatDeleted}
+                         onHistoryCleared={handleHistoryCleared}
                 />
               </ResizablePanel>
           )}
@@ -164,6 +170,7 @@ const ChatPage: React.FC = () => {
                 chatId={chatId}
                 fileName={selectedFile?.name}
                 onBadgeClick={handleBadgeClick}
+                clearHistoryTrigger={clearHistoryTrigger}
             />
           </ResizablePanel>
         </MainLayout>
