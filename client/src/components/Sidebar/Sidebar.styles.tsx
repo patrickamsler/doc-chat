@@ -64,7 +64,7 @@ export const DocumentList = styled.div`
     gap: 8px;
 `;
 
-export const MenuButton = styled.button`
+export const MenuButton = styled.div`
     position: absolute;
     right: 8px;
     top: 50%;

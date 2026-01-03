@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFile
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
-  const menuButtonRefs = useRef<Record<string, React.RefObject<HTMLButtonElement | null>>>({});
+  const menuButtonRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>({});
 
   // Initialize refs for each document
   useEffect(() => {
@@ -146,6 +146,9 @@ const Sidebar: React.FC<SidebarProps> = ({isOpen, isUploading, documents, onFile
                         <MenuButton
                             ref={menuButtonRefs.current[doc.chatId]}
                             onClick={(e) => handleMenuClick(e, doc.chatId)}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Document options"
                         >
                           <MoreVertical/>
                         </MenuButton>
