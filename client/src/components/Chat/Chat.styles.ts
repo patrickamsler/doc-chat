@@ -12,6 +12,9 @@ export const ChatContainer = styled.div`
 `;
 
 export const ChatHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid ${props => props.theme.colors.border.main};
 `;
@@ -32,6 +35,22 @@ export const ChatSubtitle = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+`;
+
+export const TrashIconButton = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: ${props => props.theme.borderRadius.md};
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+
+    &:hover {
+        background-color: ${props => props.theme.colors.gray[100]};
+        border: 1px solid ${props => props.theme.colors.gray[300]};
+    }
 `;
 
 export const MessagesContainer = styled.div`

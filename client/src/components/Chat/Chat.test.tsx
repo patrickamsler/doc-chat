@@ -3,12 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Chat from './Chat';
 import { ThemeProvider } from 'styled-components';
-import { getChatHistory, sendMessage } from '../../services/api';
+import { deleteChatHistory, getChatHistory, sendMessage } from '../../services/api';
 import theme from "../../theme";
 
 jest.mock('../../services/api', () => ({
   sendMessage: jest.fn(),
   getChatHistory: jest.fn(),
+  deleteChatHistory: jest.fn(),
 }));
 
 const setup = (chatId = 'chat1', propsOverride = {}) => {
@@ -32,6 +33,7 @@ describe('Chat component', () => {
   beforeEach(() => {
     (sendMessage as jest.Mock).mockReset();
     (getChatHistory as jest.Mock).mockReset();
+    (deleteChatHistory as jest.Mock).mockReset();
   });
 
   it('sends a message and displays the response', async () => {
@@ -121,6 +123,51 @@ describe('Chat component', () => {
     expect(screen.getByText('Can you tell me more?')).toBeInTheDocument();
     expect(screen.getByText(/This document is about testing\./)).toBeInTheDocument();
     expect(screen.getByText('[6]')).toBeInTheDocument(); // page badge (5 + 1 for 1-based index)
+  });
+
+  it('clears chat history when trash icon is clicked', async () => {
+    const mockHistory = {
+      history: [
+        {
+          timestamp: '2025-01-01T10:00:00Z',
+          content: 'Test message',
+          documents: [],
+          role: 'user',
+        },
+        {
+          timestamp: '2025-01-01T10:00:05Z',
+          content: 'Test response',
+          documents: [],
+          role: 'assistant',
+        },
+      ],
+    };
+
+    (getChatHistory as jest.Mock).mockResolvedValueOnce(mockHistory);
+    (deleteChatHistory as jest.Mock).mockResolvedValueOnce(undefined);
+    setup('chat1');
+
+    // Wait for history to load
+    await waitFor(() => {
+      expect(screen.getByText('Test message')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Test response')).toBeInTheDocument();
+
+    // Find and click the trash icon button
+    const trashButton = screen.getByTestId('clear-history-button');
+    userEvent.click(trashButton);
+
+    // Verify deleteChatHistory was called with correct chatId
+    await waitFor(() => {
+      expect(deleteChatHistory).toHaveBeenCalledWith('chat1');
+    });
+
+    // Verify messages are cleared from the UI
+    await waitFor(() => {
+      expect(screen.queryByText('Test message')).not.toBeInTheDocument();
+      expect(screen.queryByText('Test response')).not.toBeInTheDocument();
+    });
   });
 });
 

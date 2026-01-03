@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getChatHistory, sendMessage } from '../../services/api';
+import { deleteChatHistory, getChatHistory, sendMessage } from '../../services/api';
 import ChatInput from './ChatInput/ChatInput';
 import {
   AssistantMessage,
@@ -10,11 +10,12 @@ import {
   ChatTitle,
   MessagesContainer,
   MessagesList,
+  TrashIconButton,
   UserMessage
 } from './Chat.styles';
 import { useTheme } from 'styled-components';
 import { DocumentResponse } from "../../types/apiTypes";
-import { BotMessageSquare } from "lucide-react";
+import { BotMessageSquare, Trash2 } from "lucide-react";
 import { parseMarkdownWithPageRefBadges } from './Parser/MarkdownMessageParser';
 
 // Select which parser to use for rendering assistant messages
@@ -115,16 +116,31 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
     }
   };
 
+  const clearChatHistory = async () => {
+    if (!chatId) return;
+    try {
+      await deleteChatHistory(chatId);
+      setMessages([]);
+    } catch (error) {
+      console.error('Error deleting chat history:', error);
+    }
+  };
+
   return (
       <ChatContainer>
         <ChatHeader>
-          <ChatTitle>
-            <BotMessageSquare style={{width: '1.25rem', height: '1.25rem', color: theme.colors.primary[500]}}/>
-            <span>Chat Assistant</span>
-          </ChatTitle>
-          <ChatSubtitle>
-            {fileName && `Chatting about: ${fileName}`}
-          </ChatSubtitle>
+          <div>
+            <ChatTitle>
+              <BotMessageSquare style={{width: '1.25rem', height: '1.25rem', color: theme.colors.primary[500]}}/>
+              <span>Chat Assistant</span>
+            </ChatTitle>
+            <ChatSubtitle>
+              {chatId && fileName ? `Chatting about: ${fileName}` : 'No document selected'}
+            </ChatSubtitle>
+          </div>
+          <TrashIconButton onClick={() => clearChatHistory()} data-testid="clear-history-button">
+            <Trash2 style={{width: '1.25rem', height: '1.25rem', color: theme.colors.gray[500]}}/>
+          </TrashIconButton>
         </ChatHeader>
         <MessagesContainer>
           <MessagesList>

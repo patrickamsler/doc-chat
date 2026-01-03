@@ -60,3 +60,9 @@ export const getChatHistory = async (chatId: string): Promise<ChatHistoryRespons
   });
   return response.data;
 };
+
+export const deleteChatHistory = async (chatId: string): Promise<void> => {
+  await axios.delete(`${API_URL}/chats/${chatId}/history`, {
+    withCredentials: true,
+  });
+};
