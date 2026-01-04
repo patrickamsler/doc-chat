@@ -54,7 +54,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
             onKeyDown={onKeyPress}
-            placeholder="Ask any question..."
+            placeholder={isDisabled ? "" : "Ask any question..."}
             disabled={isDisabled}
         />
         <SendButton

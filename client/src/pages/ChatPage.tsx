@@ -104,6 +104,7 @@ const ChatPage: React.FC = () => {
 
     if (chatId === deletedChatId) {
       setSelectedFile(null);
+      setClearHistoryTrigger(prev => prev + 1);
       navigate('/');
     }
 
