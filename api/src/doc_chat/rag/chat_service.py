@@ -107,7 +107,7 @@ class ChatService:
         await self._add_message(user_id, chat_id, doc_id, query, is_user=True)
 
         # Use rewritten query for retrieval
-        response = await self._retrieve_and_rerank_chunks(chat_id, doc_id,
+        response = await self._retrieve_and_rerank_chunks(doc_id,
                                                           rewritten_query,
                                                           user_id)
         response_documents = [
@@ -144,7 +144,7 @@ class ChatService:
         # Rewrite query using conversation history
         return self._query_rewriter.rewrite(query, messages)
 
-    async def _retrieve_and_rerank_chunks(self, chat_id, doc_id, question,
+    async def _retrieve_and_rerank_chunks(self, doc_id, question,
           user_id):
         # Retrieve the top 20 chunks from the vector store
         retrieved_chunks = await self._vector_store.search_chunks(

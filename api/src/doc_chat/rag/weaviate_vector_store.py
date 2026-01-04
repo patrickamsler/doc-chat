@@ -10,7 +10,7 @@ from doc_chat.models import DocumentChunk, Document, Message, Chat, ChatHistory
 
 class WeaviateVectorStore:
     def __init__(self, client: WeaviateAsyncClient,
-          embedding_model: str = 'text-embedding-3-small'):
+          embedding_model: str = 'text-embedding-3-large'):
         """
         Initialize WeaviateVectorStore with an existing async client.
 
@@ -24,7 +24,7 @@ class WeaviateVectorStore:
 
     @classmethod
     async def create(cls, host: str = "localhost", port: int = 8080,
-          embedding_model: str = 'text-embedding-3-small') -> 'WeaviateVectorStore':
+          embedding_model: str = 'text-embedding-3-large') -> 'WeaviateVectorStore':
         """
         Create and initialize a WeaviateVectorStore with a new async client.
 
