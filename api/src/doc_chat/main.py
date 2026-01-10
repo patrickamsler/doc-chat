@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from doc_chat.rag.chat_service import initialize_services
+from doc_chat.rag.service_initialization import initialize_services
 from doc_chat.routes.auth_routes import auth_router
 from doc_chat.routes.chat_routes import chat_router
 

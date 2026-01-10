@@ -12,7 +12,9 @@ from werkzeug.utils import secure_filename
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
     ChatQueryRequest, ChatsResponse, ChatHistoryResponse
 from doc_chat.file_util import save_file, allowed_file, build_file_path
-from doc_chat.rag.chat_service import ChatService, get_chat_service
+from doc_chat.rag.document_service import DocumentService, get_document_service
+from doc_chat.rag.query_service import QueryService, get_query_service
+from doc_chat.rag.chat_management_service import ChatManagementService, get_chat_management_service
 from doc_chat.security.security_helper import get_current_user, User
 
 chat_router = APIRouter()
@@ -25,7 +27,7 @@ logger = logging.getLogger("chat_routes")
 async def upload_file(
       file: UploadFile = File(...),
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      document_service: DocumentService = Depends(get_document_service)
 ):
     if file.filename == '':
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -42,8 +44,8 @@ async def upload_file(
     filename = secure_filename(file.filename)
     logger.info(f"File saved at: {file_path}")
 
-    await chat_service.create_document_chat(user.id, chat_id, file_path,
-                                            filename)
+    await document_service.create_document_chat(user.id, chat_id, file_path,
+                                                 filename)
 
     response_model = UploadFileResponse(chatId=chat_id,
                                         message="File uploaded successfully")
@@ -55,13 +57,13 @@ async def upload_file(
 async def download_file(
       chat_id: str,
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      chat_mgmt_service: ChatManagementService = Depends(get_chat_management_service)
 ):
     file_path = build_file_path(user_id=user.id, chat_id=chat_id)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
 
-    chat = await chat_service.find_chat(user.id, chat_id)
+    chat = await chat_mgmt_service.find_chat(user.id, chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -76,14 +78,14 @@ async def download_file(
 async def query(
       request: ChatQueryRequest,
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      query_service: QueryService = Depends(get_query_service)
 ):
     chat_id = request.chatId
     question = request.question
     logger.info(
         f"User {user.id} querying with chat_id={chat_id} and question='{question}'")
 
-    response = await chat_service.query(user.id, chat_id, question)
+    response = await query_service.query(user.id, chat_id, question)
     return JSONResponse(content=response.model_dump(),
                         status_code=status.HTTP_200_OK)
 
@@ -91,10 +93,10 @@ async def query(
 @chat_router.get('', response_model=ChatsResponse)
 async def find_all_chats(
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      chat_mgmt_service: ChatManagementService = Depends(get_chat_management_service)
 ):
     logger.info(f"User {user.id} requesting all chats")
-    chats = await chat_service.find_all_chats(user.id)
+    chats = await chat_mgmt_service.find_all_chats(user.id)
     return JSONResponse(
         content=chats.model_dump(),
         status_code=status.HTTP_200_OK)
@@ -104,11 +106,11 @@ async def find_all_chats(
 async def get_chat_history(
       chat_id: str,
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      chat_mgmt_service: ChatManagementService = Depends(get_chat_management_service)
 ):
     logger.info(f"User {user.id} requesting chat history for chat_id={chat_id}")
     try:
-        history = await chat_service.get_chat_history(user.id, chat_id)
+        history = await chat_mgmt_service.get_chat_history(user.id, chat_id)
         return JSONResponse(
             content=history.model_dump(),
             status_code=status.HTTP_200_OK)
@@ -120,11 +122,11 @@ async def get_chat_history(
 async def delete_chat_history(
       chat_id: str,
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      chat_mgmt_service: ChatManagementService = Depends(get_chat_management_service)
 ):
     logger.info(f"User {user.id} deleting history for chat_id={chat_id}")
     try:
-        await chat_service.clear_chat_history(user.id, chat_id)
+        await chat_mgmt_service.clear_chat_history(user.id, chat_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -134,11 +136,11 @@ async def delete_chat_history(
 async def delete_chat(
       chat_id: str,
       user: User = Depends(get_current_user),
-      chat_service: ChatService = Depends(get_chat_service)
+      document_service: DocumentService = Depends(get_document_service)
 ):
     logger.info(f"User {user.id} deleting chat {chat_id}")
     try:
-        await chat_service.delete_chat(user.id, chat_id)
+        await document_service.delete_chat(user.id, chat_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
