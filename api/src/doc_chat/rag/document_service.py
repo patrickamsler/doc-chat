@@ -3,7 +3,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from doc_chat.file_util import delete_file
+from fastapi import UploadFile
+from werkzeug.utils import secure_filename
+
+from doc_chat.file_util import delete_file, save_file, allowed_file
 from .document_loader import DocumentLoader
 from .weaviate_vector_store import WeaviateVectorStore
 from ..models import Document, DocumentChunk, Chat
@@ -16,6 +19,52 @@ class DocumentService:
 
     def __init__(self, vector_store: WeaviateVectorStore):
         self._vector_store = vector_store
+
+    async def upload_and_create_document_chat(
+          self,
+          file: UploadFile,
+          user_id: str
+    ) -> str:
+        """
+        Upload a PDF file and create a document chat.
+
+        This method handles:
+        - File validation (empty filename, allowed extension)
+        - Chat ID generation
+        - File saving to disk
+        - Document indexing and vector store operations
+
+        Args:
+            file: The uploaded PDF file
+            user_id: The user ID
+
+        Returns:
+            str: The generated chat_id
+
+        Raises:
+            ValueError: If file validation fails or file is invalid
+        """
+        # Validate filename is not None or empty
+        if not file.filename or file.filename.strip() == '':
+            raise ValueError("No file selected")
+
+        # Validate file extension
+        if not allowed_file(file.filename):
+            raise ValueError("Invalid file type. Only PDF files are allowed")
+
+        # Generate chat ID
+        chat_id = str(uuid.uuid4().hex)
+        logger.info(f"User {user_id} uploading file with chat_id={chat_id}")
+
+        # Save file to disk
+        file_path = save_file(file, user_id, chat_id)
+        filename = secure_filename(file.filename)
+        logger.info(f"File saved at: {file_path}")
+
+        # Create document chat
+        await self.create_document_chat(user_id, chat_id, file_path, filename)
+
+        return chat_id
 
     async def create_document_chat(
           self,

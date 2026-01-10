@@ -1,17 +1,15 @@
 import logging
 import os
-import uuid
 
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi import File, UploadFile, HTTPException, Depends
 from fastapi import status
 from fastapi.responses import JSONResponse, FileResponse, Response
-from werkzeug.utils import secure_filename
 
 from doc_chat.api_types import UploadFileResponse, QueryResponse, \
     ChatQueryRequest, ChatsResponse, ChatHistoryResponse
-from doc_chat.file_util import save_file, allowed_file, build_file_path
+from doc_chat.file_util import build_file_path
 from doc_chat.rag.document_service import DocumentService, get_document_service
 from doc_chat.rag.query_service import QueryService, get_query_service
 from doc_chat.rag.chat_management_service import ChatManagementService, get_chat_management_service
@@ -25,32 +23,29 @@ logger = logging.getLogger("chat_routes")
 
 @chat_router.post("", response_model=UploadFileResponse)
 async def upload_file(
-      file: UploadFile = File(...),
-      user: User = Depends(get_current_user),
-      document_service: DocumentService = Depends(get_document_service)
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    document_service: DocumentService = Depends(get_document_service)
 ):
-    if file.filename == '':
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="No file selected")
+    try:
+        chat_id = await document_service.upload_and_create_document_chat(
+            file,
+            user.id
+        )
 
-    if not allowed_file(file.filename):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Invalid file")
-
-    chat_id = str(uuid.uuid4().hex)
-    logger.info(f"User {user.id} uploading file with chat_id={chat_id}")
-
-    file_path = save_file(file, user.id, chat_id)
-    filename = secure_filename(file.filename)
-    logger.info(f"File saved at: {file_path}")
-
-    await document_service.create_document_chat(user.id, chat_id, file_path,
-                                                 filename)
-
-    response_model = UploadFileResponse(chatId=chat_id,
-                                        message="File uploaded successfully")
-    return JSONResponse(content=response_model.model_dump(),
-                        status_code=status.HTTP_201_CREATED)
+        response_model = UploadFileResponse(
+            chatId=chat_id,
+            message="File uploaded successfully"
+        )
+        return JSONResponse(
+            content=response_model.model_dump(),
+            status_code=status.HTTP_201_CREATED
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 @chat_router.get("/{chat_id}/file")
