@@ -9,12 +9,10 @@ jest.mock('../services/api', () => ({
 }));
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, renderWithProviders } from '../test-utils';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from 'styled-components';
 import { BrowserRouter } from 'react-router-dom';
 import ChatPage from './ChatPage';
-import theme from '../theme';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import * as api from '../services/api';
 
@@ -98,11 +96,9 @@ const setup = async (params = {}) => {
   useNavigateMock.mockReturnValue(mockNavigate);
   useParamsMock.mockReturnValue(params);
 
-  const result = render(
+  const result = renderWithProviders(
       <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <ChatPage/>
-        </ThemeProvider>
+        <ChatPage/>
       </BrowserRouter>
   );
 
@@ -199,9 +195,7 @@ describe('ChatPage', () => {
 
       rerender(
           <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <ChatPage/>
-            </ThemeProvider>
+            <ChatPage/>
           </BrowserRouter>
       );
 
@@ -213,9 +207,7 @@ describe('ChatPage', () => {
       useParamsMock.mockReturnValue({chatId: 'chat-1'});
       rerender(
           <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <ChatPage/>
-            </ThemeProvider>
+            <ChatPage/>
           </BrowserRouter>
       );
 
@@ -319,29 +311,30 @@ describe('ChatPage', () => {
 
   describe('Error Handling', () => {
     it('should handle failed chat list fetch gracefully', async () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
       (api.getChats as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
 
       await setup();
 
+      // Even with failed fetch, the page should still render main components
       await waitFor(() => {
-        expect(consoleError).toHaveBeenCalledWith('Failed to load documents:', expect.any(Error));
+        expect(screen.getByTestId('header')).toBeInTheDocument();
+        expect(screen.getByTestId('file-upload')).toBeInTheDocument();
       });
-
-      consoleError.mockRestore();
     });
 
     it('should handle failed file download gracefully', async () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
       (api.downloadFile as jest.Mock).mockRejectedValue(new Error('Download failed'));
 
       await setup({chatId: 'chat-1'});
 
+      // Even with failed download, the page should still render main components
       await waitFor(() => {
-        expect(consoleError).toHaveBeenCalledWith('Error downloading file:', expect.any(Error));
+        expect(screen.getByTestId('header')).toBeInTheDocument();
+        expect(screen.getByTestId('chat')).toBeInTheDocument();
       });
 
-      consoleError.mockRestore();
+      // PDF viewer should not be displayed when download fails
+      expect(screen.queryByTestId('pdf-viewer')).not.toBeInTheDocument();
     });
   });
 });

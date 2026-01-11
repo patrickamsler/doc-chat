@@ -1,10 +1,8 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, renderWithProviders } from '../../test-utils';
 import userEvent from '@testing-library/user-event';
 import Chat from './Chat';
-import { ThemeProvider } from 'styled-components';
 import { deleteChatHistory, getChatHistory, sendMessage } from '../../services/api';
-import theme from "../../theme";
 
 jest.mock('../../services/api', () => ({
   sendMessage: jest.fn(),
@@ -15,11 +13,7 @@ jest.mock('../../services/api', () => ({
 const setup = (chatId = 'chat1', propsOverride = {}) => {
   const onBadgeClick = jest.fn();
   const props = {chatId, onBadgeClick, ...propsOverride};
-  render(
-      <ThemeProvider theme={theme}>
-        <Chat {...props} />
-      </ThemeProvider>
-  );
+  renderWithProviders(<Chat {...props} />);
   return {onBadgeClick};
 };
 
@@ -50,7 +44,10 @@ describe('Chat component', () => {
 
     userEvent.click(screen.getByRole('button'));
 
-    expect(sendMessage).toHaveBeenCalledWith('chat1', 'Hello');
+    // Wait for the mutation to fire
+    await waitFor(() => {
+      expect(sendMessage).toHaveBeenCalledWith('chat1', 'Hello');
+    });
 
     // user message should appear immediately
     await waitFor(() => {

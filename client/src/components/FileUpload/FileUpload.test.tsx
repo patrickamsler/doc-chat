@@ -1,10 +1,8 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, renderWithProviders } from '../../test-utils';
 import userEvent from '@testing-library/user-event';
 import FileUpload from './FileUpload';
 import { uploadFile } from '../../services/api';
-import theme from "../../theme";
-import { ThemeProvider } from "styled-components";
 
 jest.mock('../../services/api', () => ({
   uploadFile: jest.fn()
@@ -17,11 +15,7 @@ describe('FileUpload Component', () => {
     (uploadFile as jest.Mock).mockResolvedValueOnce({ chatId: fakeChatId });
     const onFileUploaded = jest.fn();
 
-    render(
-        <ThemeProvider theme={theme}>
-          <FileUpload onFileUploaded={onFileUploaded} />
-        </ThemeProvider>
-    );
+    renderWithProviders(<FileUpload onFileUploaded={onFileUploaded} />);
 
     // Create a file and directly trigger the change event on the input
     const file = new File(['dummy content'], 'test.pdf', { type: 'application/pdf' });

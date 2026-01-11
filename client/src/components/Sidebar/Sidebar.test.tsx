@@ -1,10 +1,8 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, renderWithProviders } from '../../test-utils';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from 'styled-components';
 import { BrowserRouter } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import theme from '../../theme';
 import { ChatInfo } from '../../types/apiTypes';
 
 jest.mock('../../services/api', () => ({
@@ -52,11 +50,9 @@ const setup = async (propsOverride = {}, params = {}) => {
   useNavigateMock.mockReturnValue(mockNavigate);
   useParamsMock.mockReturnValue(params);
 
-  const result = render(
+  const result = renderWithProviders(
       <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Sidebar {...props} />
-        </ThemeProvider>
+        <Sidebar {...props} />
       </BrowserRouter>
   );
 
