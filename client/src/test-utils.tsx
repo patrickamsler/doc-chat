@@ -19,11 +19,6 @@ export function createTestQueryClient(): QueryClient {
         retry: false,
       },
     },
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      error: () => {}, // Suppress errors in tests
-    },
   });
 }
 
@@ -34,15 +29,15 @@ interface AllTheProvidersProps {
 /**
  * Wrapper component that provides all necessary providers for testing
  */
-export function AllTheProviders({ children }: AllTheProvidersProps) {
+export function AllTheProviders({children}: AllTheProvidersProps) {
   const queryClient = createTestQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
-    </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          {children}
+        </ThemeProvider>
+      </QueryClientProvider>
   );
 }
 
@@ -50,10 +45,10 @@ export function AllTheProviders({ children }: AllTheProvidersProps) {
  * Custom render function that wraps components with all necessary providers
  */
 export function renderWithProviders(
-  ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
+    ui: React.ReactElement,
+    options?: Omit<RenderOptions, 'wrapper'>
 ) {
-  return render(ui, { wrapper: AllTheProviders, ...options });
+  return render(ui, {wrapper: AllTheProviders, ...options});
 }
 
 // Re-export everything from @testing-library/react
