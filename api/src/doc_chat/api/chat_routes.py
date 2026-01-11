@@ -7,13 +7,14 @@ from fastapi import File, UploadFile, HTTPException, Depends
 from fastapi import status
 from fastapi.responses import JSONResponse, FileResponse, Response
 
-from doc_chat.api_types import UploadFileResponse, QueryResponse, \
+from doc_chat.api.schemas import UploadFileResponse, QueryResponse, \
     ChatQueryRequest, ChatsResponse, ChatHistoryResponse
-from doc_chat.file_util import build_file_path
-from doc_chat.rag.document_service import DocumentService, get_document_service
-from doc_chat.rag.query_service import QueryService, get_query_service
-from doc_chat.rag.chat_management_service import ChatManagementService, get_chat_management_service
-from doc_chat.security.security_helper import get_current_user, User
+from doc_chat.api.dependencies import get_current_user, get_document_service, \
+    get_query_service, get_chat_management_service, User
+from doc_chat.utils.file_utils import build_file_path
+from doc_chat.services.document_service import DocumentService
+from doc_chat.services.query_service import QueryService
+from doc_chat.services.chat_management_service import ChatManagementService
 
 chat_router = APIRouter()
 load_dotenv()

@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import pytest
 
 from doc_chat.rag.reranker import Reranker
-from doc_chat.models import DocumentChunk
+from doc_chat.core.models import DocumentChunk
 
 
 @pytest.fixture

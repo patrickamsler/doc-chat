@@ -2,7 +2,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
 
-from doc_chat.models import Message
+from doc_chat.core.models import Message
 
 system_prompt_template = """
 You are a query rewriting assistant. Your task is to transform user queries into clear, standalone questions optimized for semantic document retrieval.

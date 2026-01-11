@@ -7,7 +7,7 @@ from io import BytesIO
 import pytest
 from fastapi import UploadFile
 
-from doc_chat.file_util import save_file, allowed_file, build_file_path, \
+from doc_chat.utils.file_utils import save_file, allowed_file, build_file_path, \
     delete_file
 
 

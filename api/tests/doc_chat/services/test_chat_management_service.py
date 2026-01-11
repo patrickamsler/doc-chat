@@ -3,10 +3,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from doc_chat.api_types import Chat, ChatsResponse, ChatHistoryResponse
-from doc_chat.models import Chat as ChatEntity, ChatHistory, Message, \
+from doc_chat.api.schemas import Chat, ChatsResponse, ChatHistoryResponse
+from doc_chat.core.models import Chat as ChatEntity, ChatHistory, Message, \
     DocumentChunk
-from doc_chat.rag.chat_management_service import ChatManagementService
+from doc_chat.services.chat_management_service import ChatManagementService
 
 
 @pytest.fixture

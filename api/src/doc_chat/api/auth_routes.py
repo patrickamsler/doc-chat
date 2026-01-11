@@ -3,8 +3,8 @@ import uuid
 
 from fastapi import APIRouter, Request, Response
 
-from doc_chat.security.security_helper import is_user_authenticated, \
-    create_guest_cookie, GUEST_COOKIE, GUEST_TTL
+from doc_chat.api.dependencies import is_user_authenticated
+from doc_chat.security.security_helper import create_guest_cookie, GUEST_COOKIE, GUEST_TTL
 
 auth_router = APIRouter()
 logger = logging.getLogger("auth_routes")

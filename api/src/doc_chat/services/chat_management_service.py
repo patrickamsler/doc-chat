@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 
-from .weaviate_vector_store import WeaviateVectorStore
-from ..api_types import (
+from doc_chat.rag.weaviate_vector_store import WeaviateVectorStore
+from doc_chat.api.schemas import (
     Chat,
     ChatsResponse,
     ChatHistoryResponse,
@@ -141,15 +141,3 @@ class ChatManagementService:
         """
         await self._vector_store.delete_chat_messages(user_id, chat_id)
         logger.info(f"Cleared history for chat {chat_id} for user {user_id}")
-
-
-# Global instance (will be initialized on app startup by service_initialization)
-_vector_store: Optional[WeaviateVectorStore] = None
-
-
-def get_chat_management_service() -> ChatManagementService:
-    """
-    Dependency to get ChatManagementService instance.
-    """
-    from .service_initialization import get_vector_store
-    return ChatManagementService(get_vector_store())

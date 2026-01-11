@@ -6,10 +6,10 @@ from typing import Optional
 from fastapi import UploadFile
 from werkzeug.utils import secure_filename
 
-from doc_chat.file_util import delete_file, save_file, allowed_file
-from .document_loader import DocumentLoader
-from .weaviate_vector_store import WeaviateVectorStore
-from ..models import Document, DocumentChunk, Chat
+from doc_chat.utils.file_utils import delete_file, save_file, allowed_file
+from doc_chat.rag.document_loader import DocumentLoader
+from doc_chat.rag.weaviate_vector_store import WeaviateVectorStore
+from doc_chat.core.models import Document, DocumentChunk, Chat
 
 logger = logging.getLogger(__name__)
 
@@ -148,15 +148,3 @@ class DocumentService:
         await self._vector_store.delete_chat_and_all_data(user_id, chat_id)
         delete_file(user_id, chat_id)
         logger.info(f"Deleted chat {chat_id} for user {user_id}")
-
-
-# Global instance (will be initialized on app startup by service_initialization)
-_vector_store: Optional[WeaviateVectorStore] = None
-
-
-def get_document_service() -> DocumentService:
-    """
-    Dependency to get DocumentService instance.
-    """
-    from .service_initialization import get_vector_store
-    return DocumentService(get_vector_store())

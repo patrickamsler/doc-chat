@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from doc_chat.rag.document_service import DocumentService
+from doc_chat.services.document_service import DocumentService
 
 
 @pytest.fixture
@@ -50,7 +50,7 @@ async def test_upload_and_create_document_chat_success(
     user_id = "user_123"
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
         mock_documents = [Mock()]
@@ -143,7 +143,7 @@ async def test_upload_and_create_document_chat_generates_unique_chat_ids(
     user_id = "user_123"
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
         mock_documents = [Mock()]
@@ -195,7 +195,7 @@ async def test_create_document_chat_new_tenant(
     mock_vector_store.tenant_exists.return_value = False
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
 
@@ -244,7 +244,7 @@ async def test_create_document_chat_existing_tenant(
     mock_vector_store.tenant_exists.return_value = True
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
 
@@ -282,7 +282,7 @@ async def test_create_document_chat_with_multiple_chunks(
     file_name = "multi_page.pdf"
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
 
@@ -326,7 +326,7 @@ async def test_create_document_chat_without_file_name(
     file_path = "/tmp/test.pdf"
 
     with patch(
-          'doc_chat.rag.document_service.DocumentLoader') as mock_loader_class:
+          'doc_chat.services.document_service.DocumentLoader') as mock_loader_class:
         mock_loader = Mock()
         mock_loader_class.return_value = mock_loader
 
@@ -357,7 +357,7 @@ async def test_delete_chat(
     user_id = "user_123"
     chat_id = "chat_456"
 
-    with patch('doc_chat.rag.document_service.delete_file') as mock_delete_file:
+    with patch('doc_chat.services.document_service.delete_file') as mock_delete_file:
         # When
         await document_service.delete_chat(user_id, chat_id)
 
@@ -379,7 +379,7 @@ async def test_delete_chat_handles_missing_file(
     user_id = "user_123"
     chat_id = "chat_999"
 
-    with patch('doc_chat.rag.document_service.delete_file') as mock_delete_file:
+    with patch('doc_chat.services.document_service.delete_file') as mock_delete_file:
         # File deletion doesn't raise an error (handled by delete_file util)
         mock_delete_file.return_value = None
 

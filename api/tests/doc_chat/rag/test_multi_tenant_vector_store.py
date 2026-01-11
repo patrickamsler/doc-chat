@@ -4,7 +4,7 @@ import tempfile
 import pytest
 
 from doc_chat.rag.multi_tenant_vector_store import MultiTenantVectorStore
-from doc_chat.token_util import create_token
+from doc_chat.utils.token_utils import create_token
 
 
 class DummySplit:

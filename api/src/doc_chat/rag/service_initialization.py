@@ -19,25 +19,21 @@ _reranker: Optional[Reranker] = None
 
 async def initialize_services(host: str = "localhost",
       port: int = 8080) -> None:
-    global _vector_store, _reranker
+    """
+    Initialize the global RAG services (vector store and reranker).
 
-    # Import here to set globals in all service modules
-    from . import document_service, query_service, chat_management_service
+    This should be called once during application startup.
+    """
+    global _vector_store, _reranker
 
     if _vector_store is None:
         logger.info(f"Initializing WeaviateVectorStore at {host}:{port}")
         _vector_store = await WeaviateVectorStore.create(host=host, port=port)
-        # Set the vector store in all service modules
-        document_service._vector_store = _vector_store
-        query_service._vector_store = _vector_store
-        chat_management_service._vector_store = _vector_store
         logger.info("WeaviateVectorStore initialized successfully")
 
     if _reranker is None:
         logger.info("Initializing Reranker")
         _reranker = Reranker()
-        # Set the reranker in the query service module
-        query_service._reranker = _reranker
         logger.info("Reranker initialized successfully")
 
 

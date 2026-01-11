@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
-from doc_chat.models import Message
+from doc_chat.core.models import Message
 from doc_chat.rag.query_rewriter import QueryRewriter
 
 

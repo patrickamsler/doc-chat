@@ -1,14 +1,14 @@
 import logging
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
-from .citation_retrieval_chain import CitationRetrievalChain
-from .query_rewriter import QueryRewriter
-from .reranker import Reranker
-from .weaviate_vector_store import WeaviateVectorStore
-from ..api_types import QueryResponse, DocumentsResponse
-from ..llm import create_llm
-from ..models import Message
+from doc_chat.rag.citation_retrieval_chain import CitationRetrievalChain
+from doc_chat.rag.query_rewriter import QueryRewriter
+from doc_chat.rag.reranker import Reranker
+from doc_chat.rag.weaviate_vector_store import WeaviateVectorStore
+from doc_chat.api.schemas import QueryResponse, DocumentsResponse
+from doc_chat.utils.llm import create_llm
+from doc_chat.core.models import Message
 
 logger = logging.getLogger(__name__)
 
@@ -177,16 +177,3 @@ class QueryService:
             message,
             chunk_ids=chunk_ids
         )
-
-
-# Global instances (will be initialized on app startup by service_initialization)
-_vector_store: Optional[WeaviateVectorStore] = None
-_reranker: Optional[Reranker] = None
-
-
-def get_query_service() -> QueryService:
-    """
-    Dependency to get QueryService instance.
-    """
-    from .service_initialization import get_vector_store, get_reranker
-    return QueryService(get_vector_store(), get_reranker())

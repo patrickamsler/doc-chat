@@ -5,7 +5,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate
 from langchain_core.language_models import BaseChatModel
 
-from doc_chat.models import DocumentChunk
+from doc_chat.core.models import DocumentChunk
 
 logger = logging.getLogger("citation_retrieval_chain")
 

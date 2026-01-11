@@ -1,6 +1,6 @@
 import string
 
-from doc_chat.token_util import create_token
+from doc_chat.utils.token_utils import create_token
 
 
 def test_create_token_length():

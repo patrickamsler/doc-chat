@@ -5,7 +5,7 @@ from weaviate.classes.config import Property, DataType, Configure, \
     ReferenceProperty
 from weaviate.classes.query import Filter, QueryReference
 
-from doc_chat.models import DocumentChunk, Document, Message, Chat, ChatHistory
+from doc_chat.core.models import DocumentChunk, Document, Message, Chat, ChatHistory
 
 
 class WeaviateVectorStore:

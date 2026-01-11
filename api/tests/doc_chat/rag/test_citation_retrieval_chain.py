@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 from doc_chat.rag.citation_retrieval_chain import CitationRetrievalChain
-from doc_chat.models import DocumentChunk
+from doc_chat.core.models import DocumentChunk
 
 
 def create_doc(chunk_id: str, page_content: str,

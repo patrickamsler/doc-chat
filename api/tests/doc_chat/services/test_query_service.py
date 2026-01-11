@@ -2,9 +2,9 @@ import pytest
 from unittest.mock import AsyncMock, Mock, patch
 from datetime import datetime, timezone
 
-from doc_chat.rag.query_service import QueryService
-from doc_chat.models import DocumentChunk, Document, ChatHistory, Message
-from doc_chat.api_types import QueryResponse
+from doc_chat.services.query_service import QueryService
+from doc_chat.core.models import DocumentChunk, Document, ChatHistory, Message
+from doc_chat.api.schemas import QueryResponse
 
 
 @pytest.fixture
@@ -32,9 +32,9 @@ def query_service(
     mock_reranker: Mock
 ) -> QueryService:
     """Create a QueryService instance with mocked dependencies."""
-    with patch('doc_chat.rag.query_service.CitationRetrievalChain'):
-        with patch('doc_chat.rag.query_service.create_llm'):
-            with patch('doc_chat.rag.query_service.QueryRewriter') as mock_query_rewriter_class:
+    with patch('doc_chat.services.query_service.CitationRetrievalChain'):
+        with patch('doc_chat.services.query_service.create_llm'):
+            with patch('doc_chat.services.query_service.QueryRewriter') as mock_query_rewriter_class:
                 service = QueryService(mock_vector_store, mock_reranker)
                 # Mock the rewrite method to return the original query by default
                 service._query_rewriter.rewrite = Mock(side_effect=lambda q, h: q)
