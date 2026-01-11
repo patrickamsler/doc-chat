@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FileText, MoreVertical, Trash2, Upload } from 'lucide-react';
 import { ChatInfo } from '../../types/apiTypes';
-import { deleteChat, deleteChatHistory } from '../../services/api';
+import { useDeleteChat, useDeleteChatHistory } from '../../hooks/useApi';
 import DropdownMenu, { MenuItem } from '../common/DropdownMenu/DropdownMenu';
 import ConfirmDialog from '../common/ConfirmDialog/ConfirmDialog';
 import {
@@ -44,6 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                                          }) => {
   const navigate = useNavigate();
   const {chatId} = useParams<{ chatId: string }>();
+  const deleteChatMutation = useDeleteChat();
+  const deleteChatHistoryMutation = useDeleteChatHistory();
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -75,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleClearHistory = async (chatId: string) => {
     setOpenMenuId(null);
     try {
-      await deleteChatHistory(chatId);
+      await deleteChatHistoryMutation.mutateAsync(chatId);
       onHistoryCleared?.(chatId);
     } catch (error) {
       console.error('Error clearing chat history:', error);
@@ -92,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (!chatToDelete) return;
 
     try {
-      await deleteChat(chatToDelete);
+      await deleteChatMutation.mutateAsync(chatToDelete);
       onChatDeleted?.(chatToDelete);
       setShowDeleteDialog(false);
       setChatToDelete(null);

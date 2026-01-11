@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { deleteChatHistory, getChatHistory, sendMessage } from '../../services/api';
+import React, { useEffect, useRef } from 'react';
+import { useChatHistory, useSendMessage, useDeleteChatHistory } from '../../hooks/useApi';
 import ChatInput from './ChatInput/ChatInput';
 import {
   AssistantMessage,
@@ -28,7 +28,6 @@ interface ChatProps {
   chatId: string;
   fileName?: string;
   onBadgeClick: (pageRef: number, content: string) => void;
-  clearHistoryTrigger?: number;
 }
 
 interface MessageType {
@@ -38,11 +37,21 @@ interface MessageType {
   isUser: boolean;
 }
 
-const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick, clearHistoryTrigger}) => {
-  const [messages, setMessages] = useState<MessageType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick}) => {
+  const { data: history = [] } = useChatHistory(chatId);
+  const sendMessageMutation = useSendMessage();
+  const deleteChatHistoryMutation = useDeleteChatHistory();
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
+
+  // Transform API format to component format
+  const messages: MessageType[] = history.map((msg, index) => ({
+    id: new Date(msg.timestamp).getTime() + index,
+    text: msg.content,
+    documents: msg.documents,
+    isUser: msg.role === 'user',
+  }));
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
@@ -52,83 +61,20 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick, clearHistory
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (!chatId) {
-      return
-    }
-    const loadChatHistory = async () => {
-      try {
-        const historyResponse = await getChatHistory(chatId);
-        const historicalMessages: MessageType[] = historyResponse.history.map((msg, index) => ({
-          id: new Date(msg.timestamp).getTime() + index,
-          text: msg.content,
-          documents: msg.documents,
-          isUser: msg.role === 'user',
-        }));
-        setMessages(historicalMessages);
-      } catch (error) {
-        console.error('Error loading chat history:', error);
-      }
-    };
-
-    loadChatHistory();
-  }, [chatId]);
-
-  useEffect(() => {
-    if (clearHistoryTrigger !== undefined && clearHistoryTrigger > 0) {
-      setMessages([]);
-    }
-  }, [clearHistoryTrigger]);
-
   const handleSendMessage = async (input: string) => {
     if (!input.trim()) return;
 
-    const timestamp = Date.now();
-    const userMessage: MessageType = {
-      id: timestamp,
-      text: input,
-      documents: [],
-      isUser: true,
-    };
-    const botMessage: MessageType = {
-      id: timestamp + 1,
-      text: "thinking...",
-      documents: [],
-      isUser: false,
-    };
-
-    setMessages(prev => [...prev, userMessage, botMessage]);
-    setIsLoading(true);
-
     try {
-      const response = await sendMessage(chatId, input);
-
-      setMessages(prevMessages =>
-          prevMessages.map(msg =>
-              msg.id === botMessage.id
-                  ? {...msg, text: response.answer, documents: response.documents}
-                  : msg
-          )
-      );
+      await sendMessageMutation.mutateAsync({ chatId, question: input });
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prevMessages =>
-          prevMessages.map(msg =>
-              msg.id === botMessage.id
-                  ? {...msg, text: "Sorry, there was an error processing your request."}
-                  : msg
-          )
-      );
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const clearChatHistory = async () => {
     if (!chatId) return;
     try {
-      await deleteChatHistory(chatId);
-      setMessages([]);
+      await deleteChatHistoryMutation.mutateAsync(chatId);
     } catch (error) {
       console.error('Error deleting chat history:', error);
     }
@@ -174,7 +120,7 @@ const Chat: React.FC<ChatProps> = ({chatId, fileName, onBadgeClick, clearHistory
         </MessagesContainer>
         <ChatInput
             onSendMessage={handleSendMessage}
-            isLoading={isLoading}
+            isLoading={sendMessageMutation.isPending}
             isDisabled={!chatId}
         />
       </ChatContainer>

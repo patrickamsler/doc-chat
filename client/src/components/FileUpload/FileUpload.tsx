@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { uploadFile } from '../../services/api';
+import { useUploadFile } from '../../hooks/useApi';
 import { FileInput } from './FileUpload.styles'
 
 
@@ -11,13 +11,15 @@ interface FileUploadProps {
 
 const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     ({onFileUploaded, onFileUploadStart, onUploadComplete}, ref) => {
+      const uploadFileMutation = useUploadFile();
+
       const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         try {
           onFileUploadStart?.();
-          const response = await uploadFile(file);
+          const response = await uploadFileMutation.mutateAsync(file);
           const fileUrl = URL.createObjectURL(file);
           onFileUploaded(response.chatId, fileUrl, file.name);
         } catch (error) {
